@@ -18,8 +18,6 @@ Please also see following documents:
 - [SECURITY](SECURITY.md)
 - [CONTRIBUTING](CONTRIBUTING.md)
 - [CODE OF CONDUCT](CODE-OF-CONDUCT.md)
-- [DOCKER](DOCKER.md)
-- [API](API.md)
 
 ## 🔗Links
 - 👯 Web hosting company [EliasDH.com](https://eliasdh.com).
