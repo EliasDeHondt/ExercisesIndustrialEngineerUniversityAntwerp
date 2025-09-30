@@ -12,7 +12,5 @@ end Assignments00;
 architecture Behavioral of Assignments00 is
 
 begin
-    G <= (not(A) and (not(B) or C)) or (not((A and not(B)) or not(C))) or (B and C);
-    -- G <= (not(C) or not(A) or B);
-
+    G <= (not(A) and (not(B) or C)) or (not((A and not(B)) or not(C))) or (B and C); -- G <= (not(C) or not(A) or B);
 end Behavioral;
