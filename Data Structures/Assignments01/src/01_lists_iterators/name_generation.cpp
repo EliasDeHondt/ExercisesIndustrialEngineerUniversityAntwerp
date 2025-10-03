@@ -5,7 +5,7 @@
 **/
 
 #include "01_lists_iterators/name_generation.hpp"
-#include <cstdlib> // srand, rand
+#include <cstdlib>
 #include <random>
 #include <string>
 
