@@ -5,7 +5,7 @@
 **/
 
 #include <catch2/catch.hpp>
-#include "01_lists_iterators/name_generation.hpp"
+#include "name_generation.hpp"
 #include <iostream>
 
 TEST_CASE("fill_vector, Same Seed Yields Same Names", "[vector]") {

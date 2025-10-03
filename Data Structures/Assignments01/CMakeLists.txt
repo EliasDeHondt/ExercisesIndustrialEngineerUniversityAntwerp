@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
-project(02_lists_iterators)
+project(Assignments01)
 
 set(CMAKE_CXX_STANDARD 17)
 
 add_library(ListLib STATIC
-        src/01_lists_iterators/iterator_functions.cpp
-        src/01_lists_iterators/name_generation.cpp
+        src/iterator_functions.cpp
+        src/name_generation.cpp
 )
 
 target_include_directories(ListLib PRIVATE "include/")

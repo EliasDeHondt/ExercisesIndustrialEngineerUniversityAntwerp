@@ -4,7 +4,7 @@
     * @since 01/01/2025
 **/
 
-#include "01_lists_iterators/name_generation.hpp"
+#include "name_generation.hpp"
 #include <cstdlib>
 #include <random>
 #include <string>
