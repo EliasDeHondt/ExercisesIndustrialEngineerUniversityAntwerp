@@ -7,12 +7,12 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity CountSnake is
+entity Assignments01 is
     port (
         Count: in unsigned(2 downto 0); -- 3-bit input
         SevenSegm: out std_logic_vector(6 downto 0) -- 7-bit output for 7-segment display
         );
-end CountSnake;
+end Assignments01;
 
 architecture Behavioral of Assignments01 is
 
