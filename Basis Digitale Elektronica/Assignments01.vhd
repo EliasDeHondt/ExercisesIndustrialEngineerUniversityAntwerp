@@ -14,9 +14,7 @@ entity Main is
         );
 end Main;
 
-architecture Behavioral of Main is
-
-begin
+architecture Behavioral of Main is begin
     process(Count) begin
         case Count is
             when "000" => -- 0
