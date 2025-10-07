@@ -7,14 +7,14 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity Assignments01 is
+entity Main is
     port (
         Count: in unsigned(2 downto 0); -- 3-bit input
         SevenSegm: out std_logic_vector(6 downto 0) -- 7-bit output for 7-segment display
         );
-end Assignments01;
+end Main;
 
-architecture Behavioral of Assignments01 is
+architecture Behavioral of Main is
 
 begin
     process(Count) begin
@@ -32,9 +32,9 @@ begin
             when "101" => -- 5
                 SevenSegm <= "1101110"; -- c,g
             when "110" => -- 6
-                SevenSegm <= "1001110"; -- g,f
+                SevenSegm <= "1111100"; -- g,f
             when "111" => -- 7
-                SevenSegm <= "1001111"; -- f,a
+                SevenSegm <= "0111101"; -- f,a
             when others =>
                 SevenSegm <= (others => '1'); -- Turn off all segments
         end case;
@@ -43,5 +43,34 @@ end Behavioral;
 -------------------- Main --------------------
 
 -------------------- Test --------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
+entity Test is
+end Test;
+
+architecture Behavioral of Test is
+    signal Counter: unsigned(2 downto 0) := (others => '0');
+    signal SevenSegm: std_logic_vector(6 downto 0);
+
+    component Main is
+        port (
+            Count: in unsigned(2 downto 0);
+            SevenSegm: out std_logic_vector(6 downto 0)
+            );
+    end component;
+begin
+    Testing: Main port map(Count => Counter, SevenSegm => SevenSegm);
+
+    p_Stimuli: process -- No sensitivity list! => "wait" is required!
+        begin
+            wait for 100 ns;
+            if Counter < 7 then
+                Counter <= Counter + 1;
+            else
+                Counter <= (others => '0');
+            end if;
+    end process p_Stimuli;
+end Behavioral;
 -------------------- Test --------------------
