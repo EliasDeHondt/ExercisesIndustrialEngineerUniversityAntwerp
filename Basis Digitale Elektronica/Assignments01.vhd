@@ -9,15 +9,15 @@ use IEEE.numeric_std.all;
 
 entity Snake is
     port (
-        Count: in unsigned(2 downto 0); -- 3-bit input
+        CountSnake: in unsigned(2 downto 0); -- 3-bit input
         SevenSegm: out std_logic_vector(6 downto 0) -- 7-bit output for 7-segment display
         );
 end Snake;
 
 architecture Behavioral of Snake is
 begin
-    process(Count) begin
-        case Count is
+    process(CountSnake) begin
+        case CountSnake is
             when "000" => -- 0
                 SevenSegm <= "0011111"; -- a,b
             when "001" => -- 1
@@ -55,12 +55,12 @@ architecture Behavioral of Test is
 
     component Snake is
         port (
-            Count: in unsigned(2 downto 0);
+            CountSnake: in unsigned(2 downto 0);
             SevenSegm: out std_logic_vector(6 downto 0)
             );
     end component;
 begin
-    Testing: Snake port map(Count => Counter, SevenSegm => SevenSegm);
+    Testing: Snake port map(CountSnake => Counter, SevenSegm => SevenSegm);
 
     p_Stimuli: process -- No sensitivity list! => "wait" is required!
         begin
