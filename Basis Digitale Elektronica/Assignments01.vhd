@@ -7,14 +7,15 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity Main is
+entity Snake is
     port (
         Count: in unsigned(2 downto 0); -- 3-bit input
         SevenSegm: out std_logic_vector(6 downto 0) -- 7-bit output for 7-segment display
         );
-end Main;
+end Snake;
 
-architecture Behavioral of Main is begin
+architecture Behavioral of Snake is
+begin
     process(Count) begin
         case Count is
             when "000" => -- 0
@@ -52,14 +53,14 @@ architecture Behavioral of Test is
     signal Counter: unsigned(2 downto 0) := (others => '0');
     signal SevenSegm: std_logic_vector(6 downto 0);
 
-    component Main is
+    component Snake is
         port (
             Count: in unsigned(2 downto 0);
             SevenSegm: out std_logic_vector(6 downto 0)
             );
     end component;
 begin
-    Testing: Main port map(Count => Counter, SevenSegm => SevenSegm);
+    Testing: Snake port map(Count => Counter, SevenSegm => SevenSegm);
 
     p_Stimuli: process -- No sensitivity list! => "wait" is required!
         begin
