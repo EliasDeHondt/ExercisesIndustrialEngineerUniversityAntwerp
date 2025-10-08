@@ -25,14 +25,13 @@ begin
             SevenSegm => Cathodes -- Output Snake = Output Main (Cathodes)
         );
     process(Mode, CountMain, Cathodes, Anodes, Leds) begin -- Sensitivity list
-        --CountSnake <= CountMain(2 downto 0); -- Take the 3 LSB of CountMain for CountSnake
         Cathodes <= (others => '1'); -- Default off (SevenSegm)
         Anodes <= (others => '1'); -- Default off (Display)
         Leds <= (others => '0'); -- Default off (LEDs)
 
         case Mode is
             when "00" => -- 0
-                if CountMain(3) = '1' then -- CountMain > "0111" (7)
+                if CountMain < 8 then -- CountMain <= "0111" (7)
                     Anodes <= "00001111";
                 else -- CountMain =< "0111" (7)
                     Anodes <= "00000000";
@@ -76,6 +75,45 @@ begin
     end process;
 end Behavioral;
 -------------------- Main --------------------
+
+-------------------- Snake -------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity Snake is
+    port (
+        CountSnake: in unsigned(2 downto 0); -- 3-bit input
+        SevenSegm: out std_logic_vector(6 downto 0) -- 7-bit output for 7-segment display
+        );
+end Snake;
+
+architecture Behavioral of Snake is
+begin
+    process(CountSnake) begin
+        case CountSnake is
+            when "000" => -- 0
+                SevenSegm <= "0011111"; -- a,b
+            when "001" => -- 1
+                SevenSegm <= "1011110"; -- b,g
+            when "010" => -- 2
+                SevenSegm <= "1111010"; -- g,e
+            when "011" => -- 3
+                SevenSegm <= "1110011"; -- e,d
+            when "100" => -- 4
+                SevenSegm <= "1100111"; -- d,c
+            when "101" => -- 5
+                SevenSegm <= "1101110"; -- c,g
+            when "110" => -- 6
+                SevenSegm <= "1111100"; -- g,f
+            when "111" => -- 7
+                SevenSegm <= "0111101"; -- f,a
+            when others =>
+                SevenSegm <= (others => '1'); -- Turn off all segments
+        end case;
+    end process;
+end Behavioral;
+-------------------- Snake -------------------
 
 -------------------- Test --------------------
 
