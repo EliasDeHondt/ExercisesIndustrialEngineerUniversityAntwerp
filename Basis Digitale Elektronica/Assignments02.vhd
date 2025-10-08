@@ -37,14 +37,16 @@ begin
                 else -- CountMain =< "0111" (7)
                     Anodes <= "00000000";
             when "01" => -- 1
-                if CountMain = "0000" then -- 0
-                    Leds <= (others => '0');
-                else
-                    Leds <= std_logic_vector(shift_left(to_unsigned(1, 16), to_integer(CountMain))); -- (0000 0000 0000 0001) <- Shift left by CountMain
-                end if
+                Leds <= std_logic_vector(shift_left(to_unsigned(1, 16), to_integer(CountMain))); -- (0000 0000 0000 0001) <- Shift left by CountMain
             when "10" => -- 2
-
+                if CountMain(3) = '1' then -- CountMain > "0111" (7)
+                    Anodes <= std_logic_vector(shift_left(to_unsigned(1, 8), to_integer(CountMain)));
+                else -- CountMain =< "0111" (7)
+                    Anodes <= std_logic_vector(shift_right(to_unsigned(128, 8), to_integer(CountMain - 8)));
+                end if;
+                Leds <= std_logic_vector(shift_right(to_unsigned(32768, 16), to_integer(CountMain))); -- (1000 0000 0000 0000) -> Shift right by CountMain
             when "11" => -- 4
+                Leds <= (others => '1'); -- All on
         end case;
     end process;
 end Behavioral;
