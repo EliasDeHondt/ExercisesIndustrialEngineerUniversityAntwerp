@@ -18,61 +18,78 @@ entity Main is
 end Main;
 
 architecture Behavioral of Main is
-    signal CountSnake: unsigned(2 downto 0) := (others => '0'); -- Input for Snake
+    signal Cathodes_snake: std_logic_vector(6 downto 0); -- output from Snake submodule
+    signal Cathodes_int: std_logic_vector(6 downto 0); -- Internal signal
+    signal Anodes_int: std_logic_vector(7 downto 0); -- Internal signal
+    signal Leds_int: std_logic_vector(15 downto 0); -- Internal signal
 begin
     Snake : entity work.Snake(Behavioral) port map ( -- Component Instance
             CountSnake => CountMain(2 downto 0), -- Input Main = Input Snake (3 LSB of CountMain)
-            SevenSegm => Cathodes -- Output Snake = Output Main (Cathodes)
+            SevenSegm => Cathodes_snake -- Output Snake = Output Main (Cathodes)
         );
-    process(Mode, CountMain, Cathodes, Anodes, Leds) begin -- Sensitivity list
-        Cathodes <= (others => '1'); -- Default off (SevenSegm)
-        Anodes <= (others => '1'); -- Default off (Display)
-        Leds <= (others => '0'); -- Default off (LEDs)
-
+    process(Mode, CountMain) begin -- Sensitivity list
         case Mode is
             when "00" => -- 0
-                if CountMain < 8 then -- CountMain <= "0111" (7)
-                    Anodes <= "00001111";
-                else -- CountMain =< "0111" (7)
-                    Anodes <= "00000000";
+                if CountMain(3) = '1' then -- CountMain >= "1000" (8)
+                    Anodes_int <= "00001111";
+                    Cathodes_int <= Cathodes_snake;
+                else -- CountMain < "1000" (8)
+                    Anodes_int <= "00000000";
+                    Cathodes_int <= Cathodes_snake;
                 end if;
+                Leds_int <= (others => '0');
             when "01" => -- 1
-                Leds <= std_logic_vector(shift_left(to_unsigned(1, 16), to_integer(CountMain))); -- (0000 0000 0000 0001) <- Shift left by CountMain
+                Anodes_int <= (others => '1');
+                Cathodes_int <= (others => '1');
+                Leds_int <= std_logic_vector(shift_left(to_unsigned(1, 16), to_integer(CountMain))); -- (0000 0000 0000 0001) <- Shift left by CountMain
             when "10" => -- 2
-                if CountMain < 8 then -- CountMain <= "0111" (7)
-                    Anodes <= std_logic_vector(shift_left(to_unsigned(1, 8), to_integer(CountMain))); -- (0000 0001) <- Shift left by CountMain
-                else -- CountMain > "0111" (7)
-                    Anodes <= std_logic_vector(shift_right(to_unsigned(128, 8), to_integer(CountMain - 8))); -- (1000 0000) -> Shift right by (CountMain - 8)
+                if CountMain(3) = '1' then -- CountMain >= "1000" (8)
+                    Anodes_int <= std_logic_vector(shift_right(to_unsigned(128, 8), to_integer(CountMain - 8))); -- (1000 0000) -> Shift right by (CountMain - 8)
+                else -- CountMain < "1000" (8)
+                    Anodes_int <= std_logic_vector(shift_left(to_unsigned(1, 8), to_integer(CountMain))); -- (0000 0001) <- Shift left by CountMain
                 end if;
-                Leds <= std_logic_vector(shift_right(to_unsigned(32768, 16), to_integer(CountMain))); -- (1000 0000 0000 0000) -> Shift right by CountMain
+                Cathodes_int <= Cathodes_snake;
+                Leds_int <= std_logic_vector(shift_right(to_unsigned(32768, 16), to_integer(CountMain))); -- (1000 0000 0000 0000) -> Shift right by CountMain
             when "11" => -- 4
-                case CountMain is
-                    when "0000" => -- 0
-                        Cathodes <= "1111110"; -- a,b,c,d,f
-                    when "0001" => -- 1
-                        Cathodes <= "0110000"; --b,c
-                    when "0010" => -- 2
-                        Cathodes <= "1101101"; -- a,b,d,e,g
-                    when "0011" => -- 3
-                        Cathodes <= "1111001"; -- a,b,c,d,g
-                    when "0100" => -- 4
-                        Cathodes <= "0110011"; -- b,c,f,g
-                    when "0101" => -- 5
-                        Cathodes <= "1011011"; -- a,c,d,f,g
-                    when "0110" => -- 6
-                        Cathodes <= "1011111"; -- a,c,d,e,f,g
-                    when "0111" => -- 7
-                        Cathodes <= "1110000"; -- a,b,c
-                    when "1000" => -- 8
-                        Cathodes <= "1111111"; -- a,b,c,d,e,f,g
-                    when "1001" => -- 9
-                        Cathodes <= "1111011"; -- a,b,c,d,f,g
-                    when others =>
-                        Cathodes <= (others => '1'); -- Turn off all segments
-                end case;
-                Leds <= (others => '1'); -- All on
+                if CountMain > 9 then
+                    Cathodes_int <= (others => '1');
+                    Anodes_int <= (others => '1');
+                else
+                    case CountMain is
+                        when "0000" => -- 0
+                            Cathodes_int <= "1111110"; -- a,b,c,d,f
+                        when "0001" => -- 1
+                            Cathodes_int <= "0110000"; --b,c
+                        when "0010" => -- 2
+                            Cathodes_int <= "1101101"; -- a,b,d,e,g
+                        when "0011" => -- 3
+                            Cathodes_int <= "1111001"; -- a,b,c,d,g
+                        when "0100" => -- 4
+                            Cathodes_int <= "0110011"; -- b,c,f,g
+                        when "0101" => -- 5
+                            Cathodes_int <= "1011011"; -- a,c,d,f,g
+                        when "0110" => -- 6
+                            Cathodes_int <= "1011111"; -- a,c,d,e,f,g
+                        when "0111" => -- 7
+                            Cathodes_int <= "1110000"; -- a,b,c
+                        when "1000" => -- 8
+                            Cathodes_int <= "1111111"; -- a,b,c,d,e,f,g
+                        when "1001" => -- 9
+                            Cathodes_int <= "1111011"; -- a,b,c,d,f,g
+                        when others =>
+                            Cathodes_int <= (others => '1'); -- Turn off all segments
+                    end case;
+                end if;
+                Leds_int <= (others => '1'); -- All on
+            when others =>
+            Cathodes_int <= (others => '1'); -- Default off (SevenSegm)
+            Anodes_int <= (others => '1'); -- Default off (Display)
+            Leds_int <= (others => '0'); -- Default off (LEDs)
         end case;
     end process;
+    Cathodes <= Cathodes_int; -- Output assignment
+    Anodes <= Anodes_int; -- Output assignment
+    Leds <= Leds_int; -- Output assignment
 end Behavioral;
 -------------------- Main --------------------
 
@@ -116,5 +133,43 @@ end Behavioral;
 -------------------- Snake -------------------
 
 -------------------- Test --------------------
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
+entity TestMain is
+end TestMain;
+
+architecture Behavioral of TestMain is
+    signal CountMain: unsigned(3 downto 0) := (others => '0');
+    signal Mode: std_logic_vector(1 downto 0) := "00";
+    signal Cathodes: std_logic_vector(6 downto 0);
+    signal Anodes: std_logic_vector(7 downto 0);
+    signal Leds: std_logic_vector(15 downto 0);
+
+    component Main is
+        port (
+            CountMain: in unsigned(3 downto 0);
+            Mode: in std_logic_vector(1 downto 0);
+            Cathodes: out std_logic_vector(6 downto 0);
+            Anodes: out std_logic_vector(7 downto 0);
+            Leds: out std_logic_vector(15 downto 0)
+        );
+    end component;
+begin
+    Testing: Main port map(CountMain => CountMain, Mode => Mode, Cathodes => Cathodes, Anodes => Anodes, Leds => Leds);
+
+    p_Stimuli: process
+    begin
+        wait for 100 ns;
+        for m in 0 to 3 loop
+            Mode <= std_logic_vector(to_unsigned(m, 2));
+            wait for 100 ns; -- wacht zodat Main de nieuwe Mode ziet
+            for c in 0 to 15 loop
+                CountMain <= to_unsigned(c, 4);
+                wait for 100 ns; -- wacht zodat Main de nieuwe CountMain ziet
+            end loop;
+        end loop;
+    end process p_Stimuli;
+end Behavioral;
 -------------------- Test --------------------
