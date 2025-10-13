@@ -27,7 +27,7 @@ begin
             CountSnake => CountMain(2 downto 0), -- Input Main = Input Snake (3 LSB of CountMain)
             SevenSegm => Cathodes_snake -- Output Snake = Output Main (Cathodes)
         );
-    process(Mode, CountMain) begin -- Sensitivity list
+    process(Mode, CountMain, Cathodes_snake) begin -- Sensitivity list
         case Mode is
             when "00" => -- 0
                 if CountMain(3) = '1' then -- CountMain >= "1000" (8)
@@ -43,10 +43,12 @@ begin
                 Cathodes_int <= (others => '1');
                 Leds_int <= std_logic_vector(shift_left(to_unsigned(1, 16), to_integer(CountMain))); -- (0000 0000 0000 0001) <- Shift left by CountMain
             when "10" => -- 2
-                if CountMain(3) = '1' then -- CountMain >= "1000" (8)
-                    Anodes_int <= std_logic_vector(shift_right(to_unsigned(128, 8), to_integer(CountMain - 8))); -- (1000 0000) -> Shift right by (CountMain - 8)
-                else -- CountMain < "1000" (8)
-                    Anodes_int <= std_logic_vector(shift_left(to_unsigned(1, 8), to_integer(CountMain))); -- (0000 0001) <- Shift left by CountMain
+                if CountMain(3) = '1' then
+                    Anodes_int <= (others => '1');
+                    Anodes_int(to_integer(CountMain)) <= '0';
+                else
+                    Anodes_int <= (others => '1');
+                    Anodes_int(15 - to_integer(CountMain)) <= '0';
                 end if;
                 Cathodes_int <= Cathodes_snake;
                 Leds_int <= std_logic_vector(shift_right(to_unsigned(32768, 16), to_integer(CountMain))); -- (1000 0000 0000 0000) -> Shift right by CountMain
@@ -57,28 +59,29 @@ begin
                 else
                     case CountMain is
                         when "0000" => -- 0
-                            Cathodes_int <= "1111110"; -- a,b,c,d,f
+                            Cathodes_int <= "0000001"; -- a,b,c,d,f
                         when "0001" => -- 1
-                            Cathodes_int <= "0110000"; --b,c
+                            Cathodes_int <= "1001111"; --b,c
                         when "0010" => -- 2
-                            Cathodes_int <= "1101101"; -- a,b,d,e,g
+                            Cathodes_int <= "0010010"; -- a,b,d,e,g
                         when "0011" => -- 3
-                            Cathodes_int <= "1111001"; -- a,b,c,d,g
+                            Cathodes_int <= "0000110"; -- a,b,c,d,g
                         when "0100" => -- 4
-                            Cathodes_int <= "0110011"; -- b,c,f,g
+                            Cathodes_int <= "1001100"; -- b,c,f,g
                         when "0101" => -- 5
-                            Cathodes_int <= "1011011"; -- a,c,d,f,g
+                            Cathodes_int <= "0100100"; -- a,c,d,f,g
                         when "0110" => -- 6
-                            Cathodes_int <= "1011111"; -- a,c,d,e,f,g
+                            Cathodes_int <= "0100000"; -- a,c,d,e,f,g
                         when "0111" => -- 7
-                            Cathodes_int <= "1110000"; -- a,b,c
+                            Cathodes_int <= "0001111"; -- a,b,c
                         when "1000" => -- 8
-                            Cathodes_int <= "1111111"; -- a,b,c,d,e,f,g
+                            Cathodes_int <= "0000000"; -- a,b,c,d,e,f,g
                         when "1001" => -- 9
-                            Cathodes_int <= "1111011"; -- a,b,c,d,f,g
+                            Cathodes_int <= "0000100"; -- a,b,c,d,f,g
                         when others =>
                             Cathodes_int <= (others => '1'); -- Turn off all segments
                     end case;
+                    Anodes_int <= (others => '0');
                 end if;
                 Leds_int <= (others => '1'); -- All on
             when others =>
