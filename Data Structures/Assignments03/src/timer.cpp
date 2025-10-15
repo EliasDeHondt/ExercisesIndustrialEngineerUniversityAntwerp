@@ -5,7 +5,11 @@
 **/
 
 #include <chrono>
+#include <iostream>
+#include <random>
 #include <vector>
+#include <cstdlib>   // getenv
+#include <cstdint>
 
 #include <insertion_sort.hpp>
 #include <quick_sort.hpp>
@@ -26,20 +30,30 @@ long timed_sorting_function(
 	const std::vector<int>& input_data					// The input data
 )
 {
-	// TODO: Start Time Measurement
+	// Start Time Measurement
+	const auto start = std::chrono::high_resolution_clock::now();
 
 	const std::vector<int> sorted = sort_fn(input_data);	// call the function that the function pointer points to,
 															// to do the actual sorting.
 
-	// TODO: End Time Measurement
-
-	return 0;	// TODO: Return Total Time in nanoseconds
+	// End Time Measurement
+	const auto end = std::chrono::high_resolution_clock::now();
+	const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+	return static_cast<long>(ns);
 }
 
 std::vector<int> generate_input_data(std::size_t size)
 {
-	// TODO: Generate the correct input data!
-	return std::vector<int>();
+	// Generate reproducible random data for fairness
+	static std::mt19937 rng(42);
+	std::uniform_int_distribution<int> dist(-1'000'000, 1'000'000);
+	std::vector<int> data;
+	data.reserve(size);
+	for (std::size_t i = 0; i < size; ++i)
+	{
+		data.push_back(dist(rng));
+	}
+	return data;
 }
 
 int main()
@@ -50,8 +64,20 @@ int main()
 		quick_sort
 	};
 
+	// Determine maximum size from environment (optional), defaults to 262144
+	std::size_t max_size = 262144;
+	if (const char* env_max = std::getenv("MAX_SIZE"))
+	{
+		char* endptr = nullptr;
+		unsigned long long v = std::strtoull(env_max, &endptr, 10);
+		if (endptr != env_max && v > 0)
+		{
+			max_size = static_cast<std::size_t>(v);
+		}
+	}
+
 	// Iterate over a number of different array sizes
-	for (std::size_t array_size = 4; array_size < 1000000; array_size *= 2)
+	for (std::size_t array_size = 4; array_size <= max_size; array_size *= 2)
 	{
 		// Generate a set of input data for each array size
 		// NOTE! Its important to give both sorting algorithms the same data, so the comparison is fair
@@ -60,11 +86,13 @@ int main()
 		// Iterate over all sorting functions, and time each one.
 		for (sort_fn_t sort_fn: sorting_functions)
 		{
-			// TODO: Print/Save the actual times
 			const long sorting_time = timed_sorting_function(
 				sort_fn,
 				input_data
 			);
+			// Print the result as CSV: size,function,time_ns
+			const char* name = (sort_fn == insertion_sort) ? "insertion_sort" : "quick_sort";
+			std::cout << array_size << "," << name << "," << sorting_time << "\n";
 		}
 	}
 }

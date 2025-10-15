@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD 17)
 #	Then, we just provide a list of all the source files that make up this library.
 #
 add_library(SortLib STATIC
-	"src/03_time_complexity/insertion_sort.cpp"
-	"src/03_time_complexity/quick_sort.cpp"
+	"src/insertion_sort.cpp"
+	"src/quick_sort.cpp"
 )
 
 # Finally, we tell CMake we want SortLib to be able to access the headers under "./include/"
@@ -36,7 +36,7 @@ target_include_directories(TestSuite PRIVATE "include/")
 target_link_libraries(TestSuite PRIVATE SortLib)
 
 add_executable(Timer
-	"src/01_time_complexity/timer.cpp"
+	"src/timer.cpp"
 )
 
 # Similar to what we did earlier, we tell CMake where "Timer" is supposed to find our headers
