@@ -43,13 +43,40 @@ begin
                 Cathodes_int <= (others => '1');
                 Leds_int <= std_logic_vector(shift_left(to_unsigned(1, 16), to_integer(CountMain))); -- (0000 0000 0000 0001) <- Shift left by CountMain
             when "10" => -- 2
-                if CountMain(3) = '1' then
-                    Anodes_int <= (others => '1');
-                    Anodes_int(to_integer(CountMain)) <= '0';
-                else
-                    Anodes_int <= (others => '1');
-                    Anodes_int(15 - to_integer(CountMain)) <= '0';
-                end if;
+                case CountMain is
+                    when "0000" =>
+                        Anodes_int <= "01111111";
+                    when "0001" =>
+                        Anodes_int <= "10111111";
+                    when "0010" =>
+                        Anodes_int <= "11011111";
+                    when "0011" =>
+                        Anodes_int <= "11101111";
+                    when "0100" =>
+                        Anodes_int <= "11110111";
+                    when "0101" =>
+                        Anodes_int <= "11111011";
+                    when "0110" =>
+                        Anodes_int <= "11111101";
+                    when "0111" =>
+                        Anodes_int <= "11111110";
+                    when "1000" =>
+                        Anodes_int <= "11111110";
+                    when "1001" =>
+                        Anodes_int <= "11111101";
+                    when "1010" =>
+                        Anodes_int <= "11111011";
+                    when "1011" =>
+                        Anodes_int <= "11110111";
+                    when "1100" =>
+                        Anodes_int <= "11101111";
+                    when "1101" =>
+                        Anodes_int <= "11011111";
+                    when "1110" =>
+                        Anodes_int <= "10111111";
+                    when "1111" =>
+                        Anodes_int <= "01111111";
+                end case;
                 Cathodes_int <= Cathodes_snake;
                 Leds_int <= std_logic_vector(shift_right(to_unsigned(32768, 16), to_integer(CountMain))); -- (1000 0000 0000 0000) -> Shift right by CountMain
             when "11" => -- 4
