@@ -19,20 +19,16 @@ public class Main {
         long date = 10;
 
         int hotelID = booking.findCheapestHotel(date);
-        System.out.println("Cheapest hotel on date " + date +
-                " is hotel: " + hotelID);
+        System.out.println("Cheapest hotel on date " + date +" is hotel: " + hotelID);
 
         System.out.println("Booking hotel on date " + date);
         int returnCode = booking.bookRoomInHotel(date, hotelID);
 
-        System.out.println("Booking room: " + (
-                returnCode == 0 ? "successful" : "failed: returncode = " + returnCode) + "\n");
+        System.out.println("Booking room: " + (returnCode == 0 ? "successful" : "failed: returncode = " + returnCode) + "\n");
 
         System.out.println("Booking again a room on date 10 in hotel 2 will result in failure due to overbooking");
         returnCode = booking.bookRoomInHotel(date, hotelID);
-        System.out.println("Booking room: " + (
-                returnCode == 0 ? "successful" : "failed: returncode = " + returnCode) + "\n");
-
+        System.out.println("Booking room: " + (returnCode == 0 ? "successful" : "failed: returncode = " + returnCode) + "\n");
     }
 
     public void initialize() {
