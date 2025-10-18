@@ -1,0 +1,122 @@
+' @author EliasDH Team
+' @see https://eliasdh.com
+' @since 01/01/2025
+
+@startuml HotelBookingSystemSequence
+!theme plain
+
+title Sequence Diagram: Main Execution Flow - Hotel Booking System
+
+participant "Main" as Main
+participant "Booking" as Booking
+participant "Hotel0\n($30/room)" as Hotel0
+participant "Hotel1\n($46.99/room)" as Hotel1
+participant "Hotel2\n($40/room)" as Hotel2
+participant "Room\n(Generic)" as Room
+
+== Initialization ==
+Main -> Main: main() -> run()
+activate Main
+Main -> Main: initialize()
+activate Main
+
+Main -> Hotel0: new Hotel(30.0)
+activate Hotel0
+Hotel0 -> Room: new Room() (room 0)
+activate Room
+Room -> Room: init bookSchedule
+deactivate Room
+Hotel0 -> Room: new Room() (room 1)
+activate Room
+Room -> Room: init bookSchedule
+deactivate Room
+Hotel0 -> Room: new Room() (room 2)
+activate Room
+Room -> Room: init bookSchedule
+deactivate Room
+Hotel0 -> Hotel0: bookRoom(10, 0)
+Hotel0 -> Room: setBooking(10, true) (room 0)
+deactivate Hotel0
+Hotel0 -> Hotel0: bookRoom(10, 1)
+Hotel0 -> Room: setBooking(10, true) (room 1)
+Hotel0 -> Hotel0: bookRoom(10, 2)
+Hotel0 -> Room: setBooking(10, true) (room 2)
+Hotel0 -> Hotel0: bookRoom(11, 0)
+Hotel0 -> Room: setBooking(11, true) (room 0)
+Hotel0 -> Hotel0: bookRoom(11, 1)
+Hotel0 -> Room: setBooking(11, true) (room 1)
+Hotel0 -> Hotel0: bookRoom(11, 2)
+Hotel0 -> Room: setBooking(11, true) (room 2)
+Hotel0 -> Hotel0: bookRoom(12, 2)
+Hotel0 -> Room: setBooking(12, true) (room 2)
+
+Main -> Hotel1: new Hotel(46.99)
+activate Hotel1
+Hotel1 -> Room: new Room() (room 0)
+activate Room
+Room -> Room: init bookSchedule
+deactivate Room
+Hotel1 -> Room: new Room() (room 1)
+activate Room
+Room -> Room: init bookSchedule
+deactivate Room
+Hotel1 -> Hotel1: bookRoom(10, 0)
+Hotel1 -> Room: setBooking(10, true) (room 0)
+Hotel1 -> Hotel1: bookRoom(10, 1)
+Hotel1 -> Room: setBooking(10, true) (room 1)
+Hotel1 -> Hotel1: bookRoom(11, 0)
+Hotel1 -> Room: setBooking(11, true) (room 0)
+Hotel1 -> Hotel1: bookRoom(12, 1)
+Hotel1 -> Room: setBooking(12, true) (room 1)
+deactivate Hotel1
+
+Main -> Hotel2: new Hotel(40.0)
+activate Hotel2
+Hotel2 -> Room: new Room() (room 0)
+activate Room
+Room -> Room: init bookSchedule
+deactivate Room
+Hotel2 -> Hotel2: bookRoom(11, 0)
+Hotel2 -> Room: setBooking(11, true) (room 0)
+deactivate Hotel2
+
+Main -> Booking: new Booking()
+activate Booking
+Main -> Booking: addHotel(Hotel0) -> hotel ID 0
+Main -> Booking: addHotel(Hotel1) -> hotel ID 1
+Main -> Booking: addHotel(Hotel2) -> hotel ID 2
+deactivate Main
+
+== Booking Flow ==
+Main -> Booking: findCheapestHotel(date=10)
+activate Booking
+Booking -> Hotel0: checkAvailability(10)
+Hotel0 -> Room: getBooking(10) (all rooms booked -> -1)
+Booking -> Hotel1: checkAvailability(10)
+Hotel1 -> Room: getBooking(10) (all rooms booked -> -1)
+Booking -> Hotel2: checkAvailability(10)
+Hotel2 -> Room: getBooking(10) (room 0 free -> return 0)
+Booking --> Main: return hotelID=2 (cheapest available: $40)
+deactivate Booking
+
+Main -> Booking: bookRoomInHotel(date=10, hotelID=2)
+activate Booking
+Booking -> Hotel2: checkAvailability(10) -> roomID=0
+Hotel2 -> Room: getBooking(10) (free)
+Booking -> Hotel2: bookRoom(10, 0)
+Hotel2 -> Room: setBooking(10, true)
+Hotel2 --> Booking: return 0 (success)
+Booking --> Main: return 0 (success)
+deactivate Booking
+
+Main -> Booking: bookRoomInHotel(date=10, hotelID=2) [second attempt]
+activate Booking
+Booking -> Hotel2: checkAvailability(10) -> -1 (no rooms free)
+Booking --> Main: return -1 (failure)
+deactivate Booking
+
+deactivate Main
+
+note over Main, Room: This diagram covers the full main() flow:\n- Hotel initialization with pre-bookings\n- Finding cheapest available hotel\n- Successful first booking\n- Failed second booking (overbooking prevention)\nOther methods (e.g., range booking) follow similar patterns.
+
+@enduml

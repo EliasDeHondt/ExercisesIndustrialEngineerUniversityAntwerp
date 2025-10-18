@@ -16,8 +16,8 @@
 			<PORepository>
 				<POUserIDFormats>
 					<POUserIDFormat Digits="2" Guid="false" Id="VlYj75mGAqACewWS" LastNumericValue="0" ModelType="BPMNElement" Prefix="BP" Suffix=""/>
-					<POUserIDFormat Digits="2" Guid="false" Id="NlYj75mGAqACewWT" LastNumericValue="2" ModelType="Actor" Prefix="AC" Suffix=""/>
-					<POUserIDFormat Digits="2" Guid="false" Id="NlYj75mGAqACewWU" LastNumericValue="5" ModelType="UseCase" Prefix="UC" Suffix=""/>
+					<POUserIDFormat Digits="2" Guid="false" Id="NlYj75mGAqACewWT" LastNumericValue="4" ModelType="Actor" Prefix="AC" Suffix=""/>
+					<POUserIDFormat Digits="2" Guid="false" Id="NlYj75mGAqACewWU" LastNumericValue="18" ModelType="UseCase" Prefix="UC" Suffix=""/>
 					<POUserIDFormat Digits="3" Guid="false" Id="NlYj75mGAqACewWV" LastNumericValue="0" ModelType="Requirement" Prefix="REQ" Suffix=""/>
 					<POUserIDFormat Digits="3" Guid="false" Id="NlYj75mGAqACewWW" LastNumericValue="0" ModelType="BusinessRule" Prefix="BR" Suffix=""/>
 					<POUserIDFormat Digits="-1" Guid="false" Id="NlYj75mGAqACewWX" LastNumericValue="0" ModelType="BusinessProcessDiagram" Prefix="" Suffix=""/>
@@ -3265,7 +3265,7 @@
 				</CombinedFragment>
 			</ModelChildren>
 		</Frame>
-		<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="B_g5BNGGAqAA1wm8" Name="relationships" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:19:44.608" PmLastModified="2025-10-18T18:17:41.672" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+		<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="B_g5BNGGAqAA1wm8" Name="relationships" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:19:44.608" PmLastModified="2025-10-18T20:19:52.226" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
 			<ModelChildren>
 				<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="h_g5BNGGAqAA1wm9" Name="Message" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:19:44.609" PmLastModified="2025-10-18T18:31:04.692" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
 					<ModelChildren>
@@ -3549,9 +3549,276 @@
 						</Message>
 					</ModelChildren>
 				</ModelRelationshipContainer>
-				<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="DSH_akmD.AACAS5Y" Name="Association" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:07:19.216" PmLastModified="2025-10-18T16:42:25.260" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
-				<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="Q3sA6kmD.AACAS6b" Name="Include" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:08:47.810" PmLastModified="2025-10-18T16:42:25.266" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+				<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="DSH_akmD.AACAS5Y" Name="Association" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:07:19.216" PmLastModified="2025-10-18T20:17:51.473" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+					<ModelChildren>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="OhvyH5mGAqACexF." EndRelationshipToMetaModelElement="IBo.H5mGAqACexJ8" FinalSpecialization="false" Id="NWl.H5mGAqACexMR" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified="2025-10-18T20:04:52.070" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="OhvyH5mGAqACexF." Id="NWl.H5mGAqACexMS" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="NWl.H5mGAqACexMT" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="OhvyH5mGAqACexF." Name="Administrator"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="IBo.H5mGAqACexJ8" Id="NWl.H5mGAqACexMU" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="NWl.H5mGAqACexMV" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="IBo.H5mGAqACexJ8" Name="Add Hotel"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="9Wl.H5mGAqACexMW"/>
+							</MasterView>
+						</Association>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="OhvyH5mGAqACexF." EndRelationshipToMetaModelElement="Ozo.H5mGAqACexKL" FinalSpecialization="false" Id="PiN.H5mGAqACexMj" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified="2025-10-18T20:04:52.066" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="OhvyH5mGAqACexF." Id="PiN.H5mGAqACexMk" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="PiN.H5mGAqACexMl" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="OhvyH5mGAqACexF." Name="Administrator"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="Ozo.H5mGAqACexKL" Id="PiN.H5mGAqACexMm" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="PiN.H5mGAqACexMn" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="Ozo.H5mGAqACexKL" Name="Remove Hotel"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="_iN.H5mGAqACexMo"/>
+							</MasterView>
+						</Association>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="wYABH5mGAqACexPZ" FinalSpecialization="false" Id="9dKRH5mGAqACexTI" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.439" PmLastModified="2025-10-18T20:17:51.471" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="9dKRH5mGAqACexTJ" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.439" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="9dKRH5mGAqACexTK" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.439" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="wYABH5mGAqACexPZ" Id="jdKRH5mGAqACexTL" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.441" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="jdKRH5mGAqACexTM" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.441" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="wYABH5mGAqACexPZ" Name="Book Room in Cheapest Hotel (Date Range)"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="LdKRH5mGAqACexTN"/>
+							</MasterView>
+						</Association>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="ba_.H5mGAqACexO3" FinalSpecialization="false" Id="6GaRH5mGAqACexTU" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified="2025-10-18T20:17:51.469" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="6GaRH5mGAqACexTV" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="6GaRH5mGAqACexTW" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="ba_.H5mGAqACexO3" Id="6GaRH5mGAqACexTX" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="6GaRH5mGAqACexTY" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="ba_.H5mGAqACexO3" Name="Book Room in Specific Hotel (Date Range)"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="WGaRH5mGAqACexTZ"/>
+							</MasterView>
+						</Association>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="4A_.H5mGAqACexOo" FinalSpecialization="false" Id="Ut6RH5mGAqACexTg" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified="2025-10-18T20:17:51.464" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="Ut6RH5mGAqACexTh" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="Ut6RH5mGAqACexTi" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="4A_.H5mGAqACexOo" Id="Ut6RH5mGAqACexTj" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="Ut6RH5mGAqACexTk" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="4A_.H5mGAqACexOo" Name="Book Room in Specific Hotel (Single Day)"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="ct6RH5mGAqACexTl"/>
+							</MasterView>
+						</Association>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="oLL.H5mGAqACexM." FinalSpecialization="false" Id="mkmRH5mGAqACexTu" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified="2025-10-18T20:17:51.469" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="mkmRH5mGAqACexTv" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="mkmRH5mGAqACexTw" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="oLL.H5mGAqACexM." Id="mkmRH5mGAqACexTx" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="mkmRH5mGAqACexTy" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="oLL.H5mGAqACexM." Name="Find Cheapest Hotel (Single Day)"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="ukmRH5mGAqACexTz"/>
+							</MasterView>
+						</Association>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="eeoBH5mGAqACexQE" FinalSpecialization="false" Id="UTWRH5mGAqACexT6" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.234" PmLastModified="2025-10-18T20:17:51.472" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="MTWRH5mGAqACexT7" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="MTWRH5mGAqACexT8" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="eeoBH5mGAqACexQE" Id="MTWRH5mGAqACexT9" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="MTWRH5mGAqACexT." Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="eeoBH5mGAqACexQE" Name="Check Room Availability (Date Range)"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="8TWRH5mGAqACexT_"/>
+							</MasterView>
+						</Association>
+						<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="BN_.H5mGAqACexPI" FinalSpecialization="false" Id="4r2RH5mGAqACexUG" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified="2025-10-18T20:17:51.471" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<FromEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="4r2RH5mGAqACexUH" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="4r2RH5mGAqACexUI" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+									</Type>
+								</AssociationEnd>
+							</FromEnd>
+							<ToEnd>
+								<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="BN_.H5mGAqACexPI" Id="4r2RH5mGAqACexUJ" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+									<Qualifier>
+										<Qualifier BacklogActivityId="0" Documentation_plain="" Id="4r2RH5mGAqACexUK" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+									</Qualifier>
+									<Type>
+										<UseCase Idref="BN_.H5mGAqACexPI" Name="Check Room Availability (Single Day)"/>
+									</Type>
+								</AssociationEnd>
+							</ToEnd>
+							<MasterView>
+								<Association Idref="Mr2RH5mGAqACexUL"/>
+							</MasterView>
+						</Association>
+					</ModelChildren>
+				</ModelRelationshipContainer>
+				<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="Q3sA6kmD.AACAS6b" Name="Include" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:08:47.810" PmLastModified="2025-10-18T20:18:34.563" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+					<ModelChildren>
+						<Include BacklogActivityId="0" Documentation_plain="" From="4A_.H5mGAqACexOo" Id="Y7dRH5mGAqACexU5" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:17:58.470" PmLastModified="2025-10-18T20:18:08.516" QualityReason_IsNull="true" QualityScore="-1" To="BN_.H5mGAqACexPI" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Stereotypes>
+								<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+							</Stereotypes>
+							<MasterView>
+								<Include Idref="c7dRH5mGAqACexU6"/>
+							</MasterView>
+						</Include>
+						<Include BacklogActivityId="0" Documentation_plain="" From="wYABH5mGAqACexPZ" Id="VxTRH5mGAqACexVC" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:18:13.610" PmLastModified="2025-10-18T20:18:34.563" QualityReason_IsNull="true" QualityScore="-1" To="eeoBH5mGAqACexQE" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Stereotypes>
+								<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+							</Stereotypes>
+							<MasterView>
+								<Include Idref="txTRH5mGAqACexVD"/>
+							</MasterView>
+						</Include>
+						<Include BacklogActivityId="0" Documentation_plain="" From="ba_.H5mGAqACexO3" Id=".0LRH5mGAqACexVG" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:18:20.255" PmLastModified="2025-10-18T20:18:34.559" QualityReason_IsNull="true" QualityScore="-1" To="wYABH5mGAqACexPZ" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Stereotypes>
+								<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+							</Stereotypes>
+							<MasterView>
+								<Include Idref="J0LRH5mGAqACexVH"/>
+							</MasterView>
+						</Include>
+						<Include BacklogActivityId="0" Documentation_plain="" From="ba_.H5mGAqACexO3" Id="IcrRH5mGAqACexVK" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:18:24.516" PmLastModified="2025-10-18T20:18:34.563" QualityReason_IsNull="true" QualityScore="-1" To="oLL.H5mGAqACexM." UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Stereotypes>
+								<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+							</Stereotypes>
+							<MasterView>
+								<Include Idref="McrRH5mGAqACexVL"/>
+							</MasterView>
+						</Include>
+					</ModelChildren>
+				</ModelRelationshipContainer>
 				<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="BPM4H5mGAqACew6Q" Name="InteractionDiagramDurationConstraint" PmAuthor="elias" PmCreateDateTime="2025-10-18T18:17:41.664" PmLastModified="2025-10-18T18:17:59.723" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+				<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="RFUxH5mGAqACexWM" Name="Anchor" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:19:52.226" PmLastModified="2025-10-18T20:35:30.904" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+					<ModelChildren>
+						<Anchor BacklogActivityId="0" Documentation_plain="" From="eeoBH5mGAqACexQE" Id="zrepH5mGAqACexY4" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:29:59.283" PmLastModified="2025-10-18T20:35:30.904" QualityReason_IsNull="true" QualityScore="-1" To="gWapH5mGAqACexYX" UserIDLastNumericValue="0" UserID_IsNull="true">
+							<MasterView>
+								<Anchor Idref="LrepH5mGAqACexY5"/>
+							</MasterView>
+						</Anchor>
+						<Anchor BacklogActivityId="0" Documentation_plain="" From="4A_.H5mGAqACexOo" Id="pdkZH5mGAqACexZw" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:32:54.949" PmLastModified="2025-10-18T20:34:06.360" QualityReason_IsNull="true" QualityScore="-1" To="ogfRH5mGAqACexVl" UserIDLastNumericValue="0" UserID_IsNull="true">
+							<MasterView>
+								<Anchor Idref="FdkZH5mGAqACexZx"/>
+							</MasterView>
+						</Anchor>
+						<Anchor BacklogActivityId="0" Documentation_plain="" From="ba_.H5mGAqACexO3" Id="SucZH5mGAqACexaC" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:33:14.322" PmLastModified="2025-10-18T20:34:06.354" QualityReason_IsNull="true" QualityScore="-1" To="ioIpH5mGAqACexXT" UserIDLastNumericValue="0" UserID_IsNull="true">
+							<MasterView>
+								<Anchor Idref="yucZH5mGAqACexaD"/>
+							</MasterView>
+						</Anchor>
+						<Anchor BacklogActivityId="0" Documentation_plain="" From="BN_.H5mGAqACexPI" Id="XfOZH5mGAqACexa6" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:34:13.818" PmLastModified="2025-10-18T20:34:38.665" QualityReason_IsNull="true" QualityScore="-1" To="vQSpH5mGAqACexX9" UserIDLastNumericValue="0" UserID_IsNull="true">
+							<MasterView>
+								<Anchor Idref="PfOZH5mGAqACexa7"/>
+							</MasterView>
+						</Anchor>
+						<Anchor BacklogActivityId="0" Documentation_plain="" From="wYABH5mGAqACexPZ" Id="jExZH5mGAqACexbQ" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:34:39.025" PmLastModified="2025-10-18T20:35:30.900" QualityReason_IsNull="true" QualityScore="-1" To="2HwxH5mGAqACexV." UserIDLastNumericValue="0" UserID_IsNull="true">
+							<MasterView>
+								<Anchor Idref="LExZH5mGAqACexbR"/>
+							</MasterView>
+						</Anchor>
+					</ModelChildren>
+				</ModelRelationshipContainer>
 			</ModelChildren>
 		</ModelRelationshipContainer>
 		<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="h_g5BNGGAqAA1wm9" Name="Message" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:19:44.609" PmLastModified="2025-10-18T18:31:04.692" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
@@ -4026,8 +4293,246 @@
 				<Message Idref="XZ8pWJmD.AAAARQz" Name="success [-1, 0]"/>
 			</MasterView>
 		</Message>
-		<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="DSH_akmD.AACAS5Y" Name="Association" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:07:19.216" PmLastModified="2025-10-18T16:42:25.260" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
-		<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="Q3sA6kmD.AACAS6b" Name="Include" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:08:47.810" PmLastModified="2025-10-18T16:42:25.266" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+		<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="DSH_akmD.AACAS5Y" Name="Association" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:07:19.216" PmLastModified="2025-10-18T20:17:51.473" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ModelChildren>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="OhvyH5mGAqACexF." EndRelationshipToMetaModelElement="IBo.H5mGAqACexJ8" FinalSpecialization="false" Id="NWl.H5mGAqACexMR" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified="2025-10-18T20:04:52.070" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="OhvyH5mGAqACexF." Id="NWl.H5mGAqACexMS" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="NWl.H5mGAqACexMT" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="OhvyH5mGAqACexF." Name="Administrator"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="IBo.H5mGAqACexJ8" Id="NWl.H5mGAqACexMU" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="NWl.H5mGAqACexMV" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:29.740" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="IBo.H5mGAqACexJ8" Name="Add Hotel"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="9Wl.H5mGAqACexMW"/>
+					</MasterView>
+				</Association>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="OhvyH5mGAqACexF." EndRelationshipToMetaModelElement="Ozo.H5mGAqACexKL" FinalSpecialization="false" Id="PiN.H5mGAqACexMj" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified="2025-10-18T20:04:52.066" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="OhvyH5mGAqACexF." Id="PiN.H5mGAqACexMk" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="PiN.H5mGAqACexMl" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="OhvyH5mGAqACexF." Name="Administrator"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="Ozo.H5mGAqACexKL" Id="PiN.H5mGAqACexMm" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="PiN.H5mGAqACexMn" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:04:41.468" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="Ozo.H5mGAqACexKL" Name="Remove Hotel"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="_iN.H5mGAqACexMo"/>
+					</MasterView>
+				</Association>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="wYABH5mGAqACexPZ" FinalSpecialization="false" Id="9dKRH5mGAqACexTI" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.439" PmLastModified="2025-10-18T20:17:51.471" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="9dKRH5mGAqACexTJ" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.439" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="9dKRH5mGAqACexTK" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.439" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="wYABH5mGAqACexPZ" Id="jdKRH5mGAqACexTL" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.441" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="jdKRH5mGAqACexTM" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:11.441" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="wYABH5mGAqACexPZ" Name="Book Room in Cheapest Hotel (Date Range)"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="LdKRH5mGAqACexTN"/>
+					</MasterView>
+				</Association>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="ba_.H5mGAqACexO3" FinalSpecialization="false" Id="6GaRH5mGAqACexTU" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified="2025-10-18T20:17:51.469" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="6GaRH5mGAqACexTV" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="6GaRH5mGAqACexTW" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="ba_.H5mGAqACexO3" Id="6GaRH5mGAqACexTX" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="6GaRH5mGAqACexTY" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:18.199" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="ba_.H5mGAqACexO3" Name="Book Room in Specific Hotel (Date Range)"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="WGaRH5mGAqACexTZ"/>
+					</MasterView>
+				</Association>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="4A_.H5mGAqACexOo" FinalSpecialization="false" Id="Ut6RH5mGAqACexTg" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified="2025-10-18T20:17:51.464" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="Ut6RH5mGAqACexTh" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="Ut6RH5mGAqACexTi" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="4A_.H5mGAqACexOo" Id="Ut6RH5mGAqACexTj" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="Ut6RH5mGAqACexTk" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:23.626" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="4A_.H5mGAqACexOo" Name="Book Room in Specific Hotel (Single Day)"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="ct6RH5mGAqACexTl"/>
+					</MasterView>
+				</Association>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="oLL.H5mGAqACexM." FinalSpecialization="false" Id="mkmRH5mGAqACexTu" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified="2025-10-18T20:17:51.469" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="mkmRH5mGAqACexTv" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="mkmRH5mGAqACexTw" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="oLL.H5mGAqACexM." Id="mkmRH5mGAqACexTx" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="mkmRH5mGAqACexTy" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:29.529" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="oLL.H5mGAqACexM." Name="Find Cheapest Hotel (Single Day)"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="ukmRH5mGAqACexTz"/>
+					</MasterView>
+				</Association>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="eeoBH5mGAqACexQE" FinalSpecialization="false" Id="UTWRH5mGAqACexT6" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.234" PmLastModified="2025-10-18T20:17:51.472" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="MTWRH5mGAqACexT7" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="MTWRH5mGAqACexT8" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="eeoBH5mGAqACexQE" Id="MTWRH5mGAqACexT9" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="MTWRH5mGAqACexT." Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:36.236" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="eeoBH5mGAqACexQE" Name="Check Room Availability (Date Range)"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="8TWRH5mGAqACexT_"/>
+					</MasterView>
+				</Association>
+				<Association Abstract="false" BacklogActivityId="0" Derived="false" Direction="From To" Documentation_plain="" EndRelationshipFromMetaModelElement="WDEOH5mGAqACexG9" EndRelationshipToMetaModelElement="BN_.H5mGAqACexPI" FinalSpecialization="false" Id="4r2RH5mGAqACexUG" Leaf="false" OrderingInProfile="-1" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified="2025-10-18T20:17:51.471" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<FromEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="WDEOH5mGAqACexG9" Id="4r2RH5mGAqACexUH" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="4r2RH5mGAqACexUI" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+							</Type>
+						</AssociationEnd>
+					</FromEnd>
+					<ToEnd>
+						<AssociationEnd AggregationKind="None" BacklogActivityId="0" ConnectToCodeModel="1" DefaultValue_IsNull="true" Derived="false" DerivedUnion="false" Documentation_plain="" EndModelElement="BN_.H5mGAqACexPI" Id="4r2RH5mGAqACexUJ" JavaCodeAttributeName="" Leaf="false" Multiplicity="Unspecified" Navigable="Navigable" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" ProvidePropertyGetterMethod="false" ProvidePropertySetterMethod="false" QualityReason_IsNull="true" QualityScore="-1" ReadOnly="false" Static="false" TypeModifier="" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+							<Qualifier>
+								<Qualifier BacklogActivityId="0" Documentation_plain="" Id="4r2RH5mGAqACexUK" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:16:40.519" PmLastModified_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+							</Qualifier>
+							<Type>
+								<UseCase Idref="BN_.H5mGAqACexPI" Name="Check Room Availability (Single Day)"/>
+							</Type>
+						</AssociationEnd>
+					</ToEnd>
+					<MasterView>
+						<Association Idref="Mr2RH5mGAqACexUL"/>
+					</MasterView>
+				</Association>
+			</ModelChildren>
+		</ModelRelationshipContainer>
+		<ModelRelationshipContainer BacklogActivityId="0" Documentation_plain="" Id="Q3sA6kmD.AACAS6b" Name="Include" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:08:47.810" PmLastModified="2025-10-18T20:18:34.563" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ModelChildren>
+				<Include BacklogActivityId="0" Documentation_plain="" From="4A_.H5mGAqACexOo" Id="Y7dRH5mGAqACexU5" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:17:58.470" PmLastModified="2025-10-18T20:18:08.516" QualityReason_IsNull="true" QualityScore="-1" To="BN_.H5mGAqACexPI" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<Stereotypes>
+						<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+					</Stereotypes>
+					<MasterView>
+						<Include Idref="c7dRH5mGAqACexU6"/>
+					</MasterView>
+				</Include>
+				<Include BacklogActivityId="0" Documentation_plain="" From="wYABH5mGAqACexPZ" Id="VxTRH5mGAqACexVC" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:18:13.610" PmLastModified="2025-10-18T20:18:34.563" QualityReason_IsNull="true" QualityScore="-1" To="eeoBH5mGAqACexQE" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<Stereotypes>
+						<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+					</Stereotypes>
+					<MasterView>
+						<Include Idref="txTRH5mGAqACexVD"/>
+					</MasterView>
+				</Include>
+				<Include BacklogActivityId="0" Documentation_plain="" From="ba_.H5mGAqACexO3" Id=".0LRH5mGAqACexVG" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:18:20.255" PmLastModified="2025-10-18T20:18:34.559" QualityReason_IsNull="true" QualityScore="-1" To="wYABH5mGAqACexPZ" UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<Stereotypes>
+						<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+					</Stereotypes>
+					<MasterView>
+						<Include Idref="J0LRH5mGAqACexVH"/>
+					</MasterView>
+				</Include>
+				<Include BacklogActivityId="0" Documentation_plain="" From="ba_.H5mGAqACexO3" Id="IcrRH5mGAqACexVK" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:18:24.516" PmLastModified="2025-10-18T20:18:34.563" QualityReason_IsNull="true" QualityScore="-1" To="oLL.H5mGAqACexM." UserIDLastNumericValue="0" UserID_IsNull="true" Visibility="Unspecified">
+					<Stereotypes>
+						<Stereotype Idref="QQEA6kmD.AACAS6G" Name="Include"/>
+					</Stereotypes>
+					<MasterView>
+						<Include Idref="McrRH5mGAqACexVL"/>
+					</MasterView>
+				</Include>
+			</ModelChildren>
+		</ModelRelationshipContainer>
 		<Stereotype Abstract="false" BacklogActivityId="0" BaseType="SysMLElementGroup" Documentation_plain="" IconPath="" Id="Ia5VBNGGAqAA1wyB" Leaf="false" Name="elementGroup" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-09T12:11:56.032" PmLastModified="2025-10-18T16:42:25.246" QualityReason_IsNull="true" QualityScore="-1" Root="false" UserIDLastNumericValue="0" UserID_IsNull="true"/>
 		<Frame BacklogActivityId="0" BaseY="40" Documentation_plain="" Id="1Ks9BNGGAqAA1w4c" Name="Sequence_CheapestHotel" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:55:28.171" PmLastModified="2025-10-18T18:32:20.969" QualityReason_IsNull="true" QualityScore="-1" Type="sd" UserIDLastNumericValue="0" UserID_IsNull="true">
 			<ModelChildren>
@@ -4107,10 +4612,644 @@
 			</ModelChildren>
 		</Frame>
 		<Stereotype Abstract="false" BacklogActivityId="0" BaseType="Include" Documentation_plain="" IconPath_IsNull="true" Id="QQEA6kmD.AACAS6G" Leaf="false" Name="Include" PmAuthor="jens" PmCreateDateTime="2024-10-04T12:08:23.682" PmLastModified="2025-10-18T16:42:25.281" QualityReason_IsNull="true" QualityScore="-1" Root="false" UserIDLastNumericValue="0" UserID_IsNull="true"/>
+		<Actor Abstract="false" BacklogActivityId="0" BusinessModel="false" Complexity_IsNull="true" Documentation_plain="" FinalSpecialization="false" FontSize="0" Goals_IsNull="true" Id="OhvyH5mGAqACexF." Leaf="false" Name="Administrator" PmAuthor="elias" PmCreateDateTime="2025-10-18T19:13:26.364" PmLastModified="2025-10-18T20:04:52.070" QualityReason_IsNull="true" QualityScore="-1" Root="false" UserID="AC03" UserIDLastNumericValue="0" Visibility="public">
+			<MasterView>
+				<Actor Idref="WhvyH5mGAqACexF9" Name="Administrator"/>
+			</MasterView>
+		</Actor>
+		<Actor Abstract="false" BacklogActivityId="0" BusinessModel="false" Complexity_IsNull="true" Documentation_plain="" FinalSpecialization="false" FontSize="0" Goals_IsNull="true" Id="WDEOH5mGAqACexG9" Leaf="false" Name="Customer" PmAuthor="elias" PmCreateDateTime="2025-10-18T19:49:09.530" PmLastModified="2025-10-18T20:17:51.473" QualityReason_IsNull="true" QualityScore="-1" Root="false" UserID="AC04" UserIDLastNumericValue="0" Visibility="public">
+			<MasterView>
+				<Actor Idref="WDEOH5mGAqACexG8" Name="Customer"/>
+			</MasterView>
+		</Actor>
+		<System Abstract="false" BacklogActivityId="0" Documentation_plain="" Id="dscOH5mGAqACexHO" Leaf="false" Name="Hotel Booking System" PmAuthor="elias" PmCreateDateTime="2025-10-18T19:49:31.886" PmLastModified="2025-10-18T20:35:30.904" QualityReason_IsNull="true" QualityScore="-1" Root="false" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ModelChildren>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="IBo.H5mGAqACexJ8" Justification="" Leaf="false" Name="Add Hotel" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.628" PmLastModified="2025-10-18T20:04:52.071" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC11" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id="YBo.H5mGAqACexJ9" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="4Bo.H5mGAqACexJ." Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.631" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="4Bo.H5mGAqACexJ_" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.631" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="EBo.H5mGAqACexKA" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.632" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="EBo.H5mGAqACexKB" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.632" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="kBo.H5mGAqACexKC" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.633" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="UBo.H5mGAqACexKD" Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.634" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="UBo.H5mGAqACexKE" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.634" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="UBo.H5mGAqACexKF" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:02.634" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="OhvyH5mGAqACexF." Name="Administrator"/>
+					</PrimaryActors>
+					<MasterView>
+						<UseCase Idref="IBo.H5mGAqACexJ7" Name="Add Hotel"/>
+					</MasterView>
+				</UseCase>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="Ozo.H5mGAqACexKL" Justification="" Leaf="false" Name="Remove Hotel" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.868" PmLastModified="2025-10-18T20:04:52.072" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC12" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id="ezo.H5mGAqACexKM" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ezo.H5mGAqACexKN" Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.870" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ezo.H5mGAqACexKO" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.870" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id=".zo.H5mGAqACexKP" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.871" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id=".zo.H5mGAqACexKQ" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.871" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="Bzo.H5mGAqACexKR" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.872" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="Bzo.H5mGAqACexKS" Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.872" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="Bzo.H5mGAqACexKT" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.872" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="hzo.H5mGAqACexKU" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:02:03.873" PmLastModified="2025-10-18T20:02:33.434" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="OhvyH5mGAqACexF." Name="Administrator"/>
+					</PrimaryActors>
+					<MasterView>
+						<UseCase Idref="Ozo.H5mGAqACexKK" Name="Remove Hotel"/>
+					</MasterView>
+				</UseCase>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="ba_.H5mGAqACexO3" Justification="" Leaf="false" Name="Book Room in Specific Hotel (Date Range)" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.606" PmLastModified="2025-10-18T20:34:06.354" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC15" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id="7a_.H5mGAqACexO4" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="7a_.H5mGAqACexO5" Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.607" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="Ha_.H5mGAqACexO6" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.608" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="Ha_.H5mGAqACexO7" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.608" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="Ha_.H5mGAqACexO8" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.608" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="na_.H5mGAqACexO9" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.609" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="na_.H5mGAqACexO." Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.609" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="na_.H5mGAqACexO_" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.609" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="Xa_.H5mGAqACexPA" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:59.610" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+					</PrimaryActors>
+					<FromSimpleRelationships>
+						<Include Idref=".0LRH5mGAqACexVG" Name=""/>
+						<Include Idref="IcrRH5mGAqACexVK" Name=""/>
+						<Anchor Idref="SucZH5mGAqACexaC" Name=""/>
+					</FromSimpleRelationships>
+					<MasterView>
+						<UseCase Idref="ba_.H5mGAqACexO2" Name="Book Room in Specific Hotel (Date Range)"/>
+					</MasterView>
+				</UseCase>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="4A_.H5mGAqACexOo" Justification="" Leaf="false" Name="Book Room in Specific Hotel (Single Day)" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.151" PmLastModified="2025-10-18T20:33:11.666" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC14" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id="EA_.H5mGAqACexOp" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="EA_.H5mGAqACexOq" Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.152" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="kA_.H5mGAqACexOr" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.153" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="kA_.H5mGAqACexOs" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.153" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="UA_.H5mGAqACexOt" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.154" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="UA_.H5mGAqACexOu" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.154" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="UA_.H5mGAqACexOv" Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.154" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="0A_.H5mGAqACexOw" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.155" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="MA_.H5mGAqACexOx" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:58.156" PmLastModified="2025-10-18T20:06:55.905" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+					</PrimaryActors>
+					<FromSimpleRelationships>
+						<Include Idref="Y7dRH5mGAqACexU5" Name=""/>
+						<Anchor Idref="pdkZH5mGAqACexZw" Name=""/>
+					</FromSimpleRelationships>
+					<MasterView>
+						<UseCase Idref="4A_.H5mGAqACexOn" Name="Book Room in Specific Hotel (Single Day)"/>
+					</MasterView>
+				</UseCase>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="BN_.H5mGAqACexPI" Justification="" Leaf="false" Name="Check Room Availability (Single Day)" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.992" PmLastModified="2025-10-18T20:34:38.670" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC16" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id="hN_.H5mGAqACexPJ" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="hN_.H5mGAqACexPK" Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.993" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="RN_.H5mGAqACexPL" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.994" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="RN_.H5mGAqACexPM" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.994" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="RN_.H5mGAqACexPN" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.994" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="xN_.H5mGAqACexPO" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.995" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="xN_.H5mGAqACexPP" Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.995" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="xN_.H5mGAqACexPQ" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.995" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="JN_.H5mGAqACexPR" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:00.996" PmLastModified="2025-10-18T20:06:55.912" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+					</PrimaryActors>
+					<FromSimpleRelationships>
+						<Anchor Idref="XfOZH5mGAqACexa6" Name=""/>
+					</FromSimpleRelationships>
+					<ToSimpleRelationships>
+						<Include Idref="Y7dRH5mGAqACexU5" Name=""/>
+					</ToSimpleRelationships>
+					<MasterView>
+						<UseCase Idref="BN_.H5mGAqACexPH" Name="Check Room Availability (Single Day)"/>
+					</MasterView>
+				</UseCase>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="wYABH5mGAqACexPZ" Justification="" Leaf="false" Name="Book Room in Cheapest Hotel (Date Range)" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.627" PmLastModified="2025-10-18T20:35:30.900" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC17" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id="IYABH5mGAqACexPa" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="IYABH5mGAqACexPb" Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.628" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="oYABH5mGAqACexPc" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.629" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="oYABH5mGAqACexPd" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.629" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="oYABH5mGAqACexPe" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.629" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="oYABH5mGAqACexPf" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.629" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="YYABH5mGAqACexPg" Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.630" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="YYABH5mGAqACexPh" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.630" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="4YABH5mGAqACexPi" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:02.631" PmLastModified="2025-10-18T20:06:55.910" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+					</PrimaryActors>
+					<FromSimpleRelationships>
+						<Include Idref="VxTRH5mGAqACexVC" Name=""/>
+						<Anchor Idref="jExZH5mGAqACexbQ" Name=""/>
+					</FromSimpleRelationships>
+					<ToSimpleRelationships>
+						<Include Idref=".0LRH5mGAqACexVG" Name=""/>
+					</ToSimpleRelationships>
+					<MasterView>
+						<UseCase Idref="QYABH5mGAqACexPY" Name="Book Room in Cheapest Hotel (Date Range)"/>
+					</MasterView>
+				</UseCase>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="oLL.H5mGAqACexM." Justification="" Leaf="false" Name="Find Cheapest Hotel (Single Day)" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.421" PmLastModified="2025-10-18T20:18:34.564" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC13" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id="4LL.H5mGAqACexM_" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ELL.H5mGAqACexNA" Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.424" PmLastModified="2025-10-18T20:05:26.520" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="kLL.H5mGAqACexNB" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.425" PmLastModified="2025-10-18T20:05:26.521" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ULL.H5mGAqACexNC" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.426" PmLastModified="2025-10-18T20:05:26.521" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ULL.H5mGAqACexND" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.426" PmLastModified="2025-10-18T20:05:26.521" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ULL.H5mGAqACexNE" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.426" PmLastModified="2025-10-18T20:05:26.521" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="0LL.H5mGAqACexNF" Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.427" PmLastModified="2025-10-18T20:05:26.521" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="0LL.H5mGAqACexNG" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.427" PmLastModified="2025-10-18T20:05:26.521" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="MLL.H5mGAqACexNH" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:05:16.428" PmLastModified="2025-10-18T20:05:26.521" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+					</PrimaryActors>
+					<ToSimpleRelationships>
+						<Include Idref="IcrRH5mGAqACexVK" Name=""/>
+					</ToSimpleRelationships>
+					<MasterView>
+						<UseCase Idref="oLL.H5mGAqACexM9" Name="Find Cheapest Hotel (Single Day)"/>
+					</MasterView>
+				</UseCase>
+				<UseCase Abstract="false" BacklogActivityId="0" BusinessModel="false" ContextName_IsNull="true" DescNameColumnWidth="0" DescValueColumnWidth="0" Documentation_plain="" Id="eeoBH5mGAqACexQE" Justification="" Leaf="false" Name="Check Room Availability (Date Range)" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.670" PmLastModified="2025-10-18T20:30:10.006" PostConditions_IsNull="true" PreConditions_IsNull="true" QualityReason_IsNull="true" QualityScore="-1" Root="false" ScheduleRowHeight="24" Status="Identify" TaskPoolId="0" TaskPoolName_IsNull="true" TemplateName_IsNull="true" TestingConfig_IsNull="true" TestingSetup_IsNull="true" UcRank="Unspecified" UseCaseDescriptionDiagramId_IsNull="true" UserID="UC18" UserIDLastNumericValue="0">
+					<Stereotypes>
+						<Stereotype Idref="EGYj75mGAqACewQy" Name="UseCase"/>
+					</Stereotypes>
+					<TaggedValues>
+						<TaggedValueContainer CustomizedOrdering="false" Id=".eoBH5mGAqACexQF" Name="" SubLevelTaggedValueCustomizedOrdering="false">
+							<ModelChildren>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="BeoBH5mGAqACexQG" Multiplicity="Unspecified" Name="Level" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.672" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="OmYj75mGAqACewQ0" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="BeoBH5mGAqACexQH" Multiplicity="Unspecified" Name="Complexity" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.672" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="umYj75mGAqACewQ1" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="BeoBH5mGAqACexQI" Multiplicity="Unspecified" Name="Use Case Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.672" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="emYj75mGAqACewQ2" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="heoBH5mGAqACexQJ" Multiplicity="Unspecified" Name="Implementation Status" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.673" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition=".mYj75mGAqACewQ3" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="2" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="heoBH5mGAqACexQK" Multiplicity="Unspecified" Name="Preconditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.673" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="hmYj75mGAqACewQ4" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ReoBH5mGAqACexQL" Multiplicity="Unspecified" Name="Post-conditions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.674" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="xmYj75mGAqACewQ5" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ReoBH5mGAqACexQM" Multiplicity="Unspecified" Name="Author" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.674" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="JmYj75mGAqACewQ6" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+								<TaggedValue ArchimatePropertyDefId_IsNull="true" BacklogActivityId="0" Documentation_plain="" HtmlValue_IsNull="true" Id="ReoBH5mGAqACexQN" Multiplicity="Unspecified" Name="Assumptions" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:06:24.674" PmLastModified="2025-10-18T20:06:55.911" QualityReason_IsNull="true" QualityScore="-1" TagDefinition="pmYj75mGAqACewQ7" TagDefinitionStereotype="EGYj75mGAqACewQy" Type="Multi-line Text" UserIDLastNumericValue="0" UserID_IsNull="true" Value=""/>
+							</ModelChildren>
+						</TaggedValueContainer>
+					</TaggedValues>
+					<PrimaryActors>
+						<Actor Idref="WDEOH5mGAqACexG9" Name="Customer"/>
+					</PrimaryActors>
+					<FromSimpleRelationships>
+						<Anchor Idref="zrepH5mGAqACexY4" Name=""/>
+					</FromSimpleRelationships>
+					<ToSimpleRelationships>
+						<Include Idref="VxTRH5mGAqACexVC" Name=""/>
+					</ToSimpleRelationships>
+					<MasterView>
+						<UseCase Idref="eeoBH5mGAqACexQD" Name="Check Room Availability (Date Range)"/>
+					</MasterView>
+				</UseCase>
+			</ModelChildren>
+			<MasterView>
+				<System Idref="tscOH5mGAqACexHN" Name="Hotel Booking System"/>
+			</MasterView>
+		</System>
+		<NOTE BacklogActivityId="0" Documentation="&lt;head&gt;&#13;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#13;&#10;    &#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;    Returns first available room ID or -1&#13;&#10;  &lt;/body&gt;" Documentation_plain="Returns first available room ID or -1" Id="vQSpH5mGAqACexX9" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:29:06.877" PmLastModified="2025-10-18T20:34:38.669" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ToSimpleRelationships>
+				<Anchor Idref="XfOZH5mGAqACexa6" Name=""/>
+			</ToSimpleRelationships>
+			<MasterView>
+				<NOTE Idref="vQSpH5mGAqACexX8" Name=""/>
+			</MasterView>
+		</NOTE>
+		<NOTE BacklogActivityId="0" Documentation="&lt;head&gt;&#13;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#13;&#10;    &#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;    &lt;p&gt;&#13;&#10;      Selects cheapest available hotel&#13;&#10;    &lt;/p&gt;&#13;&#10;    &lt;p&gt;&#13;&#10;      Returns hotel ID on success, -1 on failure&#13;&#10;    &lt;/p&gt;&#13;&#10;  &lt;/body&gt;" Documentation_plain="Selects cheapest available hotel&#10;Returns hotel ID on success, -1 on failure" Id="ioIpH5mGAqACexXT" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:28:09.681" PmLastModified="2025-10-18T20:34:06.360" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ToSimpleRelationships>
+				<Anchor Idref="SucZH5mGAqACexaC" Name=""/>
+			</ToSimpleRelationships>
+			<MasterView>
+				<NOTE Idref="ioIpH5mGAqACexXS" Name=""/>
+			</MasterView>
+		</NOTE>
+		<NOTE BacklogActivityId="0" Documentation="&lt;head&gt;&#13;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#13;&#10;    &#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;    &lt;p&gt;&#13;&#10;      Returns 0 on success, -1 on failure&#13;&#10;    &lt;/p&gt;&#13;&#10;    &lt;p&gt;&#13;&#10;      (invalid hotel/ date / no availability)&#13;&#10;    &lt;/p&gt;&#13;&#10;  &lt;/body&gt;" Documentation_plain="Returns 0 on success, -1 on failure&#10;(invalid hotel/ date / no availability)" Id="ogfRH5mGAqACexVl" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:19:00.549" PmLastModified="2025-10-18T20:34:06.360" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ToSimpleRelationships>
+				<Anchor Idref="pdkZH5mGAqACexZw" Name=""/>
+			</ToSimpleRelationships>
+			<MasterView>
+				<NOTE Idref="ogfRH5mGAqACexVk" Name=""/>
+			</MasterView>
+		</NOTE>
+		<NOTE BacklogActivityId="0" Documentation="&lt;head&gt;&#13;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#13;&#10;    &#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;    &lt;p&gt;&#13;&#10;      Atomic booking for entire range&#13;&#10;    &lt;/p&gt;&#13;&#10;    &lt;p&gt;&#13;&#10;      Returns 0 on success, -1 on failure&#13;&#10;    &lt;/p&gt;&#13;&#10;  &lt;/body&gt;" Documentation_plain="Atomic booking for entire range&#10;Returns 0 on success, -1 on failure" Id="2HwxH5mGAqACexV." Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:19:24.571" PmLastModified="2025-10-18T20:35:30.904" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ToSimpleRelationships>
+				<Anchor Idref="jExZH5mGAqACexbQ" Name=""/>
+			</ToSimpleRelationships>
+			<MasterView>
+				<NOTE Idref="2HwxH5mGAqACexV9" Name=""/>
+			</MasterView>
+		</NOTE>
+		<NOTE BacklogActivityId="0" Documentation="&lt;head&gt;&#13;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#13;&#10;    &#13;&#10;  &lt;/head&gt;&#13;&#10;  &lt;body&gt;&#13;&#10;    &lt;p&gt;&#13;&#10;      Returns first available room ID or -2 (invalid)&#13;&#10;    &lt;/p&gt;&#13;&#10;  &lt;/body&gt;" Documentation_plain="Returns first available room ID or -2 (invalid)" Id="gWapH5mGAqACexYX" Name="" PmAuthor="elias" PmCreateDateTime="2025-10-18T20:29:24.737" PmLastModified="2025-10-18T20:35:30.904" QualityReason_IsNull="true" QualityScore="-1" UserIDLastNumericValue="0" UserID_IsNull="true">
+			<ToSimpleRelationships>
+				<Anchor Idref="zrepH5mGAqACexY4" Name=""/>
+			</ToSimpleRelationships>
+			<MasterView>
+				<NOTE Idref="gWapH5mGAqACexYW" Name=""/>
+			</MasterView>
+		</NOTE>
 	</Models>
 	<Diagrams>
-		<UseCaseDiagram AlignToGrid="false" AutoFitShapesSize="false" ConnectionPointStyle="0" ConnectorLabelOrientation="0" ConnectorLineJumps="0" ConnectorLineJumpsSize="0" ConnectorModelElementNameAlignment="4" ConnectorStyle="1" DiagramBackground="rgb(255, 255, 255)" Editable="true" FilterByViewpointLegend="true" FollowDiagramParentElement="true" GridColor="rgb(192, 192, 192)" GridHeight="10" GridVisible="false" GridWidth="10" Height="750" HideConnectorIfFromToIsHidden="0" HideEmptyTaggedValues="false" Id="GCi9BNGGAqAA1w4j" ImageHeight="0" ImageScale="1.0" ImageWidth="0" InitializeDiagramForCreate="true" Maximized="false" ModelElementNameAlignment="4" Name="UC_Diagram" PaintConnectorThroughLabel="1" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:55:44.280" PmLastModified="2025-10-16T10:55:07.039" PointConnectorEndToCompartmentMember="true" QualityScore="-1" RequestFitSizeWithPromptUser="false" RequestValidateSnapToGrid="false" ShapePresentationOption="0" ShowActivityStateNodeCaption="524287" ShowAllocatedFrom="true" ShowAllocatedTo="true" ShowColorLegend="false" ShowConnectorLegend="false" ShowConnectorName="0" ShowConstraints="false" ShowDefaultPackage="false" ShowDiagramFrame="true" ShowExtendCondition="false" ShowInformationItemOption="2" ShowPMAuthor="false" ShowPMDifficulty="false" ShowPMDiscipline="false" ShowPMIteration="false" ShowPMPhase="false" ShowPMPriority="false" ShowPMStatus="false" ShowPMVersion="false" ShowPackageNameStyle="0" ShowRelationshipConstraintExpression="false" ShowShapeLegend="false" ShowShapeStereotypeIconName="true" ShowStereotypes="true" ShowTaggedValues="false" ShowUseCaseExtensionPoint="true" ShowUseCaseId="false" TeamworkCreateDateTime="0" TrimmedHeight="0" TrimmedWidth="0" UseCaseDisplayOption="0" Width="1444" X="0" Y="0" ZoomRatio="1.0" _actorDisplayOption="0" _globalPaletteOption="true" documentation="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &#10;    &lt;/p&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;"/>
-		<InteractionDiagram AlignToGrid="false" AutoExtendActivations="true" AutoFitShapesSize="false" ConnectionPointStyle="0" ConnectorLabelOrientation="0" ConnectorLineJumps="0" ConnectorLineJumpsSize="0" ConnectorModelElementNameAlignment="4" ConnectorStyle="1" DiagramBackground="rgb(255, 255, 255)" DisplayLifeLinesAsRobustnessAnalysisIcon="0" Editable="true" FilterByViewpointLegend="true" FollowDiagramParentElement="true" GridColor="rgb(192, 192, 192)" GridHeight="10" GridVisible="false" GridWidth="10" Height="877" HideConnectorIfFromToIsHidden="0" HideEmptyTaggedValues="false" Id="nQgZBNGGAqAA1wka" ImageHeight="0" ImageScale="1.0" ImageWidth="0" InitializeDiagramForCreate="true" InteractionLifeLinePresentationOption="0" Maximized="false" ModelElementNameAlignment="4" Name="Sequence_BookRoom" PaintConnectorThroughLabel="1" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:15:18.583" PmLastModified="2025-09-05T18:16:16.263" PointConnectorEndToCompartmentMember="true" QualityScore="-1" RequestFitSizeWithPromptUser="false" RequestValidateSnapToGrid="false" SequenceNumberHandling="0" SequenceNumbering="0" ShapePresentationOption="0" ShowActivations="true" ShowActivityStateNodeCaption="524287" ShowAllocatedFrom="true" ShowAllocatedTo="true" ShowArgumentsInMessagesOperationSignature="true" ShowColorLegend="false" ShowConnectorLegend="false" ShowConnectorName="0" ShowConstraints="false" ShowDefaultPackage="false" ShowDiagramFrame="true" ShowInformationItemOption="2" ShowMessageName="true" ShowMessageStereotype="true" ShowMessagesOperationSignature="true" ShowPMAuthor="false" ShowPMDifficulty="false" ShowPMDiscipline="false" ShowPMIteration="false" ShowPMPhase="false" ShowPMPriority="false" ShowPMStatus="false" ShowPMVersion="false" ShowPackageNameStyle="0" ShowParameterNamesInMessageOperationSignature="true" ShowParameterTypesInMessageOperationSignature="true" ShowRelationshipConstraintExpression="false" ShowReturnTypeInMessagesOperationSignature="true" ShowSequenceNumbers="true" ShowShapeLegend="false" ShowShapeStereotypeIconName="true" ShowStereotypes="true" ShowTaggedValues="false" TeamworkCreateDateTime="0" TrimmedHeight="0" TrimmedWidth="0" Width="1918" X="0" Y="0" ZoomRatio="1.0" _globalPaletteOption="true" _requestFixDiagramForRoseImport="false" _requestRecalculateSequenceNumbers="false" _rootFrame="3IgZBNGGAqAA1wkf" documentation="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &#10;    &lt;/p&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;">
+		<UseCaseDiagram AlignToGrid="false" AutoFitShapesSize="false" ConnectionPointStyle="0" ConnectorLabelOrientation="0" ConnectorLineJumps="0" ConnectorLineJumpsSize="0" ConnectorModelElementNameAlignment="4" ConnectorStyle="1" DiagramBackground="rgb(255, 255, 255)" Editable="true" FilterByViewpointLegend="true" FollowDiagramParentElement="true" GridColor="rgb(192, 192, 192)" GridHeight="10" GridVisible="false" GridWidth="10" Height="877" HideConnectorIfFromToIsHidden="0" HideEmptyTaggedValues="false" Id="GCi9BNGGAqAA1w4j" ImageHeight="0" ImageScale="1.0" ImageWidth="0" InitializeDiagramForCreate="true" Maximized="true" ModelElementNameAlignment="4" Name="UC_Diagram" PaintConnectorThroughLabel="1" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:55:44.280" PmLastModified="2025-10-18T20:35:20.897" PointConnectorEndToCompartmentMember="true" QualityScore="-1" RequestFitSizeWithPromptUser="false" RequestValidateSnapToGrid="false" ShapePresentationOption="0" ShowActivityStateNodeCaption="524287" ShowAllocatedFrom="true" ShowAllocatedTo="true" ShowColorLegend="false" ShowConnectorLegend="false" ShowConnectorName="0" ShowConstraints="false" ShowDefaultPackage="false" ShowDiagramFrame="true" ShowExtendCondition="false" ShowInformationItemOption="2" ShowPMAuthor="false" ShowPMDifficulty="false" ShowPMDiscipline="false" ShowPMIteration="false" ShowPMPhase="false" ShowPMPriority="false" ShowPMStatus="false" ShowPMVersion="false" ShowPackageNameStyle="0" ShowRelationshipConstraintExpression="false" ShowShapeLegend="false" ShowShapeStereotypeIconName="true" ShowStereotypes="true" ShowTaggedValues="false" ShowUseCaseExtensionPoint="true" ShowUseCaseId="false" TeamworkCreateDateTime="0" TrimmedHeight="0" TrimmedWidth="0" UseCaseDisplayOption="0" Width="1894" X="0" Y="0" ZoomRatio="1.1" _actorDisplayOption="0" _globalPaletteOption="true" documentation="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &#10;    &lt;/p&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;">
+			<Shapes>
+				<Actor Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" CreatorDiagramType="UseCaseDiagram" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="171" Id="WhvyH5mGAqACexF9" MetaModelElement="OhvyH5mGAqACexF." Model="OhvyH5mGAqACexF." ModelElementNameAlignment="9" Name="Administrator" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="91" X="49" Y="83" ZOrder="32">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="South" Visible="true" Width="86" X="50" Y="253"/>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</Actor>
+				<Actor Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" CreatorDiagramType="UseCaseDiagram" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="170" Id="WDEOH5mGAqACexG8" MetaModelElement="WDEOH5mGAqACexG9" Model="WDEOH5mGAqACexG9" ModelElementNameAlignment="9" Name="Customer" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="137" X="19" Y="345" ZOrder="30">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="South" Visible="true" Width="69" X="54" Y="516"/>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</Actor>
+				<System Background="rgb(122, 207, 245)" CaptionAlignment="0" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" Foreground="rgb(0, 0, 0)" Height="432" Id="tscOH5mGAqACexHN" MetaModelElement="dscOH5mGAqACexHO" Model="dscOH5mGAqACexHO" ModelElementNameAlignment="1" Name="Hotel Booking System" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="999" X="235" Y="169" ZOrder="28">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="433" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="1000" X="0" Y="0"/>
+					<DiagramElementChildren>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="40" Id="IBo.H5mGAqACexJ7" MetaModelElement="IBo.H5mGAqACexJ8" Model="IBo.H5mGAqACexJ8" ModelElementNameAlignment="9" Name="Add Hotel" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="80" X="252" Y="179" ZOrder="26">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="40" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="80" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="40" Id="Ozo.H5mGAqACexKK" MetaModelElement="Ozo.H5mGAqACexKL" Model="Ozo.H5mGAqACexKL" ModelElementNameAlignment="9" Name="Remove Hotel" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="80" X="263" Y="235" ZOrder="24">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="40" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="80" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="68" Id="oLL.H5mGAqACexM9" MetaModelElement="oLL.H5mGAqACexM." Model="oLL.H5mGAqACexM." ModelElementNameAlignment="9" Name="Find Cheapest Hotel (Single Day)" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="179" X="677" Y="430" ZOrder="22">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="69" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="180" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="54" Id="4A_.H5mGAqACexOn" MetaModelElement="4A_.H5mGAqACexOo" Model="4A_.H5mGAqACexOo" ModelElementNameAlignment="9" Name="Book Room in Specific Hotel (Single Day)" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="228" X="263" Y="461" ZOrder="20">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="55" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="229" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="53" Id="ba_.H5mGAqACexO2" MetaModelElement="ba_.H5mGAqACexO3" Model="ba_.H5mGAqACexO3" ModelElementNameAlignment="9" Name="Book Room in Specific Hotel (Date Range)" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="239" X="252" Y="531" ZOrder="18">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="54" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="240" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="56" Id="BN_.H5mGAqACexPH" MetaModelElement="BN_.H5mGAqACexPI" Model="BN_.H5mGAqACexPI" ModelElementNameAlignment="9" Name="Check Room Availability (Single Day)" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="213" X="297" Y="353" ZOrder="16">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="57" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="214" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="58" Id="QYABH5mGAqACexPY" MetaModelElement="wYABH5mGAqACexPZ" Model="wYABH5mGAqACexPZ" ModelElementNameAlignment="9" Name="Book Room in Cheapest Hotel (Date Range)" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="246" X="653" Y="335" ZOrder="14">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="59" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="247" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+						<UseCase Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" DisplayOption="3" Foreground="rgb(0, 0, 0)" Height="40" Id="eeoBH5mGAqACexQD" MetaModelElement="eeoBH5mGAqACexQE" Model="eeoBH5mGAqACexQE" ModelElementNameAlignment="9" Name="Check Room Availability (Date Range)" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowExtensionPoint="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="198" X="1025" Y="354" ZOrder="12">
+							<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+							<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+								<Stroke/>
+							</Line>
+							<Caption Height="40" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="Center" Visible="true" Width="199" X="0" Y="0"/>
+							<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+						</UseCase>
+					</DiagramElementChildren>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</System>
+				<NOTE Angle="0" Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" Height="57" Id="ogfRH5mGAqACexVk" MetaModelElement="ogfRH5mGAqACexVl" Model="ogfRH5mGAqACexVl" ModelElementNameAlignment="9" Name="" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="229" X="404" Y="103" ZOrder="10">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="12" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="FreeMove" Visible="true" Width="214" X="0" Y="0"/>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</NOTE>
+				<NOTE Angle="0" Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" Height="48" Id="2HwxH5mGAqACexV9" MetaModelElement="2HwxH5mGAqACexV." Model="2HwxH5mGAqACexV." ModelElementNameAlignment="9" Name="" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="219" X="916" Y="116" ZOrder="8">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="12" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="FreeMove" Visible="true" Width="204" X="0" Y="0"/>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</NOTE>
+				<NOTE Angle="0" Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" Height="46" Id="ioIpH5mGAqACexXS" MetaModelElement="ioIpH5mGAqACexXT" Model="ioIpH5mGAqACexXT" ModelElementNameAlignment="9" Name="" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="255" X="573" Y="617" ZOrder="6">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="12" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="FreeMove" Visible="true" Width="240" X="0" Y="0"/>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</NOTE>
+				<NOTE Angle="0" Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" Height="40" Id="vQSpH5mGAqACexX8" MetaModelElement="vQSpH5mGAqACexX9" Model="vQSpH5mGAqACexX9" ModelElementNameAlignment="9" Name="" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="220" X="652" Y="120" ZOrder="4">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="12" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="FreeMove" Visible="true" Width="205" X="0" Y="0"/>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</NOTE>
+				<NOTE Angle="0" Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" Height="40" Id="gWapH5mGAqACexYW" MetaModelElement="gWapH5mGAqACexYX" Model="gWapH5mGAqACexYX" ModelElementNameAlignment="9" Name="" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="270" X="905" Y="617" ZOrder="2">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="12" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="FreeMove" Visible="true" Width="255" X="0" Y="0"/>
+					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
+				</NOTE>
+			</Shapes>
+			<Connectors>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WhvyH5mGAqACexF9" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="176" Id="9Wl.H5mGAqACexMW" MetaModelElement="NWl.H5mGAqACexMR" Model="NWl.H5mGAqACexMR" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="IBo.H5mGAqACexJ7" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="222" X="74" Y="153" ZOrder="34">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="212" Y="280"/>
+					<Points>
+						<Point X="120.0" Y="270.0"/>
+						<Point X="120.0" Y="284.0"/>
+						<Point X="242.0" Y="284.0"/>
+						<Point X="242.0" Y="199.0"/>
+						<Point X="251.0" Y="199.0"/>
+					</Points>
+				</Association>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WhvyH5mGAqACexF9" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="110" Id="_iN.H5mGAqACexMo" MetaModelElement="PiN.H5mGAqACexMj" Model="PiN.H5mGAqACexMj" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="Ozo.H5mGAqACexKK" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="287" X="61" Y="225" ZOrder="36">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="192" Y="288"/>
+					<Points>
+						<Point X="107.0" Y="270.0"/>
+						<Point X="107.0" Y="290.0"/>
+						<Point X="303.0" Y="290.0"/>
+						<Point X="303.0" Y="276.0"/>
+					</Points>
+				</Association>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WDEOH5mGAqACexG8" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="124" Id="LdKRH5mGAqACexTN" MetaModelElement="9dKRH5mGAqACexTI" Model="9dKRH5mGAqACexTI" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="QYABH5mGAqACexPY" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="795" X="25" Y="265" ZOrder="38">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="408" Y="306"/>
+					<Points>
+						<Point X="70.0" Y="344.0"/>
+						<Point X="70.0" Y="310.0"/>
+						<Point X="775.0" Y="310.0"/>
+						<Point X="775.0" Y="334.0"/>
+					</Points>
+				</Association>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WDEOH5mGAqACexG8" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="213" Id="WGaRH5mGAqACexTZ" MetaModelElement="6GaRH5mGAqACexTU" Model="6GaRH5mGAqACexTU" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="ba_.H5mGAqACexO2" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="369" X="33" Y="487" ZOrder="40">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="180" Y="655"/>
+					<Points>
+						<Point X="79.0" Y="532.0"/>
+						<Point X="79.0" Y="655.0"/>
+						<Point X="357.0" Y="655.0"/>
+						<Point X="357.0" Y="586.0"/>
+					</Points>
+				</Association>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WDEOH5mGAqACexG8" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="121" Id="ct6RH5mGAqACexTl" MetaModelElement="Ut6RH5mGAqACexTg" Model="Ut6RH5mGAqACexTg" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="4A_.H5mGAqACexOn" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="290" X="111" Y="385" ZOrder="42">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="262" Y="429"/>
+					<Points>
+						<Point X="157.0" Y="430.0"/>
+						<Point X="357.0" Y="430.0"/>
+						<Point X="357.0" Y="461.0"/>
+					</Points>
+				</Association>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WDEOH5mGAqACexG8" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="231" Id="ukmRH5mGAqACexTz" MetaModelElement="mkmRH5mGAqACexTu" Model="mkmRH5mGAqACexTu" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="oLL.H5mGAqACexM9" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="689" X="33" Y="277" ZOrder="44">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="427" Y="318"/>
+					<Points>
+						<Point X="79.0" Y="344.0"/>
+						<Point X="79.0" Y="322.0"/>
+						<Point X="586.0" Y="322.0"/>
+						<Point X="586.0" Y="463.0"/>
+						<Point X="677.0" Y="463.0"/>
+					</Points>
+				</Association>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WDEOH5mGAqACexG8" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="373" Id="8TWRH5mGAqACexT_" MetaModelElement="UTWRH5mGAqACexT6" Model="UTWRH5mGAqACexT6" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="eeoBH5mGAqACexQD" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="1228" X="13" Y="343" ZOrder="46">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="689" Y="667"/>
+					<Points>
+						<Point X="59.0" Y="532.0"/>
+						<Point X="59.0" Y="671.0"/>
+						<Point X="1196.0" Y="671.0"/>
+						<Point X="1196.0" Y="389.0"/>
+					</Points>
+				</Association>
+				<Association AssociationEndPropertyStringsAInternalHeight="-2147483648" AssociationEndPropertyStringsAInternalWidth="-2147483648" AssociationEndPropertyStringsBInternalHeight="-2147483648" AssociationEndPropertyStringsBInternalWidth="-2147483648" Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="WDEOH5mGAqACexG8" FromConnectType="0" FromMultiplicityInternalHeight="-2147483648" FromMultiplicityInternalWidth="-2147483648" FromPinType="1" FromRoleInternalHeight="-2147483648" FromRoleInternalWidth="-2147483648" FromShapeXDiff="0" FromShapeYDiff="0" HasAssociationEndPropertyStringsAShape="false" HasAssociationEndPropertyStringsBShape="false" HasMultiplicityAShape="false" HasMultiplicityBShape="false" HasRoleAShape="false" HasRoleBShape="false" Height="113" Id="Mr2RH5mGAqACexUL" MetaModelElement="4r2RH5mGAqACexUG" Model="4r2RH5mGAqACexUG" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowAssociationEndPropertyStrings="false" ShowConnectorName="2" ShowDirection="false" ShowFromMultiplicity="true" ShowFromRoleName="true" ShowFromRoleVisibility="true" ShowMultiplicityConstraints="false" ShowNavigationArrows="0" ShowOrderedMultiplicityConstraint="true" ShowStereotypes="true" ShowToMultiplicity="true" ShowToRoleName="true" ShowToRoleVisibility="true" ShowUniqueMultiplicityConstraint="true" SuppressImplied1MultiplicityForAssociationEnd="0" To="BN_.H5mGAqACexPH" ToConnectType="0" ToMultiplicityInternalHeight="-2147483648" ToMultiplicityInternalWidth="-2147483648" ToPinType="1" ToRoleInternalHeight="-2147483648" ToRoleInternalWidth="-2147483648" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="354" X="41" Y="289" ZOrder="48">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="216" Y="334"/>
+					<Points>
+						<Point X="87.0" Y="344.0"/>
+						<Point X="87.0" Y="334.0"/>
+						<Point X="350.0" Y="334.0"/>
+						<Point X="350.0" Y="357.0"/>
+					</Points>
+				</Association>
+				<Include Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" Foreground="rgb(0, 0, 0)" From="4A_.H5mGAqACexOn" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="153" Id="c7dRH5mGAqACexU6" MetaModelElement="Y7dRH5mGAqACexU5" Model="Y7dRH5mGAqACexU5" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="BN_.H5mGAqACexPH" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="90" X="446" Y="352" ZOrder="50">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="82" X="454" Y="425"/>
+					<Points>
+						<Point X="491.0" Y="460.0"/>
+						<Point X="491.0" Y="398.0"/>
+					</Points>
+				</Include>
+				<Include Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" Foreground="rgb(0, 0, 0)" From="QYABH5mGAqACexPY" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="90" Id="txTRH5mGAqACexVD" MetaModelElement="VxTRH5mGAqACexVC" Model="VxTRH5mGAqACexVC" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="eeoBH5mGAqACexQD" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="220" X="851" Y="326" ZOrder="52">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="82" X="920" Y="356"/>
+					<Points>
+						<Point X="897.0" Y="371.0"/>
+						<Point X="1026.0" Y="371.0"/>
+					</Points>
+				</Include>
+				<Include Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" Foreground="rgb(0, 0, 0)" From="ba_.H5mGAqACexO2" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="236" Id="J0LRH5mGAqACexVH" MetaModelElement=".0LRH5mGAqACexVG" Model=".0LRH5mGAqACexVG" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="QYABH5mGAqACexPY" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="461" X="446" Y="340" ZOrder="54">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="82" X="615" Y="523"/>
+					<Points>
+						<Point X="491.0" Y="531.0"/>
+						<Point X="862.0" Y="531.0"/>
+						<Point X="862.0" Y="386.0"/>
+					</Points>
+				</Include>
+				<Include Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" Foreground="rgb(0, 0, 0)" From="ba_.H5mGAqACexO2" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="150" Id="McrRH5mGAqACexVL" MetaModelElement="IcrRH5mGAqACexVK" Model="IcrRH5mGAqACexVK" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="oLL.H5mGAqACexM9" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="374" X="446" Y="453" ZOrder="56">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="82" X="624" Y="553"/>
+					<Points>
+						<Point X="491.0" Y="558.0"/>
+						<Point X="775.0" Y="558.0"/>
+						<Point X="775.0" Y="499.0"/>
+					</Points>
+				</Include>
+				<Anchor Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="eeoBH5mGAqACexQD" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="320" Id="LrepH5mGAqACexY5" MetaModelElement="zrepH5mGAqACexY4" Model="zrepH5mGAqACexY4" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="gWapH5mGAqACexYW" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="90" X="1001" Y="342" ZOrder="58">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="1048" Y="501"/>
+					<Points>
+						<Point X="1047.0" Y="388.0"/>
+						<Point X="1047.0" Y="617.0"/>
+					</Points>
+				</Anchor>
+				<Anchor Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="4A_.H5mGAqACexOn" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="420" Id="FdkZH5mGAqACexZx" MetaModelElement="pdkZH5mGAqACexZw" Model="pdkZH5mGAqACexZw" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="ogfRH5mGAqACexVk" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="155" X="446" Y="115" ZOrder="60">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="552" Y="359"/>
+					<Points>
+						<Point X="491.0" Y="490.0"/>
+						<Point X="556.0" Y="490.0"/>
+						<Point X="556.0" Y="160.0"/>
+					</Points>
+				</Anchor>
+				<Anchor Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="ba_.H5mGAqACexO2" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="132" Id="yucZH5mGAqACexaD" MetaModelElement="SucZH5mGAqACexaC" Model="SucZH5mGAqACexaC" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="ioIpH5mGAqACexXS" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="198" X="420" Y="530" ZOrder="62">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="503" Y="604"/>
+					<Points>
+						<Point X="465.0" Y="575.0"/>
+						<Point X="572.0" Y="617.0"/>
+					</Points>
+				</Anchor>
+				<Anchor Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="BN_.H5mGAqACexPH" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="285" Id="PfOZH5mGAqACexa7" MetaModelElement="XfOZH5mGAqACexa6" Model="XfOZH5mGAqACexa6" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="vQSpH5mGAqACexX8" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="331" X="399" Y="115" ZOrder="64">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="491" Y="195"/>
+					<Points>
+						<Point X="444.0" Y="355.0"/>
+						<Point X="444.0" Y="199.0"/>
+						<Point X="685.0" Y="199.0"/>
+						<Point X="685.0" Y="160.0"/>
+					</Points>
+				</Anchor>
+				<Anchor Background="rgb(122, 207, 245)" ConnectorLabelOrientation="4" ConnectorLineJumps="4" ConnectorStyle="Follow Diagram" CreatorDiagramType="UseCaseDiagram" Foreground="rgb(0, 0, 0)" From="QYABH5mGAqACexPY" FromConnectType="0" FromPinType="1" FromShapeXDiff="0" FromShapeYDiff="0" Height="264" Id="LExZH5mGAqACexbR" MetaModelElement="jExZH5mGAqACexbQ" Model="jExZH5mGAqACexbQ" ModelElementNameAlignment="9" PaintThroughLabel="2" RequestRebuild="false" RequestRebuildFromEnd="false" RequestRebuildToEnd="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" Selectable="true" ShowConnectorName="2" To="2HwxH5mGAqACexV9" ToConnectType="0" ToPinType="1" ToShapeXDiff="0" ToShapeYDiff="0" UseFromShapeCenter="true" UseToShapeCenter="true" Width="285" X="785" Y="119" ZOrder="66">
+					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
+					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
+						<Stroke/>
+					</Line>
+					<Caption Height="0" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="20" X="904" Y="238"/>
+					<Points>
+						<Point X="830.0" Y="338.0"/>
+						<Point X="830.0" Y="230.0"/>
+						<Point X="1025.0" Y="230.0"/>
+						<Point X="1025.0" Y="164.0"/>
+					</Points>
+				</Anchor>
+			</Connectors>
+		</UseCaseDiagram>
+		<InteractionDiagram AlignToGrid="false" AutoExtendActivations="true" AutoFitShapesSize="false" ConnectionPointStyle="0" ConnectorLabelOrientation="0" ConnectorLineJumps="0" ConnectorLineJumpsSize="0" ConnectorModelElementNameAlignment="4" ConnectorStyle="1" DiagramBackground="rgb(255, 255, 255)" DisplayLifeLinesAsRobustnessAnalysisIcon="0" Editable="true" FilterByViewpointLegend="true" FollowDiagramParentElement="true" GridColor="rgb(192, 192, 192)" GridHeight="10" GridVisible="false" GridWidth="10" Height="925" HideConnectorIfFromToIsHidden="0" HideEmptyTaggedValues="false" Id="nQgZBNGGAqAA1wka" ImageHeight="0" ImageScale="1.0" ImageWidth="0" InitializeDiagramForCreate="true" InteractionLifeLinePresentationOption="0" Maximized="false" ModelElementNameAlignment="4" Name="Sequence_BookRoom" PaintConnectorThroughLabel="1" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:15:18.583" PmLastModified="2025-10-18T18:43:12.089" PointConnectorEndToCompartmentMember="true" QualityScore="-1" RequestFitSizeWithPromptUser="false" RequestValidateSnapToGrid="false" SequenceNumberHandling="0" SequenceNumbering="0" ShapePresentationOption="0" ShowActivations="true" ShowActivityStateNodeCaption="524287" ShowAllocatedFrom="true" ShowAllocatedTo="true" ShowArgumentsInMessagesOperationSignature="true" ShowColorLegend="false" ShowConnectorLegend="false" ShowConnectorName="0" ShowConstraints="false" ShowDefaultPackage="false" ShowDiagramFrame="true" ShowInformationItemOption="2" ShowMessageName="true" ShowMessageStereotype="true" ShowMessagesOperationSignature="true" ShowPMAuthor="false" ShowPMDifficulty="false" ShowPMDiscipline="false" ShowPMIteration="false" ShowPMPhase="false" ShowPMPriority="false" ShowPMStatus="false" ShowPMVersion="false" ShowPackageNameStyle="0" ShowParameterNamesInMessageOperationSignature="true" ShowParameterTypesInMessageOperationSignature="true" ShowRelationshipConstraintExpression="false" ShowReturnTypeInMessagesOperationSignature="true" ShowSequenceNumbers="true" ShowShapeLegend="false" ShowShapeStereotypeIconName="true" ShowStereotypes="true" ShowTaggedValues="false" TeamworkCreateDateTime="0" TrimmedHeight="0" TrimmedWidth="0" Width="1918" X="0" Y="0" ZoomRatio="1.3" _globalPaletteOption="true" _requestFixDiagramForRoseImport="false" _requestRecalculateSequenceNumbers="false" _rootFrame="3IgZBNGGAqAA1wkf" documentation="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &#10;    &lt;/p&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;">
 			<Shapes>
 				<Activation Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" Foreground="rgb(0, 0, 0)" Height="1111" Id="xR_ZBNGGAqAA1wmz" MetaModelElement="RR_ZBNGGAqAA1wmx" Model="RR_ZBNGGAqAA1wmx" ModelElementNameAlignment="9" Name="Activation" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="8" X="584" Y="121" ZOrder="34">
 					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
@@ -4125,7 +5264,7 @@
 					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
 						<Stroke/>
 					</Line>
-					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="102" X="976" Y="40"/>
+					<Caption Height="16" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="102" X="976" Y="40"/>
 					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
 				</InteractionLifeLine>
 				<InteractionLifeLine Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" Foreground="rgb(0, 0, 0)" Height="1212" Id="UGCZBNGGAqAA1wlF" MetaModelElement="UGCZBNGGAqAA1wlG" Model="UGCZBNGGAqAA1wlG" ModelElementNameAlignment="1" Name="Hotel" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" ParentFrame="3IgZBNGGAqAA1wkf" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowClassifier="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="92" X="755" Y="40" ZOrder="38">
@@ -4133,7 +5272,7 @@
 					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
 						<Stroke/>
 					</Line>
-					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="92" X="755" Y="40"/>
+					<Caption Height="16" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="92" X="755" Y="40"/>
 					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
 				</InteractionLifeLine>
 				<InteractionLifeLine Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" Foreground="rgb(0, 0, 0)" Height="1212" Id="skMZBNGGAqAA1wk0" MetaModelElement="skMZBNGGAqAA1wk1" Model="skMZBNGGAqAA1wk1" ModelElementNameAlignment="1" Name="Booking:" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" ParentFrame="3IgZBNGGAqAA1wkf" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowClassifier="true" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="99" X="539" Y="40" ZOrder="40">
@@ -4141,7 +5280,7 @@
 					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
 						<Stroke/>
 					</Line>
-					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="99" X="539" Y="40"/>
+					<Caption Height="16" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="99" X="539" Y="40"/>
 					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
 				</InteractionLifeLine>
 				<InteractionActor Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" Foreground="rgb(0, 0, 0)" Height="1212" Id="2CibmJmD.AAAAQpe" MetaModelElement="2CibmJmD.AAAAQpf" Model="2CibmJmD.AAAAQpf" ModelElementNameAlignment="9" Name="Actor" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" ParentFrame="3IgZBNGGAqAA1wkf" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="60" X="311" Y="40" ZOrder="32">
@@ -4149,7 +5288,7 @@
 					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
 						<Stroke/>
 					</Line>
-					<Caption Height="15" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="46" X="318" Y="75"/>
+					<Caption Height="16" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="47" X="317" Y="74"/>
 					<FillColor Color="rgb(122, 207, 245)" Style="1" Transparency="0" Type="1"/>
 				</InteractionActor>
 				<Activation Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" Foreground="rgb(0, 0, 0)" Height="378" Id="MaVgWJmD.AAAAQsb" MetaModelElement="kaVgWJmD.AAAAQsZ" Model="kaVgWJmD.AAAAQsZ" ModelElementNameAlignment="9" Name="Activation" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="8" X="797" Y="150" ZOrder="30">
@@ -4283,7 +5422,7 @@
 					<Line Cap="0" Color="rgb(0, 0, 0)" Transparency="0" Weight="1.0">
 						<Stroke/>
 					</Line>
-					<Caption Height="14" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="206" X="361" Y="102"/>
+					<Caption Height="16" InternalHeight="-2147483648" InternalWidth="-2147483648" Side="None" Visible="true" Width="190" X="368" Y="100"/>
 					<Points>
 						<Point X="345.0" Y="121.0"/>
 						<Point X="584.0" Y="121.0"/>
@@ -4438,7 +5577,7 @@
 				</Message>
 			</Connectors>
 		</InteractionDiagram>
-		<InteractionDiagram AlignToGrid="false" AutoExtendActivations="true" AutoFitShapesSize="false" ConnectionPointStyle="0" ConnectorLabelOrientation="0" ConnectorLineJumps="0" ConnectorLineJumpsSize="0" ConnectorModelElementNameAlignment="4" ConnectorStyle="1" DiagramBackground="rgb(255, 255, 255)" DisplayLifeLinesAsRobustnessAnalysisIcon="0" Editable="true" FilterByViewpointLegend="true" FollowDiagramParentElement="true" GridColor="rgb(192, 192, 192)" GridHeight="10" GridVisible="false" GridWidth="10" Height="925" HideConnectorIfFromToIsHidden="0" HideEmptyTaggedValues="false" Id="xKs9BNGGAqAA1w4Y" ImageHeight="0" ImageScale="1.0" ImageWidth="0" InitializeDiagramForCreate="true" InteractionLifeLinePresentationOption="0" Maximized="true" ModelElementNameAlignment="4" Name="Sequence_CheapestHotel" PaintConnectorThroughLabel="1" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:55:28.163" PmLastModified="2025-10-18T18:33:53.250" PointConnectorEndToCompartmentMember="true" QualityScore="-1" RequestFitSizeWithPromptUser="false" RequestValidateSnapToGrid="false" SequenceNumberHandling="0" SequenceNumbering="0" ShapePresentationOption="0" ShowActivations="true" ShowActivityStateNodeCaption="524287" ShowAllocatedFrom="true" ShowAllocatedTo="true" ShowArgumentsInMessagesOperationSignature="true" ShowColorLegend="false" ShowConnectorLegend="false" ShowConnectorName="0" ShowConstraints="false" ShowDefaultPackage="false" ShowDiagramFrame="true" ShowInformationItemOption="2" ShowMessageName="true" ShowMessageStereotype="true" ShowMessagesOperationSignature="true" ShowPMAuthor="false" ShowPMDifficulty="false" ShowPMDiscipline="false" ShowPMIteration="false" ShowPMPhase="false" ShowPMPriority="false" ShowPMStatus="false" ShowPMVersion="false" ShowPackageNameStyle="0" ShowParameterNamesInMessageOperationSignature="true" ShowParameterTypesInMessageOperationSignature="true" ShowRelationshipConstraintExpression="false" ShowReturnTypeInMessagesOperationSignature="true" ShowSequenceNumbers="true" ShowShapeLegend="false" ShowShapeStereotypeIconName="true" ShowStereotypes="true" ShowTaggedValues="false" TeamworkCreateDateTime="0" TrimmedHeight="0" TrimmedWidth="0" Width="1894" X="0" Y="0" ZoomRatio="1.2" _globalPaletteOption="true" _requestFixDiagramForRoseImport="false" _requestRecalculateSequenceNumbers="false" _rootFrame="1Ks9BNGGAqAA1w4c" documentation="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &#10;    &lt;/p&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;">
+		<InteractionDiagram AlignToGrid="false" AutoExtendActivations="true" AutoFitShapesSize="false" ConnectionPointStyle="0" ConnectorLabelOrientation="0" ConnectorLineJumps="0" ConnectorLineJumpsSize="0" ConnectorModelElementNameAlignment="4" ConnectorStyle="1" DiagramBackground="rgb(255, 255, 255)" DisplayLifeLinesAsRobustnessAnalysisIcon="0" Editable="true" FilterByViewpointLegend="true" FollowDiagramParentElement="true" GridColor="rgb(192, 192, 192)" GridHeight="10" GridVisible="false" GridWidth="10" Height="925" HideConnectorIfFromToIsHidden="0" HideEmptyTaggedValues="false" Id="xKs9BNGGAqAA1w4Y" ImageHeight="0" ImageScale="1.0" ImageWidth="0" InitializeDiagramForCreate="true" InteractionLifeLinePresentationOption="0" Maximized="false" ModelElementNameAlignment="4" Name="Sequence_CheapestHotel" PaintConnectorThroughLabel="1" PmAuthor="jensdehoog" PmCreateDateTime="2023-10-11T23:55:28.163" PmLastModified="2025-10-18T18:33:53.250" PointConnectorEndToCompartmentMember="true" QualityScore="-1" RequestFitSizeWithPromptUser="false" RequestValidateSnapToGrid="false" SequenceNumberHandling="0" SequenceNumbering="0" ShapePresentationOption="0" ShowActivations="true" ShowActivityStateNodeCaption="524287" ShowAllocatedFrom="true" ShowAllocatedTo="true" ShowArgumentsInMessagesOperationSignature="true" ShowColorLegend="false" ShowConnectorLegend="false" ShowConnectorName="0" ShowConstraints="false" ShowDefaultPackage="false" ShowDiagramFrame="true" ShowInformationItemOption="2" ShowMessageName="true" ShowMessageStereotype="true" ShowMessagesOperationSignature="true" ShowPMAuthor="false" ShowPMDifficulty="false" ShowPMDiscipline="false" ShowPMIteration="false" ShowPMPhase="false" ShowPMPriority="false" ShowPMStatus="false" ShowPMVersion="false" ShowPackageNameStyle="0" ShowParameterNamesInMessageOperationSignature="true" ShowParameterTypesInMessageOperationSignature="true" ShowRelationshipConstraintExpression="false" ShowReturnTypeInMessagesOperationSignature="true" ShowSequenceNumbers="true" ShowShapeLegend="false" ShowShapeStereotypeIconName="true" ShowStereotypes="true" ShowTaggedValues="false" TeamworkCreateDateTime="0" TrimmedHeight="0" TrimmedWidth="0" Width="1894" X="0" Y="0" ZoomRatio="1.2" _globalPaletteOption="true" _requestFixDiagramForRoseImport="false" _requestRecalculateSequenceNumbers="false" _rootFrame="1Ks9BNGGAqAA1w4c" documentation="&lt;html&gt;&#10;  &lt;head&gt;&#10;    &lt;style type=&quot;text/css&quot;&gt;&#10;      &lt;!--&#10;        body { color: #000000; font-family: Dialog; font-size: 12px }&#10;      --&gt;&#10;    &lt;/style&gt;&#10;    &#10;  &lt;/head&gt;&#10;  &lt;body&gt;&#10;    &lt;p&gt;&#10;      &#10;    &lt;/p&gt;&#10;  &lt;/body&gt;&#10;&lt;/html&gt;&#10;">
 			<Shapes>
 				<InteractionActor Background="rgb(122, 207, 245)" ConnectToPoint="true" ConnectionPointType="2" CoverConnector="false" Foreground="rgb(0, 0, 0)" Height="547" Id="AO6gH5mGAqACewsI" MetaModelElement="AO6gH5mGAqACewsJ" Model="AO6gH5mGAqACewsJ" ModelElementNameAlignment="9" Name="Actor" OverrideAppearanceWithStereotypeIcon="true" ParentConnectorDTheta="0.0" ParentConnectorHeaderLength="40" ParentConnectorLineLength="10" ParentFrame="1Ks9BNGGAqAA1w4c" PresentationOption="4" PrimitiveShapeType="0" RequestDefaultSize="false" RequestFitSize="false" RequestFitSizeFromCenter="false" RequestResetCaption="false" RequestResetCaptionFitWidth="false" RequestResetCaptionSize="false" RequestSetSizeOption="0" Selectable="true" ShowAllocatedFrom="0" ShowAllocatedTo="0" ShowStereotypeIconName="0" ShowTaggedValues="0" Width="126" X="0" Y="40" ZOrder="22">
 					<ElementFont Color="rgb(0, 0, 0)" Name="Dialog" Size="11" Style="0"/>
