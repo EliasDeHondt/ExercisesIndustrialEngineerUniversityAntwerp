@@ -16,13 +16,13 @@ entity Main is
 end Main;
 
 architecture Behavioral of Main is
-    signal clk_divider : unsigned(15 downto 0) := (others => '0');
-    signal clk_8khz    : std_logic := '0';
-    signal display_sel : unsigned(2 downto 0) := (others => '0');
-    signal segments    : std_logic_vector(7 downto 0);
+    signal clk_divider: unsigned(15 downto 0) := (others => '0');
+    signal clk_8khz: std_logic := '0';
+    signal display_sel: unsigned(2 downto 0) := (others => '0');
+    signal segments: std_logic_vector(7 downto 0);
 begin
     process(Clk) begin
-        if rising_edge(Clk) then
+        if rising_edge(Clk) then -- Triggers only on rising edge of Clk (100 MHz system clock)
             if clk_divider = 6249 then
                 clk_divider <= (others => '0');
                 clk_8khz <= not clk_8khz;
@@ -33,7 +33,7 @@ begin
     end process;
 
     process(clk_8khz) begin
-        if rising_edge(clk_8khz) then
+        if rising_edge(clk_8khz) then -- Triggers only on rising edge of Clk (8 kHz clock)
             if display_sel = 7 then
                 display_sel <= (others => '0');
             else
