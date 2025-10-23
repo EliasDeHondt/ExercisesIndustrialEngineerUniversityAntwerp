@@ -44,14 +44,14 @@ begin
 
     process(display_sel) begin
         case display_sel is
-            when "000" => segments <= "11111001"; -- 1
-            when "001" => segments <= "10100100"; -- 2
-            when "010" => segments <= "10110000"; -- 3
-            when "011" => segments <= "10011001"; -- 4
-            when "100" => segments <= "10010010"; -- 5
-            when "101" => segments <= "10000010"; -- 6
-            when "110" => segments <= "11111000"; -- 7
-            when "111" => segments <= "10000000"; -- 8
+            when "000" => segments <= "10011110"; -- 1
+            when "001" => segments <= "00100100"; -- 2 
+            when "010" => segments <= "00001100"; -- 3
+            when "011" => segments <= "10011000"; -- 4
+            when "100" => segments <= "01001000"; -- 5
+            when "101" => segments <= "01000000"; -- 6
+            when "110" => segments <= "00011110"; -- 7
+            when "111" => segments <= "00000000"; -- 8
             when others => segments <= (others => '1');
         end case;
     end process;
