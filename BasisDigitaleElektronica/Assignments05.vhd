@@ -44,29 +44,33 @@ begin
 
     process(display_sel) begin
         case display_sel is
-            when "000" => segments <= "10011110"; -- 1
-            when "001" => segments <= "00100100"; -- 2 
-            when "010" => segments <= "00001100"; -- 3
-            when "011" => segments <= "10011000"; -- 4
-            when "100" => segments <= "01001000"; -- 5
-            when "101" => segments <= "01000000"; -- 6
-            when "110" => segments <= "00011110"; -- 7
-            when "111" => segments <= "00000000"; -- 8
-            when others => segments <= (others => '1');
-        end case;
-    end process;
-
-    process(display_sel) begin
-        case display_sel is
-            when "000" => Anodes <= "11111110"; -- Enable display 1
-            when "001" => Anodes <= "11111101"; -- Enable display 2
-            when "010" => Anodes <= "11111011"; -- Enable display 3
-            when "011" => Anodes <= "11110111"; -- Enable display 4
-            when "100" => Anodes <= "11101111"; -- Enable display 5
-            when "101" => Anodes <= "11011111"; -- Enable display 6
-            when "110" => Anodes <= "10111111"; -- Enable display 7
-            when "111" => Anodes <= "01111111"; -- Enable display 8
-            when others => Anodes <= (others => '1');
+            when "000" => 
+                segments <= "10011111"; -- 1
+                Anodes <= "11111110"; -- Enable display 1
+            when "001" => 
+                segments <= "00100101"; -- 2 
+                Anodes <= "11111101"; -- Enable display 2
+            when "010" => 
+                segments <= "00001101"; -- 3
+                Anodes <= "11111011"; -- Enable display 3
+            when "011" => 
+                segments <= "10011001"; -- 4
+                Anodes <= "11110111"; -- Enable display 4
+            when "100" => 
+                segments <= "01001001"; -- 5
+                Anodes <= "11101111"; -- Enable display 5
+            when "101" => 
+                segments <= "01000001"; -- 6
+                Anodes <= "11011111"; -- Enable display 6
+            when "110" => 
+                segments <= "00011111"; -- 7
+                Anodes <= "10111111"; -- Enable display 7
+            when "111" => 
+                segments <= "00000001"; -- 8
+                Anodes <= "01111111"; -- Enable display 8
+            when others => 
+                segments <= (others => '1');
+                Anodes <= (others => '1');
         end case;
     end process;
     Cathodes <= segments;
