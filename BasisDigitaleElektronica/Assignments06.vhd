@@ -9,7 +9,6 @@ use IEEE.numeric_std.all;
 
 entity Main is
     port (
-        Dip: in std_logic_vector(1 downto 0);
         R: out std_logic_vector(1 downto 0);
         G: out std_logic_vector(1 downto 0);
         B: out std_logic_vector(1 downto 0);
