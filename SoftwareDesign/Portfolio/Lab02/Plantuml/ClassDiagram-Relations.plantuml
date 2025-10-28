@@ -1,0 +1,117 @@
+' @author EliasDH Team
+' @see https://eliasdh.com
+' @since 01/01/2025
+
+@startuml ClassDiagram-Relations
+
+title Class Diagram - Film Festival Relations
+
+abstract class Person {
+    -name : String
+    # Person(name : String)
+    +getName() : String
+}
+
+class Attendee {
+    -bookings : List<Booking>
+    +Attendee(name : String)
+    -addBooking(b : Booking) : void
+    +getBookings() : List<Booking>
+}
+
+class Staff {
+    +Staff(name : String)
+}
+
+abstract class Work {
+    -title : String
+    -runtimeMinutes : int
+    # Work(title : String, runtimeMinutes : int)
+    +getTitle() : String
+    +getRuntimeMinutes() : int
+}
+
+class FeatureFilm {
+    +FeatureFilm(title : String, runtimeMinutes : int)
+}
+
+class ShortFilm {
+    +ShortFilm(title : String, runtimeMinutes : int)
+}
+
+class Venue {
+    -name : String
+    -capacity : int
+    +Venue(name : String, capacity : int)
+    +getName() : String
+    +getCapacity() : int
+}
+
+class Festival {
+    -name : String
+    -program : Program
+    -venues : List<Venue>
+    +Festival(name : String)
+    +getName() : String
+    +getProgram() : Program
+    +registerVenue(v : Venue) : void
+    +getVenues() : List<Venue>
+}
+
+class Program {
+    -screenings : List<Screening>
+    +Program()
+    +schedule(work : Work, venue : Venue, start : LocalDateTime, capacity : int) : Screening
+    +getScreenings() : List<Screening>
+}
+
+class Screening {
+    -program : Program
+    -work : Work
+    -venue : Venue
+    -startTime : LocalDateTime
+    -capacity : int
+    -crew : Set<Staff>
+    -bookings : List<Booking>
+    +Screening(program : Program, work : Work, venue : Venue, startTime : LocalDateTime, capacity : int)
+    +getProgram() : Program
+    +getWork() : Work
+    +getVenue() : Venue
+    +getStartTime() : LocalDateTime
+    +getCapacity() : int
+    +assign(s : Staff) : void
+    +getCrew() : Set<Staff>
+    +book(a : Attendee, seatLabel : String, price : BigDecimal) : Booking
+    +getBookings() : List<Booking>
+}
+
+class Booking {
+    -attendee : Attendee
+    -screening : Screening
+    -seatLabel : String
+    -price : BigDecimal
+    -bookedAt : LocalDateTime
+    +Booking(attendee : Attendee, screening : Screening, seatLabel : String, price : BigDecimal, bookedAt : LocalDateTime)
+    +getAttendee() : Attendee
+    +getScreening() : Screening
+    +getSeatLabel() : String
+    +getPrice() : BigDecimal
+    +getBookedAt() : LocalDateTime
+}
+
+Person <|-- Attendee
+Person <|-- Staff
+Work <|-- FeatureFilm
+Work <|-- ShortFilm
+Festival *-- "1" Program
+Festival o-- "0..*" Venue
+Program *-- "1..*" Screening
+Screening -- "1" Work
+Screening -- "1" Venue
+Screening "1" -- "0..*" Staff
+Screening *-- "1..*" Booking
+Attendee "1" -- "0..*" Booking
+Booking "1" -- "1" Attendee
+Booking "1" -- "1" Screening
+
+@enduml

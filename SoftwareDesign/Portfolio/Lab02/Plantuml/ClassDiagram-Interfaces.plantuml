@@ -1,0 +1,44 @@
+' @author EliasDH Team
+' @see https://eliasdh.com
+' @since 01/01/2025
+
+@startuml UniversalRemote Class Diagram
+
+title Class Diagram: Universal Remote Control System
+
+interface VolumeDevice {
+    + {abstract} volumeUp(): void
+    + {abstract} volumeDown(): void
+}
+
+class TV {
+    - volume: int = 0
+    + volumeUp(): void
+    + volumeDown(): void
+}
+
+class Radio {
+    - volume: int = 0
+    + volumeUp(): void
+    + volumeDown(): void
+}
+
+class CDPlayer {
+    - volume: int = 0
+    + volumeUp(): void
+    + volumeDown(): void
+}
+
+class UniversalRemote {
+    - devices: List<VolumeDevice>
+    + addDevice(device: VolumeDevice): void
+    + lowerVolume(): void
+    + riseVolume(): void
+}
+
+TV ..|> VolumeDevice : implements
+Radio ..|> VolumeDevice : implements
+CDPlayer ..|> VolumeDevice : implements
+UniversalRemote o-- "*" VolumeDevice : contains
+
+@enduml
