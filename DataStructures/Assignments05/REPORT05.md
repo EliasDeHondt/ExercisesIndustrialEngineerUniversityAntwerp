@@ -11,14 +11,14 @@
 
 ## 🖖Info
 
-1.
+1. We can use a binary tree to represent a mathematical expression, which traversal method should we use to evaluate the expression? Why can’t we use the others?
 > 
 
 
-2. 
+2. If you assume a sorted binary tree (Such as the one shown in the figure), what is the time-complexity of finding a node with a given value?
 > 
 
-3. 
+3. We can also use binary trees to build N-ary trees, how would you tackle this?
 > 
 
 ## 🔗Links
