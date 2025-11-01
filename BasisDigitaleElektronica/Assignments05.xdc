@@ -23,8 +23,6 @@ set_property -dict { PACKAGE_PIN T14   IOSTANDARD LVCMOS33 } [get_ports { Anodes
 set_property -dict { PACKAGE_PIN K2    IOSTANDARD LVCMOS33 } [get_ports { Anodes[1] }];
 set_property -dict { PACKAGE_PIN U13   IOSTANDARD LVCMOS33 } [get_ports { Anodes[0] }];
 
-# Clock Pin
-set_property -dict { PACKAGE_PIN E3    IOSTANDARD LVCMOS33 } [get_ports { Clk }];
-
-# Clock Definition 100 MHz
+# Clock (100 MHz)
+set_property -dict { PACKAGE_PIN E3 IOSTANDARD LVCMOS33 } [get_ports { Clk }];
 create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports { Clk }];
