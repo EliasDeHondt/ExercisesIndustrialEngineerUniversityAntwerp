@@ -1,0 +1,64 @@
+' @author EliasDH Team
+' @see https://eliasdh.com
+' @since 01/01/2025
+
+@startuml Observer_Auction
+!define RECTANGLE class
+!define INTERFACE interface
+
+skinparam classAttributeIconSize 0
+
+title Class Diagram: Observer Auction Platform
+
+interface Observer {
+    + update(event: String, payload: Object): void
+}
+
+interface Subject {
+    + addObserver(o: Observer): void
+    + removeObserver(o: Observer): void
+    + notifyObservers(event: String, payload: Object): void
+}
+
+class Auction {
+    - observers: Set<Observer>
+    - highest: Bid
+    + addObserver(o: Observer): void
+    + removeObserver(o: Observer): void
+    + notifyObservers(event: String, payload: Object): void
+    + place(bid: Bid): void
+    + highest(): Bid
+}
+
+class MaxBidTracker {
+    - max: int
+    + update(event: String, payload: Object): void
+    + getMax(): int
+}
+
+class ConsoleAnnouncer {
+    + update(event: String, payload: Object): void
+}
+
+class Bid {
+    - bidder: String
+    - amount: int
+    + Bid(bidder: String, amount: int)
+    + getBidder(): String
+    + getAmount(): int
+}
+
+Auction ..|> Subject : implements
+MaxBidTracker ..|> Observer : implements
+ConsoleAnnouncer ..|> Observer : implements
+Auction o-- Observer : aggregates
+Auction --> Bid : uses
+Auction ..> Bid : updates highest
+
+note top of Auction
+    Notifies on every "bidPlaced"
+    event with Bid as payload.
+    (1 Auction to 0..* Observers)
+end note
+
+@enduml

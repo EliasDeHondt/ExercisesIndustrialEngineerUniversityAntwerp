@@ -1,0 +1,60 @@
+' @author EliasDH Team
+' @see https://eliasdh.com
+' @since 01/01/2025
+
+@startuml Inventory_Singleton
+!define RECTANGLE class
+!define ABSTRACT abstract
+
+skinparam classAttributeIconSize 0
+
+title Class Diagram: Inventory System (Singleton + PropertyChangeSupport)
+
+abstract class Database {
+    - pcs: PropertyChangeSupport
+    + addListener(l: PropertyChangeListener): void
+    + removeListener(l: PropertyChangeListener): void
+    # notifyObservers(event: String, oldV: Object, newV: Object): void
+}
+
+class InventoryDB {
+    - INSTANCE: InventoryDB (volatile)
+    - stock: Map<String, Integer>
+    - InventoryDB() (private)
+    + getInstance(): InventoryDB
+    + setStock(sku: String, newQty: int): void
+    + getStock(sku: String): int
+}
+
+interface PropertyChangeListener {
+    + propertyChange(evt: PropertyChangeEvent): void
+}
+
+class AuditLogger {
+    + propertyChange(evt: PropertyChangeEvent): void
+}
+
+class ReorderService {
+    - threshold: int = 3
+    + propertyChange(evt: PropertyChangeEvent): void
+}
+
+class Controller {
+    - db: InventoryDB
+    + Controller(db: InventoryDB)
+    + adjust(sku: String, newQty: int): void
+}
+
+InventoryDB --|> Database : extends
+AuditLogger ..|> PropertyChangeListener : implements
+ReorderService ..|> PropertyChangeListener : implements
+Controller --> InventoryDB : depends on
+InventoryDB --> PropertyChangeListener : notifies (0..*)
+
+note right of InventoryDB
+    Thread-safe Singleton (double-checked locking)
+    + ConcurrentHashMap for stock.
+    Fires "stockChanged" events.
+end note
+
+@enduml

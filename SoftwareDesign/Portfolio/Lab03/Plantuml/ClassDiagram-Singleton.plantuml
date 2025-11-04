@@ -1,0 +1,42 @@
+' @author EliasDH Team
+' @see https://eliasdh.com
+' @since 01/01/2025
+
+@startuml Singleton_Ticketing
+!define RECTANGLE class
+
+skinparam classAttributeIconSize 0
+
+title Class Diagram: Singleton Ticketing Service
+
+class IdGenerator {
+    - INSTANCE: IdGenerator
+    - counter: long
+    - IdGenerator() (private)
+    + getInstance(): IdGenerator
+    + nextId(): long
+}
+
+class TicketService {
+    + create(title: String): Ticket
+}
+
+class Ticket {
+    - id: long
+    - title: String
+    + Ticket(id: long, title: String)
+    + getId(): long
+    + getTitle(): String
+    + toString(): String
+}
+
+IdGenerator ..> TicketService : uses getInstance()
+TicketService ..> Ticket : creates
+TicketService ..> IdGenerator : depends on
+
+note right of IdGenerator
+    Singleton met eager initialization
+    voor thread-safe ID-generatie.
+end note
+
+@enduml
