@@ -2,22 +2,22 @@
 // @see https://eliasdh.com
 // @since 01/01/2025
 
-package SoftwareDesign.Portfolio.Lab04.Code.Plants;
-import SoftwareDesign.Portfolio.Lab04.Code.Plant;
+package SoftwareDesign.Portfolio.Lab04.Lab04a.Code.Plants;
+import SoftwareDesign.Portfolio.Lab04.Lab04a.Code.Plant;
 
-public class Maple implements Plant {
+public class Pine implements Plant {
     @Override
     public String commonName() {
-        return "Maple";
+        return "Pine";
     }
 
     @Override
     public double spacingMeters() {
-        return 3.0;
+        return 2.5;
     }
 
     @Override
     public String soilPreference() {
-        return "loam";
+        return "sandy";
     }
 }

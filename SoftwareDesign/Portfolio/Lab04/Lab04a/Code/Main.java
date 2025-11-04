@@ -2,8 +2,8 @@
 // @see https://eliasdh.com
 // @since 01/01/2025
 
-package SoftwareDesign.Portfolio.Lab04.Code;
-import SoftwareDesign.Portfolio.Lab04.Code.Planners.*;
+package SoftwareDesign.Portfolio.Lab04.Lab04a.Code;
+import SoftwareDesign.Portfolio.Lab04.Lab04a.Code.Planners.*;
 
 public class Main {
     public static void main(String[] args) {
