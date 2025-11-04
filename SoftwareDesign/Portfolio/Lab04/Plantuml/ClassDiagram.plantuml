@@ -1,0 +1,145 @@
+' @author EliasDH Team
+' @see https://eliasdh.com
+' @since 01/01/2025
+
+@startuml ReforestationPlanner_FactoryMethod
+!theme plain
+
+title Reforestation Planner - Factory Method Pattern Class Diagram
+
+interface Plant {
+    + {abstract} commonName(): String
+    + {abstract} spacingMeters(): double
+    + {abstract} soilPreference(): String
+    + info(): String <<default>>
+}
+
+abstract class ReforestationPlanner {
+    + {abstract} createPlant(): Plant
+    + plan(hectares: double, soil: String): PlantingPlan
+    # {private} soilAdjustment(soil: String): double
+}
+
+class PlantingPlan {
+    - plant: Plant
+    - samplings: int
+    - spacingMeters: double
+    - note: String
+    + getPlant(): Plant
+    + setPlant(plant: Plant)
+    + getSamplings(): int
+    + setSamplings(samplings: int)
+    + getSpacingMeters(): double
+    + setSpacingMeters(spacingMeters: double)
+    + getNote(): String
+    + setNote(note: String)
+}
+
+class Pine {
+    + commonName(): String
+    + spacingMeters(): double
+    + soilPreference(): String
+}
+
+class Beech {
+    + commonName(): String
+    + spacingMeters(): double
+    + soilPreference(): String
+}
+
+class Willow {
+    + commonName(): String
+    + spacingMeters(): double
+    + soilPreference(): String
+}
+
+class Alder {
+    + commonName(): String
+    + spacingMeters(): double
+    + soilPreference(): String
+}
+
+class Oak {
+    + commonName(): String
+    + spacingMeters(): double
+    + soilPreference(): String
+}
+
+class Spruce {
+    + commonName(): String
+    + spacingMeters(): double
+    + soilPreference(): String
+}
+
+class Maple {
+    + commonName(): String
+    + spacingMeters(): double
+    + soilPreference(): String
+}
+
+class PinePlanner {
+    + createPlant(): Plant
+}
+
+class BeechPlanner {
+    + createPlant(): Plant
+}
+
+class WillowPlanner {
+    + createPlant(): Plant
+}
+
+class AlderPlanner {
+    + createPlant(): Plant
+}
+
+class OakPlanner {
+    + createPlant(): Plant
+}
+
+class SprucePlanner {
+    + createPlant(): Plant
+}
+
+class MaplePlanner {
+    + createPlant(): Plant
+}
+
+class Main {
+    + main(args: String[]): void
+}
+
+Plant <|.. Pine : implements
+Plant <|.. Beech : implements
+Plant <|.. Willow : implements
+Plant <|.. Alder : implements
+Plant <|.. Oak : implements
+Plant <|.. Spruce : implements
+Plant <|.. Maple : implements
+
+ReforestationPlanner <|-- PinePlanner : extends
+ReforestationPlanner <|-- BeechPlanner : extends
+ReforestationPlanner <|-- WillowPlanner : extends
+ReforestationPlanner <|-- AlderPlanner : extends
+ReforestationPlanner <|-- OakPlanner : extends
+ReforestationPlanner <|-- SprucePlanner : extends
+ReforestationPlanner <|-- MaplePlanner : extends
+
+PinePlanner ..> Pine : creates
+BeechPlanner ..> Beech : creates
+WillowPlanner ..> Willow : creates
+AlderPlanner ..> Alder : creates
+OakPlanner ..> Oak : creates
+SprucePlanner ..> Spruce : creates
+MaplePlanner ..> Maple : creates
+
+ReforestationPlanner ..> Plant : uses (factory method)
+ReforestationPlanner ..> PlantingPlan : returns
+PlantingPlan *-- Plant : composition
+Main ..> ReforestationPlanner : uses
+
+note top of ReforestationPlanner : Abstract Creator\nImplements Factory Method Pattern
+note top of Plant : Product Interface
+note bottom of PlantingPlan : Result/Plan Object
+
+@enduml
