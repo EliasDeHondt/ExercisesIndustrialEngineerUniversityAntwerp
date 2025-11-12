@@ -25,5 +25,5 @@ set_property -dict { PACKAGE_PIN B11 IOSTANDARD LVCMOS33 } [get_ports { HSync }]
 set_property -dict { PACKAGE_PIN B12 IOSTANDARD LVCMOS33 } [get_ports { VSync }];
 
 # Clock (100 MHz)
-set_property -dict { PACKAGE_PIN E3 IOSTANDARD LVCMOS33 } [get_ports { Clk }];
-create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports { Clk }];
+set_property -dict { PACKAGE_PIN E3 IOSTANDARD LVCMOS33 } [get_ports { Clk100MHz }];
+create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports { Clk100MHz }];
