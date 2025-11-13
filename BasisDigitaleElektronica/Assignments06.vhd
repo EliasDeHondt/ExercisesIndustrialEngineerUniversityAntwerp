@@ -22,7 +22,7 @@ architecture Behavioral of Main is
     signal HCounter : integer := 1;         -- Horizontal pixel counter
     signal VCounter : integer := 1;         -- Vertical line counter
     signal Clk25MHz : std_logic := '0';     -- Derived 25 MHz clock for VGA timing
-    signal Counter   : integer := 0;         -- Frequency divider counter
+    signal Counter   : integer := 0;        -- Frequency divider counter
 begin
     VGA_G <= "0000"; -- No Green
     VGA_B <= "0000"; -- No Blue
@@ -56,12 +56,12 @@ begin
     end process;
 
     VGA_SYNC: process (HCounter, VCounter) is begin
-        if VCounter > 523 and VCounter <= 525 then -- VSync pulse
+        if VCounter > 523 and VCounter <= 525 then      -- VSync pulse
             VSync <= '0';
         else
             VSync <= '1';
         end if;
-        if HCounter > 704 and HCounter <= 800 then -- HSync pulse
+        if HCounter > 704 and HCounter <= 800 then      -- HSync pulse
             HSync <= '0';
         else
             HSync <= '1';
