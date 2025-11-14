@@ -62,7 +62,7 @@ architecture Behavioral of Test is
 begin
     Testing: Main port map(Count => Counter, SevenSegm => SevenSegm);
 
-    p_Stimuli: process -- No sensitivity list! => "wait" is required!
+    P_STIMULI: process -- No sensitivity list! => "wait" is required!
         begin
             wait for 100 ns;
             if Counter < 7 then
@@ -70,6 +70,6 @@ begin
             else
                 Counter <= (others => '0');
             end if;
-    end process p_Stimuli;
+    end process P_STIMULI;
 end Behavioral;
 -------------------- Test --------------------

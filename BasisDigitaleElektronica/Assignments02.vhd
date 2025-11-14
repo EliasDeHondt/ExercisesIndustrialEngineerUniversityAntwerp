@@ -23,11 +23,11 @@ architecture Behavioral of Main is
     signal Anodes_int: std_logic_vector(7 downto 0); -- Internal signal
     signal Leds_int: std_logic_vector(15 downto 0); -- Internal signal
 begin
-    Snake : entity work.Snake(Behavioral) port map ( -- Component Instance
+    Snake: entity work.Snake(Behavioral) port map ( -- Component Instance
             CountSnake => CountMain(2 downto 0), -- Input Main = Input Snake (3 LSB of CountMain)
             SevenSegm => Cathodes_snake -- Output Snake = Output Main (Cathodes)
         );
-    process(Mode, CountMain, Cathodes_snake) begin -- Sensitivity list
+    MODE_SELECT: process(Mode, CountMain, Cathodes_snake) begin -- Sensitivity list
         case Mode is
             when "00" => -- 0
                 if CountMain(3) = '1' then -- CountMain >= "1000" (8)
@@ -116,7 +116,7 @@ begin
             Anodes_int <= (others => '1'); -- Default off (Display)
             Leds_int <= (others => '0'); -- Default off (LEDs)
         end case;
-    end process;
+    end process MODE_SELECT;
     Cathodes <= Cathodes_int; -- Output assignment
     Anodes <= Anodes_int; -- Output assignment
     Leds <= Leds_int; -- Output assignment
@@ -137,7 +137,7 @@ end Snake;
 
 architecture Behavioral of Snake is
 begin
-    process(CountSnake) begin
+    SET_SNEGM: process(CountSnake) begin
         case CountSnake is
             when "000" => -- 0
                 SevenSegm <= "0011111"; -- a,b
@@ -158,7 +158,7 @@ begin
             when others =>
                 SevenSegm <= (others => '1'); -- Turn off all segments
         end case;
-    end process;
+    end process SET_SNEGM;
 end Behavioral;
 -------------------- Snake -------------------
 
@@ -189,8 +189,7 @@ architecture Behavioral of TestMain is
 begin
     Testing: Main port map(CountMain => CountMain, Mode => Mode, Cathodes => Cathodes, Anodes => Anodes, Leds => Leds);
 
-    p_Stimuli: process
-    begin
+    P_STIMULI: process begin
         wait for 100 ns;
         for m in 0 to 3 loop
             Mode <= std_logic_vector(to_unsigned(m, 2));
@@ -200,6 +199,6 @@ begin
                 wait for 100 ns; -- wacht zodat Main de nieuwe CountMain ziet
             end loop;
         end loop;
-    end process p_Stimuli;
+    end process P_STIMULI;
 end Behavioral;
 -------------------- Test --------------------

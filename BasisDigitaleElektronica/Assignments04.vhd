@@ -25,7 +25,7 @@ architecture Behavioral of Main is
     signal HT: unsigned(3 downto 0);
     signal TT: unsigned(3 downto 0);
     signal EH: unsigned(3 downto 0);
-    signal Error: std_logic;
+    signal Error: std_logic; -- Error flag for invalid operations
 
     signal A_resized: unsigned(13 downto 0);
     signal B_resized: unsigned(13 downto 0);
@@ -45,7 +45,7 @@ begin
     A_resized <= resize(A, 14);
     B_resized <= resize(B, 14);
     
-    process (Mode, A, B, A_resized, B_resized, Display, DT, HT, TT, EH, Error) begin
+    MAIN_PROCESS: process (Mode, A, B, A_resized, B_resized, Display, DT, HT, TT, EH, Error) begin
         Error <= '0';
         case Mode is
                 when "00" => -- A + B
@@ -86,7 +86,7 @@ begin
         if Error = '1' then -- Show error
             BCD <= "1110";
         end if;
-    end process;
+    end process MAIN_PROCESS;
 end Behavioral;
 -------------------- Main --------------------
 

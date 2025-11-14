@@ -21,7 +21,7 @@ architecture Behavioral of Main is
     signal A_unsigned, B_unsigned : unsigned(3 downto 0); -- Positief binaire (only positive)
     signal result_signed : signed(4 downto 0);
 begin
-    process(Dips, A, B, A_unsigned, B_unsigned, A_signed, B_signed, result_signed) begin
+    MAIN_PROCESS: process(Dips, A, B, A_unsigned, B_unsigned, A_signed, B_signed, result_signed) begin
         A_unsigned <= unsigned(A); -- Convert std_logic_vector to unsigned
         B_unsigned <= unsigned(B); -- Convert std_logic_vector to unsigned
         A_signed <= signed(A); -- Convert std_logic_vector to signed
@@ -37,6 +37,6 @@ begin
         else
             Som <= '0' & std_logic_vector(result_signed(3 downto 0)); -- And '0' to avoid overflow
         end if;
-    end process;
+    end process MAIN_PROCESS;
 end Behavioral;
 -------------------- Main --------------------

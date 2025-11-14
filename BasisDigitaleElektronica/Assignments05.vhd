@@ -21,18 +21,18 @@ architecture Behavioral of Main is
     signal display_sel: unsigned(2 downto 0) := (others => '0');
     signal segments: std_logic_vector(7 downto 0);
 begin
-    process(Clk) begin
+    CLOCK_DIVIDER: process(Clk) begin
         if rising_edge(Clk) then -- Triggers only on rising edge of Clk (100 MHz system clock)
-            if clk_divider = 6249 then
-                clk_divider <= (others => '0');
+            if clk_divider = 6249 then -- Divide by 6250 to get 8 kHz
+                clk_divider <= (others => '0'); -- Reset counter
                 clk_8khz <= not clk_8khz;
             else
                 clk_divider <= clk_divider + 1;
             end if;
         end if;
-    end process;
+    end process CLOCK_DIVIDER;
 
-    process(clk_8khz) begin
+    DISPLAY_COUNTER: process(clk_8khz) begin
         if rising_edge(clk_8khz) then -- Triggers only on rising edge of Clk (8 kHz clock)
             if display_sel = 7 then
                 display_sel <= (others => '0');
@@ -40,9 +40,9 @@ begin
                 display_sel <= display_sel + 1;
             end if;
         end if;
-    end process;
+    end process DISPLAY_COUNTER;
 
-    process(display_sel) begin
+    DISPLAY: process(display_sel) begin
         case display_sel is
             when "000" => 
                 segments <= "10011111"; -- 1
@@ -72,7 +72,7 @@ begin
                 segments <= (others => '1');
                 Anodes <= (others => '1');
         end case;
-    end process;
+    end process DISPLAY;
     Cathodes <= segments;
 end Behavioral;
 -------------------- Main --------------------

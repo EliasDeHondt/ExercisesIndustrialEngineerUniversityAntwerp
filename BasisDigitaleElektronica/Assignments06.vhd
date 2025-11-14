@@ -4,8 +4,8 @@
 
 -------------------- Main --------------------
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.numeric_std.ALL;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
 entity Main is
     Port (
@@ -19,10 +19,10 @@ entity Main is
 end Main;
 
 architecture Behavioral of Main is
-    signal HCounter : integer := 1;         -- Horizontal pixel counter
-    signal VCounter : integer := 1;         -- Vertical line counter
-    signal Clk25MHz : std_logic := '0';     -- Derived 25 MHz clock for VGA timing
-    signal Counter   : integer := 0;        -- Frequency divider counter
+    signal HCounter : integer := 1;                 -- Horizontal pixel counter
+    signal VCounter : integer := 1;                 -- Vertical line counter
+    signal Clk25MHz : std_logic := '0';             -- Derived 25 MHz clock for VGA timing
+    signal Counter  : integer := 0;                 -- Clock divider counter
 begin
     VGA_G <= "0000"; -- No Green
     VGA_B <= "0000"; -- No Blue
@@ -39,7 +39,7 @@ begin
                 Counter <= 0;
             end if;
         end if;
-    end process;
+    end process CLOCK_DIVIDER;
 
     VGA_TIMING: process (Clk25MHz) is begin
         if rising_edge(Clk25MHz) then
@@ -53,7 +53,7 @@ begin
             else HCounter <= HCounter + 1;              -- Next pixel
             end if;
         end if;
-    end process;
+    end process VGA_TIMING;
 
     VGA_SYNC: process (HCounter, VCounter) is begin
         if VCounter > 523 and VCounter <= 525 then      -- VSync pulse
@@ -71,6 +71,6 @@ begin
         else
             VGA_R <= "0000"; -- No Red
         end if;
-    end process;
+    end process VGA_SYNC;
 end Behavioral;
 -------------------- Main --------------------
