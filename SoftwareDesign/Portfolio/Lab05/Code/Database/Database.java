@@ -1,0 +1,33 @@
+// @author EliasDH Team
+// @see https://eliasdh.com
+// @since 01/01/2025
+
+package SoftwareDesign.Portfolio.Lab05.Code.Database;
+import SoftwareDesign.Portfolio.Lab05.Code.Employee.Employee;
+import SoftwareDesign.Portfolio.Lab05.Code.Register_entry.RegisterEntry;
+import java.beans.PropertyChangeListener;
+import java.util.List;
+
+public interface Database {
+    List<Employee> getEmployees();
+
+    List<RegisterEntry> getEntriesFor(Employee e);
+
+    void addEmployee(Employee e);
+
+    void updateEmployee(Employee updated);
+
+    void removeEmployee(Employee e);
+
+    RegisterEntry checkIn(Employee e);
+
+    RegisterEntry checkOut(Employee e);
+
+    void updateEntry(RegisterEntry updated);
+
+    void removeEntry(String entryId);
+
+    void addPropertyChangeListener(PropertyChangeListener l);
+
+    void removePropertyChangeListener(PropertyChangeListener l);
+}
