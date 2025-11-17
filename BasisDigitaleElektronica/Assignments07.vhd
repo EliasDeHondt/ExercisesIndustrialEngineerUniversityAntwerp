@@ -171,6 +171,10 @@ begin
                 VGA_G <= COLOR_ELIASDH_G(7 downto 4);
                 VGA_B <= COLOR_ELIASDH_B(7 downto 4);
             end if;
+        else
+            VGA_R <= "0000";
+            VGA_G <= "0000";
+            VGA_B <= "0000";
         end if;
     end process VGA_SYNC;
 
