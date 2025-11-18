@@ -2,12 +2,11 @@
 -- @see https://eliasdh.com
 -- @since 01/01/2025
 
--------------------- Main --------------------
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity Main is
+entity ComponentMain is
     Port (
         Clk100MHz: in std_logic := '0';
         VGA_R: out std_logic_vector (3 downto 0);
@@ -19,9 +18,9 @@ entity Main is
         Anodes: out std_logic_vector(7 downto 0);
         Leds: out std_logic_vector(15 downto 0)
     );
-end Main;
+end ComponentMain;
 
-architecture Behavioral of Main is
+architecture Behavioral of ComponentMain is
     type icon is array (0 to 7) of std_logic_vector(15 downto 0); -- 8 rows of 16 pixels (type definition)
     
     constant UM1 : icon := ( -- UM1 (UFO Mothership 1)
@@ -116,52 +115,71 @@ architecture Behavioral of Main is
     constant COLOR_ELIASDH_G: std_logic_vector(7 downto 0) := x"94";
     constant COLOR_ELIASDH_B: std_logic_vector(7 downto 0) := x"F0";
 
-    signal HCounter: integer := 1;                 -- Horizontal pixel counter
-    signal VCounter: integer := 1;                 -- Vertical line counter
-    signal Clk25MHz: std_logic := '0';             -- Derived 25 MHz clock for VGA timing
-    signal Counter: integer := 0;                  -- Clock divider counter
+    signal HCounter: integer range 0 to 799 := 0;   -- Horizontal pixel counter (0-based)
+    signal VCounter: integer range 0 to 524 := 0;   -- Vertical line counter (0-based)
+    signal Clk25MHz: std_logic := '0';              -- Derived 25 MHz clock for VGA timing
+    signal ClkDivider: integer range 0 to 1 := 0;   -- Simplified divider counter for 50% duty
+
+
+    signal MainSpeedUp: std_logic; -- Signal from Leds component to indicate when to speed up aliens
+    component ComponentLeds -- LED control component
+        port (
+            Clk100MHz: in std_logic;
+            SpeedUp: out std_logic;
+            Leds: out std_logic_vector(15 downto 0)
+        );
+    end component;
+
+    signal MainLives: integer range 0 to 8;        -- Example lives value for 7-seg display
+    signal MainScore: integer range 0 to 9999;     -- Example score value for 7-seg display
+    component Component7Seg -- 7-segment display component
+        port (
+            Clk100MHz: in std_logic;
+            Cathodes: out std_logic_vector(7 downto 0);
+            Anodes: out std_logic_vector(7 downto 0);
+            Lives: in integer range 0 to 8;
+            Score: in integer range 0 to 9999
+        );
+    end component;
 begin
-    CLOCK_DIVIDER: process (Clk100MHz) is begin -- Generate 25 MHz clock from 100 MHz input 1/4 frequency
+    CLOCK_DIVIDER: process (Clk100MHz) is begin -- Generate 25 MHz clock from 100 MHz (divide by 4, better duty)
         if rising_edge(Clk100MHz) then
-            if Counter < 1 then
-                Clk25MHz <= '0';
-                Counter <= Counter + 1;
-            elsif Counter <= 2 then
-                Clk25MHz <= '1';
-                Counter <= Counter + 1;
-            else
-                Clk25MHz <= '0';
-                Counter <= 0;
+            ClkDivider <= ClkDivider + 1;
+            if ClkDivider = 1 then
+                ClkDivider <= 0;
+                Clk25MHz <= not Clk25MHz;  -- Toggle every 2 cycles for ~50% duty
             end if;
         end if;
     end process CLOCK_DIVIDER;
 
     VGA_TIMING: process (Clk25MHz) is begin
         if rising_edge(Clk25MHz) then
-            if HCounter = 800 then                      -- End of line
-                HCounter <= 1;
-                if VCounter = 525 then                  -- End of frame
-                    VCounter <= 1;
+            if HCounter = 799 then                      -- End of line
+                HCounter <= 0;
+                if VCounter = 524 then                  -- End of frame
+                    VCounter <= 0;
                 else 
                     VCounter <= VCounter + 1;           -- Next line
                 end if;
-            else HCounter <= HCounter + 1;              -- Next pixel
+            else 
+                HCounter <= HCounter + 1;              -- Next pixel
             end if;
         end if;
     end process VGA_TIMING;
 
     VGA_SYNC: process (HCounter, VCounter) is begin     -- Standard 640x480@60Hz sync pulses
-        if VCounter > 523 and VCounter <= 525 then      -- VSync pulse
+    if VCounter >= 490 and VCounter <= 491 then         -- VSync pulse
             VSync <= '0';
         else
             VSync <= '1';
         end if;
-        if HCounter > 704 and HCounter <= 800 then      -- HSync pulse
+        if HCounter >= 656 and HCounter <= 751 then     -- HSync pulse
             HSync <= '0';
         else
             HSync <= '1';
         end if;
-        if HCounter < 640 and VCounter < 480 then -- Visible area
+
+        if HCounter <= 639 and VCounter <= 479 then -- Visible area
             if HCounter = 0 or HCounter = 639 or VCounter = 0 or VCounter = 479 then -- Check for border pixels
                 VGA_R <= "1111";
                 VGA_G <= "0000";
@@ -178,9 +196,14 @@ begin
         end if;
     end process VGA_SYNC;
 
+    -- Temp values for testing
+    MainLives <= 5;
+    MainScore <= 1234;
+
+    COMPONENTLEDS_INST: ComponentLeds port map (Clk100MHz => Clk100MHz, SpeedUp => MainSpeedUp, Leds => Leds); -- LED component instantiation
+    COMPONENT7SEG_INST: Component7Seg port map (Clk100MHz => Clk100MHz, Cathodes => Cathodes, Anodes => Anodes, Lives => MainLives, Score => MainScore); -- 7-segment display component instantiation
+
     -- Temporary outputs
     Cathodes <= (others => '1');
     Anodes <= (others => '1');
-    Leds <= (others => '0');
 end Behavioral;
--------------------- Main --------------------
