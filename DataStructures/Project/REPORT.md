@@ -5,16 +5,35 @@
 
 1. [📘Table of Contents](#📘table-of-contents)
 2. [🖖Info](#🖖info)
+    1. [🤜Project Overview](#🤜project-overview)
+    2. [🤜Build Instructions](#🤜build-instructions)
+    3. [🤜Running the Program](#🤜running-the-program)
 3. [🔗Links](#🔗links)
 
 ---
 
 ## 🖖Info
 
-### Project Overview
-This project implements a **SparseMatrix** data structure using C++17 templates. A sparse matrix is a matrix that contains mostly zero elements, making it inefficient to store all values in a traditional 2D array. Instead, this implementation uses the **Coordinate (COO) format**, which only stores non-zero elements along with their row and column indices. This approach dramatically reduces memory consumption, especially for matrices with high sparsity (many zeros). For example, a 100×100 matrix that is 99% sparse only stores about 100 non-zero elements instead of 10,000, resulting in 99% memory savings.
+### 🤜Project Overview
+What a Sparse Matrix Is Used For (and Why It Exists)
+A sparse matrix is used in situations where you have a huge matrix, but most of its values are zero. Examples:
 
-### Build Instructions
+- Graphs and Networks:
+    - Social networks
+    - Road networks
+    - Computer networks 
+> These can be represented as adjacency matrices, but 99.999% of connections don’t exist → zeroes.
+
+- Machine Learning & AI
+    - Natural Language Processing (NLP)
+    - Recommendation systems
+    - Feature vectors that contain mostly zero data
+> For example: a document-word matrix with 1 million possible words → most documents use only a few hundred words → the matrix is extremely sparse.
+
+- COO Format
+    - (row, col, value) tuples
+
+### 🤜Build Instructions
 
 To build the project, follow these steps:
 
@@ -25,7 +44,7 @@ cmake ..
 cmake --build .
 ```
 
-### Running the Program
+### 🤜Running the Program
 
 **Run the demo program** (visualization of sparse matrices):
 ```bash
