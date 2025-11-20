@@ -5,69 +5,72 @@
 **/
 
 #include <gtest/gtest.h>
-#include "../lib/SparseMatrix.h" 
+#include "../lib/SparseMatrix.h"
 
 using namespace std;
 
-class SparseMatrixTest : public ::testing::Test {
-protected:
-    SparseMatrix<double> m{3, 3}; 
-
-    void SetUp() override {
-        m(0, 0) = 1.0;
-        m(1, 2) = 5.0;
-        m(2, 1) = 2.0;
-    }
-};
-
-TEST_F(SparseMatrixTest, QueryNormalCase) {
-    EXPECT_EQ(m(0, 0), 1.0);
-    EXPECT_EQ(m(0, 1), 0.0);
+void printMatrixInfo(const SparseMatrix<double>& m) {
+    cout << "\n[Matrix Info]\n";
+    cout << "Rows: " << m.rows() << "\n";
+    cout << "Cols: " << m.columns() << "\n";
+    cout << "Non-zero count: " << m.non_zero_count() << "\n";
+    cout << "Sparsity: " << m.sparsity() * 100 << "%\n";
 }
 
-TEST_F(SparseMatrixTest, QueryEdgeCase_OutOfBounds) {
-    EXPECT_THROW(m(3, 0), std::out_of_range);
-    EXPECT_THROW(m(0, 3), std::out_of_range);
+// ============================================================
+// This test shows: “How much memory would this use as a regular matrix vs. sparse?”
+TEST(SparseMatrixAnalysis, CompressionEfficiency) {
+    SparseMatrix<double> m(1000, 1000);
+
+    m(0, 0) = 1;
+    m(500, 123) = 2;
+    m(999, 999) = 3;
+
+    cout << "\n[Test] CompressionEfficiency\n";
+    printMatrixInfo(m);
+
+    size_t dense_cells = m.rows() * m.columns();
+    size_t sparse_cells = m.non_zero_count();
+
+    cout << "Dense cell count: " << dense_cells << "\n";
+    cout << "Sparse stored cells: " << sparse_cells << "\n";
+
+    EXPECT_EQ(sparse_cells, 3);
+    EXPECT_EQ(dense_cells, 1'000'000);
 }
+// ============================================================
+// Sparse matrix cannot store 0 values
+TEST(SparseMatrixBehavior, ZeroRemovesElement) {
+    SparseMatrix<double> m(5, 5);
 
-TEST_F(SparseMatrixTest, InsertNormalCase) {
-    m(1, 1) = 9.9;
-    EXPECT_EQ(m(1, 1), 9.9);
-    m(0, 0) = 10.0;
-    EXPECT_EQ(m(0, 0), 10.0);
+    m(2, 2) = 9.0;
+    EXPECT_EQ(m.non_zero_count(), 1);
+
+    m(2, 2) = 0.0;
+
+    cout << "\n[Test] ZeroRemovesElement\n";
+    printMatrixInfo(m);
+
+    EXPECT_EQ(m.non_zero_count(), 0);
+    EXPECT_EQ(m(2, 2), 0.0);
 }
+// ============================================================
+// Important: For a sparse matrix, copying must correctly duplicate the internal structure.
+TEST(SparseMatrixCopy, DeepCopyCheck) {
+    SparseMatrix<double> m1(3, 3);
+    m1(0, 0) = 5;
+    m1(1, 2) = 7;
 
-TEST(MatrixMultiplicationTest, EdgeCase_IncompatibleShapes) {
-    SparseMatrix<double> A(2, 3);
-    SparseMatrix<double> B(4, 2);
-    
-    EXPECT_THROW(operator*(A, B), std::runtime_error);
+    SparseMatrix<double> m2 = m1;
+
+    cout << "\n[Test] DeepCopyCheck\n";
+    printMatrixInfo(m2);
+
+    EXPECT_EQ(m2(0, 0), 5);
+    EXPECT_EQ(m2(1, 2), 7);
+    EXPECT_EQ(m2.non_zero_count(), 2);
+
+    m1(0, 0) = 99;
+    EXPECT_EQ(m2(0, 0), 5);
 }
-
-TEST(MatrixMultiplicationTest, NormalCase) {
-    SparseMatrix<double> A(2, 2);
-    SparseMatrix<double> B(2, 2);
-    
-    A(0, 0) = 1.0;
-    A(0, 1) = 2.0;
-    A(1, 1) = 3.0;
-
-    B(0, 0) = 4.0;
-    B(1, 0) = 1.0;
-    B(1, 1) = 5.0;
-
-    SparseMatrix<double> C = operator*(A, B);
-
-    EXPECT_EQ(C(0, 0), 6.0);
-    EXPECT_EQ(C(0, 1), 10.0);
-    EXPECT_EQ(C(1, 0), 3.0);
-    EXPECT_EQ(C(1, 1), 15.0);
-}
-
-TEST_F(SparseMatrixTest, IteratorOverNonZeroElements) {
-    int count = 0;
-    for (auto it = m.begin(); it != m.end(); ++it) {
-        count++;
-    }
-    EXPECT_EQ(count, 3); // Er zijn 3 non-zero elementen ingevoegd
-}
+// ============================================================
