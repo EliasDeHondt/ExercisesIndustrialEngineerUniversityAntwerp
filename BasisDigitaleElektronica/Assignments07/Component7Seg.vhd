@@ -35,11 +35,11 @@ architecture Behavioral of Component7Seg is
 
     constant GSeg : std_logic_vector(7 downto 0) := "01000011";  -- G
     constant ASeg : std_logic_vector(7 downto 0) := "00010001";  -- A
-    constant MSeg : std_logic_vector(7 downto 0) := "00110111";  -- M
+    constant MSeg : std_logic_vector(7 downto 0) := "00010011";  -- M
     constant ESeg : std_logic_vector(7 downto 0) := "01100001";  -- E
     constant OSeg : std_logic_vector(7 downto 0) := "00000011";  -- O
     constant VSeg : std_logic_vector(7 downto 0) := "10000011";  -- V
-    constant RSeg : std_logic_vector(7 downto 0) := "00110001";  -- R
+    constant RSeg : std_logic_vector(7 downto 0) := "00010001";  -- R
 
     type PatternArray is array (0 to 7) of std_logic_vector(7 downto 0);
     signal DigitPatterns : PatternArray; -- Patterns for each of the 8 digits
@@ -73,23 +73,23 @@ begin
     process (Clk8khz) begin
         if rising_edge(Clk8khz) then
             if Lives = 0 then -- Game Over display
-                DigitPatterns(7) <= GSeg;
-                DigitPatterns(6) <= ASeg;
-                DigitPatterns(5) <= MSeg;
-                DigitPatterns(4) <= ESeg;
-                DigitPatterns(3) <= OSeg;
-                DigitPatterns(2) <= VSeg;
-                DigitPatterns(1) <= ESeg;
-                DigitPatterns(0) <= RSeg;
+                DigitPatterns(0) <= GSeg;
+                DigitPatterns(1) <= ASeg;
+                DigitPatterns(2) <= MSeg;
+                DigitPatterns(3) <= ESeg;
+                DigitPatterns(4) <= OSeg;
+                DigitPatterns(5) <= VSeg;
+                DigitPatterns(6) <= ESeg;
+                DigitPatterns(7) <= RSeg;
             else -- Normal display of Lives and Score
-                DigitPatterns(4) <= DIGITS(Score mod 10);
-                DigitPatterns(5) <= DIGITS((Score / 10) mod 10);
+                DigitPatterns(7) <= DIGITS(Score mod 10);
+                DigitPatterns(6) <= DIGITS((Score / 10) mod 10);
                 if Score < 10 then DigitPatterns(5) <= BLANK; end if;
 
-                DigitPatterns(6) <= DIGITS((Score / 100) mod 10);
+                DigitPatterns(5) <= DIGITS((Score / 100) mod 10);
                 if Score < 100 then DigitPatterns(6) <= BLANK; end if;
 
-                DigitPatterns(7) <= DIGITS(Score / 1000);
+                DigitPatterns(4) <= DIGITS(Score / 1000);
                 if Score < 1000 then DigitPatterns(7) <= BLANK; end if;
 
                 DigitPatterns(3) <= BLANK;
@@ -107,10 +107,10 @@ begin
             when "001" => Anodes <= "11111101"; Segments <= DigitPatterns(1); -- Blank
             when "010" => Anodes <= "11111011"; Segments <= DigitPatterns(2); -- Blank
             when "011" => Anodes <= "11110111"; Segments <= DigitPatterns(3); -- Blank
-            when "100" => Anodes <= "11101111"; Segments <= DigitPatterns(4); -- Score units
-            when "101" => Anodes <= "11011111"; Segments <= DigitPatterns(5); -- Score tens
-            when "110" => Anodes <= "10111111"; Segments <= DigitPatterns(6); -- Score hundreds
-            when "111" => Anodes <= "01111111"; Segments <= DigitPatterns(7); -- Score thousands
+            when "100" => Anodes <= "11101111"; Segments <= DigitPatterns(4); -- Score thousands
+            when "101" => Anodes <= "11011111"; Segments <= DigitPatterns(5); -- Score hundreds
+            when "110" => Anodes <= "10111111"; Segments <= DigitPatterns(6); -- Score tens
+            when "111" => Anodes <= "01111111"; Segments <= DigitPatterns(7); -- Score units
             when others => Anodes <= (others => '1'); Segments <= (others => '1');
         end case;
     end process;
