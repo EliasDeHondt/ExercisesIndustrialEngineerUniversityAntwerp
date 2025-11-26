@@ -13,6 +13,10 @@
 
 ## 🖖Introduction
 
+Verbinden met de Router
+Host windows “ipconfig” zoek ip van Router
+Verbinden “ssh root@192.168.1.1“
+
 ### 👉NAT Config
 
 ```cli
