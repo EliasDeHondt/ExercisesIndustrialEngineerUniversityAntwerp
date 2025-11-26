@@ -7,6 +7,8 @@
 2. [🖖Introduction](#🖖introduction)
     1. [👉NAT Config](#👉nat-config)
     2. [👉NAT Check](#👉nat-check)
+    3. [👉Firewall Config](#👉firewall-config)
+    4. [👉Firewall Check](#👉firewall-check)
 3. [🔗Links](#🔗links)
 
 ---
@@ -88,6 +90,30 @@ uci commit firewall
 ```cli
 ifstatus wan
 ```
+
+
+### 👉Firewall Config
+
+```cli
+
+
+iptables -L -v -n # Verify rules are in place
+```
+
+
+### 👉Firewall Check
+
+1. Explain the difference between inbound, outbound, and forwarded traffic. Include examples (firewall rules) from your setup.
+> 
+
+2. Why does blocking SSH to the router not affect SSH that is port forwarded to a LAN device?
+>
+
+3. What rule that you needed to configure for the objective was the easiest to verify? Which was the hardest? Why?
+>
+
+4. If this were a production environment, what additional firewall measures would you recommend?
+>
 
 ## 🔗Links
 - 👯 Web hosting company [EliasDH.com](https://eliasdh.com).
