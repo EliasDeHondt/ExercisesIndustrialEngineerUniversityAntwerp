@@ -91,29 +91,121 @@ uci commit firewall
 ifstatus wan
 ```
 
-
 ### 👉Firewall Config
 
 ```cli
+uci add firewall rule # Only LAN IP 192.168.201.90 is allowed to SSH to the router
+uci set firewall.@rule[-1].name='Allow_SSH_from_90'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].src_ip='192.168.201.90'
+uci set firewall.@rule[-1].dest_port='22'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].target='ACCEPT'
+uci add firewall rule
+uci set firewall.@rule[-1].name='Deny_SSH_others'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].dest_port='22'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].target='DROP'
+uci commit firewall
+/etc/init.d/firewall restart
 
+uci add firewall rule # Block ICMP on WAN
+uci set firewall.@rule[-1].name='Block_ICMP_WAN'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].proto='icmp'
+uci set firewall.@rule[-1].target='DROP'
+uci commit firewall
+/etc/init.d/firewall restart
 
-iptables -L -v -n # Verify rules are in place
+uci add firewall rule # Log ALL dropped WAN traffic
+uci set firewall.@rule[-1].name='Log_Dropped_WAN'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].proto='all'
+uci set firewall.@rule[-1].target='DROP'
+uci set firewall.@rule[-1].log='1'
+uci commit firewall
+/etc/init.d/firewall restart
+
+uci delete firewall.@rule[Expose_LuCI_WAN] # Restrict exposed LuCI on WAN to 143.129.40.0/24
+uci add firewall rule
+uci set firewall.@rule[-1].name='Allow_LuCI_From_UAntwerp'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].src_ip='143.129.40.0/24'
+uci set firewall.@rule[-1].dest_port='80'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].target='ACCEPT'
+uci add firewall rule
+uci set firewall.@rule[-1].name='Block_LuCI_Others'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].dest_port='80'
+uci set firewall.@rule[-1].proto='tcp'
+uci set firewall.@rule[-1].target='DROP'
+uci commit firewall
+/etc/init.d/firewall restart
+
+uci add firewall rule # Allow ICMP within LAN, but ICMP to router
+uci set firewall.@rule[-1].name='Allow_ICMP_LAN_internal'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].dest='lan'
+uci set firewall.@rule[-1].proto='icmp'
+uci set firewall.@rule[-1].target='ACCEPT'
+uci add firewall rule
+uci set firewall.@rule[-1].name='Block_ICMP_to_router'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].proto='icmp'
+uci set firewall.@rule[-1].target='DROP'
+uci commit firewall
+/etc/init.d/firewall restart
 ```
 
 
 ### 👉Firewall Check
 
 1. Explain the difference between inbound, outbound, and forwarded traffic. Include examples (firewall rules) from your setup.
-> 
+> Inbound traffic is traffic coming from an external network (e.g., WAN) to the router itself.
+> - Example: Someone on the internet trying to access your router.
+```cli
+uci add firewall rule
+uci set firewall.@rule[-1].name='Drop_Inbound_WAN'
+uci set firewall.@rule[-1].src='wan'
+uci set firewall.@rule[-1].target='DROP'
+uci commit firewall
+```
+
+> Outbound traffic is traffic sent by the router itself to another network.
+> - Example: The router contacting an NTP or DNS server.
+```cli
+uci add firewall rule
+uci set firewall.@rule[-1].name='Allow_Router_NTP'
+uci set firewall.@rule[-1].proto='udp'
+uci set firewall.@rule[-1].dest_port='123'
+uci set firewall.@rule[-1].target='ACCEPT'
+uci commit firewall
+```
+
+> Forwarded traffic is traffic that passes through the router, from one interface to another.
+> - Example: A LAN device accessing the internet through the router.
+```cli
+uci add firewall rule
+uci set firewall.@rule[-1].name='Allow_LAN_to_WAN'
+uci set firewall.@rule[-1].src='lan'
+uci set firewall.@rule[-1].dest='wan'
+uci set firewall.@rule[-1].target='ACCEPT'
+uci commit firewall
+```
 
 2. Why does blocking SSH to the router not affect SSH that is port forwarded to a LAN device?
->
+> Blocking SSH to the router does not affect SSH that is port forwarded to a LAN device because the firewall rules for the router itself and the port forwarding rules operate independently. When you block SSH to the router, you are preventing direct access to the router's own SSH service. However, port forwarding allows incoming SSH requests on a specific external port to be redirected to a different internal IP address and port on the LAN device. Therefore, as long as the port forwarding rule is in place, users can still access the LAN device via SSH without being affected by the router's SSH restrictions.
 
 3. What rule that you needed to configure for the objective was the easiest to verify? Which was the hardest? Why?
->
+> Easiest ICMP block on WAN, because you can simply ping from WAN side.
+> Hardest was the LuCI restriction, because you need to test from specific IP range.
 
 4. If this were a production environment, what additional firewall measures would you recommend?
->
+> Disable LuCI on WAN completely
+> Protect against spoofing
+> Disable unneeded services
 
 ## 🔗Links
 - 👯 Web hosting company [EliasDH.com](https://eliasdh.com).
