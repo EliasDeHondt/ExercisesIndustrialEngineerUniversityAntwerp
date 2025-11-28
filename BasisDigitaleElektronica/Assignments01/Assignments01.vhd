@@ -14,7 +14,7 @@ entity Main is
         );
 end Main;
 
-architecture Behavioral of Main is
+architecture RTL of Main is
 begin
     process(Count) begin
         case Count is
@@ -38,7 +38,7 @@ begin
                 SevenSegm <= (others => '1'); -- Turn off all segments
         end case;
     end process;
-end Behavioral;
+end RTL;
 -------------------- Main --------------------
 
 -------------------- Test --------------------

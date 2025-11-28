@@ -24,7 +24,7 @@ entity ComponentMain is
     );
 end ComponentMain;
 
-architecture Behavioral of ComponentMain is
+architecture RTL of ComponentMain is
     type icon is array (0 to 7) of std_logic_vector(15 downto 0); -- 8 rows of 16 pixels (type definition)
     
     constant UM1 : icon := ( -- UM1 (UFO Mothership 1)
@@ -294,4 +294,4 @@ begin
 
     COMPONENTLEDS_INST: ComponentLeds port map (Clk100MHz => Clk100MHz, SpeedUp => MainSpeedUp, Leds => Leds); -- LED component instantiation
     COMPONENT7SEG_INST: Component7Seg port map (Clk100MHz => Clk100MHz, Cathodes => Cathodes, Anodes => Anodes, Lives => MainLives, Score => MainScore); -- 7-segment display component instantiation
-end Behavioral;
+end RTL;

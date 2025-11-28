@@ -13,8 +13,8 @@ entity Main is
         );
 end Main;
 
-architecture Behavioral of Main is
+architecture RTL of Main is
 begin
     G <= (not(A) and (not(B) or C)) or (not((A and not(B)) or not(C))) or (B and C); -- G <= (not(C) or not(A) or B);
-end Behavioral;
+end RTL;
 -------------------- Main --------------------

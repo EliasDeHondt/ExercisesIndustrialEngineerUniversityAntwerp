@@ -18,7 +18,7 @@ entity Main is
     );
 end Main;
 
-architecture Behavioral of Main is
+architecture RTL of Main is
     signal HCounter : integer := 1;                 -- Horizontal pixel counter
     signal VCounter : integer := 1;                 -- Vertical line counter
     signal Clk25MHz : std_logic := '0';             -- Derived 25 MHz clock for VGA timing
@@ -72,5 +72,5 @@ begin
             VGA_R <= "0000"; -- No Red
         end if;
     end process VGA_SYNC;
-end Behavioral;
+end RTL;
 -------------------- Main --------------------

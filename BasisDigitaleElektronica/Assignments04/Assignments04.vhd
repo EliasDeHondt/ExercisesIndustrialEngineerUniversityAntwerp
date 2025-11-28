@@ -18,7 +18,7 @@ entity Main is
     );
 end Main;
 
-architecture Behavioral of Main is
+architecture RTL of Main is
     signal Result: unsigned(13 downto 0);
     signal BCD: unsigned(3 downto 0);
     signal DT: unsigned(3 downto 0);
@@ -87,7 +87,7 @@ begin
             BCD <= "1110";
         end if;
     end process MAIN_PROCESS;
-end Behavioral;
+end RTL;
 -------------------- Main --------------------
 
 -------------------- BCD2Number --------------------
@@ -102,7 +102,7 @@ entity BCD2Number is
     );
 end BCD2Number;
 
-architecture Behavioral of BCD2Number is
+architecture RTL of BCD2Number is
 begin
     SevenSegm <= 
                 "0000001" when BCD = 0 else
@@ -121,7 +121,7 @@ begin
                 "1000010" when BCD = 13 else
                 "0110000" when BCD = 14 else
                 "0111000";
-end Behavioral;
+end RTL;
 -------------------- BCD2Number --------------------
 
 -------------------- Binary2BCD --------------------
@@ -139,11 +139,11 @@ entity Binary2BCD is
     );
 end Binary2BCD;
 
-architecture Behavioral of Binary2BCD is
+architecture RTL of Binary2BCD is
 begin
     DT <= resize(Binary / 1000, 4);
     HT <= resize((Binary mod 1000) / 100, 4);
     TT <= resize((Binary mod 100) / 10, 4);
     EH <= resize(Binary mod 10, 4);
-end Behavioral;
+end RTL;
 -------------------- Binary2BCD --------------------

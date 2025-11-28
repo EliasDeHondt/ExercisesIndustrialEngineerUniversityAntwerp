@@ -17,13 +17,13 @@ entity Main is
         );
 end Main;
 
-architecture Behavioral of Main is
+architecture RTL of Main is
     signal Cathodes_snake: std_logic_vector(6 downto 0); -- output from Snake submodule
     signal Cathodes_int: std_logic_vector(6 downto 0); -- Internal signal
     signal Anodes_int: std_logic_vector(7 downto 0); -- Internal signal
     signal Leds_int: std_logic_vector(15 downto 0); -- Internal signal
 begin
-    Snake: entity work.Snake(Behavioral) port map ( -- Component Instance
+    Snake: entity work.Snake(RTL) port map ( -- Component Instance
             CountSnake => CountMain(2 downto 0), -- Input Main = Input Snake (3 LSB of CountMain)
             SevenSegm => Cathodes_snake -- Output Snake = Output Main (Cathodes)
         );
@@ -112,15 +112,15 @@ begin
                 end if;
                 Leds_int <= (others => '1'); -- All on
             when others =>
-            Cathodes_int <= (others => '1'); -- Default off (SevenSegm)
-            Anodes_int <= (others => '1'); -- Default off (Display)
-            Leds_int <= (others => '0'); -- Default off (LEDs)
+                Cathodes_int <= (others => '1'); -- Default off (SevenSegm)
+                Anodes_int <= (others => '1'); -- Default off (Display)
+                Leds_int <= (others => '0'); -- Default off (LEDs)
         end case;
     end process MODE_SELECT;
     Cathodes <= Cathodes_int; -- Output assignment
     Anodes <= Anodes_int; -- Output assignment
     Leds <= Leds_int; -- Output assignment
-end Behavioral;
+end RTL;
 -------------------- Main --------------------
 
 -------------------- Snake -------------------
@@ -135,7 +135,7 @@ entity Snake is
         );
 end Snake;
 
-architecture Behavioral of Snake is
+architecture RTL of Snake is
 begin
     SET_SNEGM: process(CountSnake) begin
         case CountSnake is
@@ -159,7 +159,7 @@ begin
                 SevenSegm <= (others => '1'); -- Turn off all segments
         end case;
     end process SET_SNEGM;
-end Behavioral;
+end RTL;
 -------------------- Snake -------------------
 
 -------------------- Test --------------------

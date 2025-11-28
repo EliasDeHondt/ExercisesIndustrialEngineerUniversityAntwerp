@@ -10,7 +10,7 @@ entity ComponentLeds is
         );
 end ComponentLeds;
 
-architecture Behavioral of ComponentLeds is
+architecture RTL of ComponentLeds is
     signal ClkDivider: unsigned(26 downto 0) := (others => '0');   -- Counter voor clock division (~2Hz, groter voor langzamer)
     signal Position: integer range 0 to 15 := 15;                  -- Huidige LED positie (start links, LED 15)
     signal DirectionDown: std_logic := '1';                        -- '1' = dalend (links naar rechts, 15->0), '0' = stijgend
@@ -45,4 +45,4 @@ begin
             end if;
         end if;
     end process LEDS_PROCESS;
-end Behavioral;
+end RTL;

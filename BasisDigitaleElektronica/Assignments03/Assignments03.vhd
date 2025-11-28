@@ -16,7 +16,7 @@ entity Main is
         );
 end Main;
 
-architecture Behavioral of Main is
+architecture RTL of Main is
     signal A_signed, B_signed : signed(3 downto 0); -- Two's complement (possible and negative)
     signal A_unsigned, B_unsigned : unsigned(3 downto 0); -- Positief binaire (only positive)
     signal result_signed : signed(4 downto 0);
@@ -38,5 +38,5 @@ begin
             Som <= '0' & std_logic_vector(result_signed(3 downto 0)); -- And '0' to avoid overflow
         end if;
     end process MAIN_PROCESS;
-end Behavioral;
+end RTL;
 -------------------- Main --------------------

@@ -15,7 +15,7 @@ entity Main is
     );
 end Main;
 
-architecture Behavioral of Main is
+architecture RTL of Main is
     signal clk_divider: unsigned(15 downto 0) := (others => '0');
     signal clk_8khz: std_logic := '0';
     signal display_sel: unsigned(2 downto 0) := (others => '0');
@@ -74,5 +74,5 @@ begin
         end case;
     end process DISPLAY;
     Cathodes <= segments;
-end Behavioral;
+end RTL;
 -------------------- Main --------------------
