@@ -289,7 +289,7 @@ begin
 
             if BulletActive = '1' then -- Draw bullet
                 if HCounter >= BulletX and HCounter < BulletX + BULLET_WIDTH and
-                   VCounter >= BulletY and VCounter < BulletY + BULLET_HEIGHT then
+                VCounter >= BulletY and VCounter < BulletY + BULLET_HEIGHT then
                     VGA_R <= "1111";
                     VGA_G <= "0000";
                     VGA_B <= "0000";
