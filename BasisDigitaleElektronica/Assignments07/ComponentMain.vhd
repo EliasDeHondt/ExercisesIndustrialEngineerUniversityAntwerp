@@ -119,32 +119,35 @@ architecture RTL of ComponentMain is
     constant COLOR_ELIASDH_G: std_logic_vector(7 downto 0) := x"94";
     constant COLOR_ELIASDH_B: std_logic_vector(7 downto 0) := x"F0";
 
-    constant CANNON_WIDTH  : integer := 16; -- Full width of cannon icon
-    constant CANNON_HEIGHT : integer := 8;  -- Full height of cannon icon
-    constant SCALE : integer := 4;
+    constant CANNON_WIDTH: integer := 16;           -- Full width of cannon icon
+    constant CANNON_HEIGHT: integer := 8;           -- Full height of cannon icon
+    constant SCALE: integer := 4;
 
-    signal CannonX : integer := 286;  -- Centered                       - Correct voor SCALE = 4
-    signal CannonY : integer := 450;  -- Bottom of 480p visible area    - Correct voor SCALE = 4
+    signal CannonX: integer := 286;                 -- Centered                       - Correct voor SCALE = 4
+    signal CannonY: integer := 450;                 -- Bottom of 480p visible area    - Correct voor SCALE = 4
 
     signal HCounter: integer range 0 to 799 := 0;   -- Horizontal pixel counter (0-based)
     signal VCounter: integer range 0 to 524 := 0;   -- Vertical line counter (0-based)
     signal Clk25MHz: std_logic := '0';              -- Derived 25 MHz clock for VGA timing
     signal ClkDivider: integer range 0 to 1 := 0;   -- Simplified divider counter for 50% duty
 
-    signal BTNL_sync : std_logic := '0';    -- Synchronized left button
-    signal BTNR_sync : std_logic := '0';    -- Synchronized right button
-    signal BTNL_prev : std_logic := '0';    -- Previous state of left button
-    signal BTNR_prev : std_logic := '0';    -- Previous state of right button
+    signal BTNL_sync: std_logic := '0';             -- Synchronized left button
+    signal BTNR_sync: std_logic := '0';             -- Synchronized right button
+    signal BTNL_prev: std_logic := '0';             -- Previous state of left button
+    signal BTNR_prev: std_logic := '0';             -- Previous state of right button
 
-    signal BulletActive : std_logic := '0'; -- Indicates if a bullet is currently active
-    signal BulletX : integer := 0;          -- X position of the bullet
-    signal BulletY : integer := 0;          -- Y position of the bullet
-    signal BTNC_sync : std_logic := '0';    -- Synchronized center button
-    signal BTNC_prev : std_logic := '0';    -- Previous state of center button
+    signal BulletActive: std_logic := '0';          -- Indicates if a bullet is currently active
+    signal BulletX: integer range 0 to 639 := 0;
+    signal BulletY: integer range 0 to 479 := 479;  -- start buiten scherm
+    signal BTNC_sync: std_logic := '0';             -- Synchronized center button
+    signal BTNC_prev: std_logic := '0';             -- Previous state of center button
+    signal FrameTick: std_logic := '0';             -- 1 puls per frame (60 Hz)
+    signal FireEdge : std_logic := '0';             -- Edge detect for firing bullet
 
     constant BULLET_WIDTH  : integer := 4;
     constant BULLET_HEIGHT : integer := 10;
-    constant BULLET_SPEED  : integer := 8;  -- pixels per frame
+    constant BULLET_SPEED  : integer := 8;          -- pixels per frame
+
 
     signal MainSpeedUp: std_logic; -- Signal from Leds component to indicate when to speed up aliens
     component ComponentLeds -- LED control component
@@ -179,27 +182,55 @@ begin
 
     VGA_TIMING: process (Clk25MHz) is begin
         if rising_edge(Clk25MHz) then
+            FrameTick <= '0';                           -- Clear frame tick each pixel    
             if HCounter = 799 then                      -- End of line
                 HCounter <= 0;
                 if VCounter = 524 then                  -- End of frame
                     VCounter <= 0;
-                else 
+                    FrameTick <= '1';                   -- Signal new frame
+                else
                     VCounter <= VCounter + 1;           -- Next line
                 end if;
-            else 
+            else
                 HCounter <= HCounter + 1;              -- Next pixel
             end if;
         end if;
     end process VGA_TIMING;
 
-    CANNON_INPUTS : process(Clk100MHz)
+    GAME_LOGIC: process (Clk25MHz) begin
+        if rising_edge(Clk25MHz) then
+            if BTNC_sync = '1' and BTNC_prev = '0' then
+                FireEdge <= '1';
+            end if;
+
+            if HCounter = 799 and VCounter = 524 then
+                if FireEdge = '1' and BulletActive = '0' then
+                    BulletActive <= '1';
+                    BulletX <= CannonX + (CANNON_WIDTH * SCALE)/2 - BULLET_WIDTH/2;
+                    BulletY <= CannonY - BULLET_HEIGHT - 10;
+                end if;
+                FireEdge <= '0';  -- Reset na verwerking
+
+                if BulletActive = '1' then
+                    if BulletY >= BULLET_SPEED + BULLET_HEIGHT then
+                        BulletY <= BulletY - BULLET_SPEED;
+                    else
+                        BulletActive <= '0';
+                    end if;
+                end if;
+            end if;
+
+            BTNC_prev <= BTNC_sync;
+        end if;
+    end process GAME_LOGIC;
+
+    CANNON_INPUTS: process(Clk100MHz)
         constant MOVE_STEP : integer := CANNON_WIDTH * SCALE;  -- 16 * SCALE
     begin
         if rising_edge(Clk100MHz) then
             -- Input synchronisatie
             BTNL_prev <= BTNL_sync;
             BTNR_prev <= BTNR_sync;
-            BTNC_prev <= BTNC_sync;
 
             BTNL_sync <= BTNL;
             BTNR_sync <= BTNR;
@@ -218,22 +249,6 @@ begin
                     CannonX <= CannonX + MOVE_STEP;
                 else
                     CannonX <= 640 - (CANNON_WIDTH * SCALE);
-                end if;
-            end if;
-
-            if (BTNC_sync = '1' and BTNC_prev = '0' and BulletActive = '0') then
-                BulletActive <= '1';
-
-                -- Start from center of cannon barrel
-                BulletX <= CannonX + (CANNON_WIDTH * SCALE) / 2 - BULLET_WIDTH / 2;
-                BulletY <= CannonY - BULLET_HEIGHT;
-            end if;
-
-            if BulletActive = '1' then
-                if BulletY > BULLET_SPEED then
-                    BulletY <= BulletY - BULLET_SPEED;
-                else
-                    BulletActive <= '0'; -- bullet gone
                 end if;
             end if;
         end if;
@@ -263,22 +278,21 @@ begin
             end if;
 
             if HCounter >= CannonX and HCounter < CannonX + (CANNON_WIDTH * SCALE) 
-            and VCounter >= CannonY and VCounter < CannonY + (CANNON_HEIGHT * SCALE) then
+            and VCounter >= CannonY and VCounter < CannonY + (CANNON_HEIGHT * SCALE) then -- Draw cannon
 
                 if CANNON((VCounter - CannonY) / SCALE)(15 - ((HCounter - CannonX) / SCALE)) = '1' then
                     VGA_R <= COLOR_ELIASDH_R(7 downto 4);
                     VGA_G <= COLOR_ELIASDH_G(7 downto 4);
                     VGA_B <= COLOR_ELIASDH_B(7 downto 4);
                 end if;
+            end if;
 
-                if BulletActive = '1' then
-                    if HCounter >= BulletX and HCounter < BulletX + BULLET_WIDTH and
-                    VCounter >= BulletY and VCounter < BulletY + BULLET_HEIGHT then
-
-                        VGA_R <= COLOR_ELIASDH_R(7 downto 4);
-                        VGA_G <= COLOR_ELIASDH_G(7 downto 4);
-                        VGA_B <= COLOR_ELIASDH_B(7 downto 4);
-                    end if;
+            if BulletActive = '1' then -- Draw bullet
+                if HCounter >= BulletX and HCounter < BulletX + BULLET_WIDTH and
+                   VCounter >= BulletY and VCounter < BulletY + BULLET_HEIGHT then
+                    VGA_R <= "1111";
+                    VGA_G <= "0000";
+                    VGA_B <= "0000";
                 end if;
             end if;
         else
