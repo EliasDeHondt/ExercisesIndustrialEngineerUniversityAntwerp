@@ -33,8 +33,8 @@ begin
     BCD2Number_inst: entity work.BCD2Number port map (
         BCD => BCD,
         SevenSegm => Cathodes
-    ); 
-    Binary2BCD_inst: entity work.Binary2BCD port map(
+    );
+    Binary2BCD_inst: entity work.Binary2BCD port map (
         Binary => Result,
         DT => DT,
         HT => HT,
@@ -84,7 +84,7 @@ begin
         end case;
 
         if Error = '1' then -- Show error
-            BCD <= "1110";
+            BCD <= "1110"; -- Display 'E' for error
         end if;
     end process MAIN_PROCESS;
 end RTL;
@@ -139,8 +139,7 @@ entity Binary2BCD is
     );
 end Binary2BCD;
 
-architecture RTL of Binary2BCD is
-begin
+architecture RTL of Binary2BCD is begin
     DT <= resize(Binary / 1000, 4);
     HT <= resize((Binary mod 1000) / 100, 4);
     TT <= resize((Binary mod 100) / 10, 4);
