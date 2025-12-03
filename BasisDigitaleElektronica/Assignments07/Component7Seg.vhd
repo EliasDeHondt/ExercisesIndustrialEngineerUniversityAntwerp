@@ -50,9 +50,10 @@ architecture RTL of Component7Seg is
     signal Segments: std_logic_vector(7 downto 0);
 begin
     CLOCK_DIVIDER: process(Clk100MHz) begin
-        if rising_edge(Clk100MHz) then -- Triggers only on rising edge of Clk (100 MHz system clock)
-            if ClkDivider = 6249 then -- Divide by 6250 to get 8 kHz
-                ClkDivider <= (others => '0'); -- Reset counter
+        -- From 100 MHz to 8 kHz -> (100.000.000 / 8.000 / 2 = 6.250 cycles)
+        if rising_edge(Clk100MHz) then          -- Triggers only on rising edge of Clk (100 MHz system clock)
+            if ClkDivider = 6249 then           -- Divide by 6250 to get 8 kHz
+                ClkDivider <= (others => '0');  -- Reset counter
                 Clk8khz <= not Clk8khz;
             else
                 ClkDivider <= ClkDivider + 1;
@@ -70,38 +71,33 @@ begin
         end if;
     end process DISPLAY_COUNTER;
 
-    process (Clk8khz) begin
+    CALC_7SEG: process(Clk8khz) begin
         if rising_edge(Clk8khz) then
-            if Lives = 0 then -- Game Over display
-                DigitPatterns(0) <= GSeg;
-                DigitPatterns(1) <= ASeg;
-                DigitPatterns(2) <= MSeg;
-                DigitPatterns(3) <= ESeg;
-                DigitPatterns(4) <= OSeg;
-                DigitPatterns(5) <= VSeg;
-                DigitPatterns(6) <= ESeg;
-                DigitPatterns(7) <= RSeg;
-            else -- Normal display of Lives and Score
-                DigitPatterns(7) <= DIGITS(Score mod 10);
-                DigitPatterns(6) <= DIGITS((Score / 10) mod 10);
-                if Score < 10 then DigitPatterns(5) <= BLANK; end if;
+            if Lives = 0 or Score >= 9999 then -- Display "GAME OVER"
+                DigitPatterns(0) <= GSeg;  -- G
+                DigitPatterns(1) <= ASeg;  -- A
+                DigitPatterns(2) <= MSeg;  -- M
+                DigitPatterns(3) <= ESeg;  -- E
+                DigitPatterns(4) <= OSeg;  -- O
+                DigitPatterns(5) <= VSeg;  -- V
+                DigitPatterns(6) <= ESeg;  -- E
+                DigitPatterns(7) <= RSeg;  -- R
+            else
+                DigitPatterns(0) <= DIGITS(Score / 1000);           -- Thousands
+                DigitPatterns(1) <= DIGITS((Score / 100) mod 10);   -- Hundreds
+                DigitPatterns(2) <= DIGITS((Score / 10) mod 10);    -- Tens
+                DigitPatterns(3) <= DIGITS(Score mod 10);           -- Ones
 
-                DigitPatterns(5) <= DIGITS((Score / 100) mod 10);
-                if Score < 100 then DigitPatterns(6) <= BLANK; end if;
+                DigitPatterns(4) <= BLANK;
+                DigitPatterns(5) <= BLANK;
+                DigitPatterns(6) <= BLANK;
 
-                DigitPatterns(4) <= DIGITS(Score / 1000);
-                if Score < 1000 then DigitPatterns(7) <= BLANK; end if;
-
-                DigitPatterns(3) <= BLANK;
-                DigitPatterns(2) <= BLANK;
-                DigitPatterns(1) <= BLANK;
-
-                DigitPatterns(0) <= DIGITS(Lives);
+                DigitPatterns(7) <= DIGITS(Lives);
             end if;
         end if;
-    end process;
+    end process CALC_7SEG;
 
-    process (DisplaySel, DigitPatterns) begin
+    SET_7SEG: process (DisplaySel, DigitPatterns) begin
         case DisplaySel is
             when "000" => Anodes <= "11111110"; Segments <= DigitPatterns(0); -- Lives
             when "001" => Anodes <= "11111101"; Segments <= DigitPatterns(1); -- Blank
@@ -113,7 +109,6 @@ begin
             when "111" => Anodes <= "01111111"; Segments <= DigitPatterns(7); -- Score units
             when others => Anodes <= (others => '1'); Segments <= (others => '1');
         end case;
-    end process;
-
+    end process SET_7SEG;
     Cathodes <= Segments;
 end RTL;

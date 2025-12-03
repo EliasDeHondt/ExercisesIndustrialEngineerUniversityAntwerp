@@ -26,19 +26,8 @@ end ComponentMain;
 
 architecture RTL of ComponentMain is
     type icon is array (0 to 7) of std_logic_vector(15 downto 0); -- 8 rows of 16 pixels (type definition)
-    
-    constant UM1 : icon := ( -- UM1 (UFO Mothership 1) - Classic Space Invaders UFO
-        "0000001111110000",
-        "0001111111111110",
-        "0011111111111111",
-        "0110110110110110",
-        "1111111111111111",
-        "0011101111101110",
-        "0001100110011000",
-        "0000000000000000"
-    );
 
-    constant OF1 : icon := ( -- OF1 (Octopus Frame 1) - Tentacles down
+    constant OF1 : icon := ( -- OF1 (Octopus Frame 1) Tentacles down
         "0000011111100000",
         "0001111111111000",
         "0011111111111100",
@@ -49,7 +38,7 @@ architecture RTL of ComponentMain is
         "0011000000001100"
     );
 
-    constant OF2 : icon := ( -- OF2 (Octopus Frame 2) - Tentacles up
+    constant OF2 : icon := ( -- OF2 (Octopus Frame 2) Tentacles up
         "0000011111100000",
         "0001111111111000",
         "0011111111111100",
@@ -60,51 +49,7 @@ architecture RTL of ComponentMain is
         "0110000000000110"
     );
 
-    constant CF1 : icon := ( -- CF1 (Crab Frame 1) - Claws up
-        "0010000000000100",
-        "0001000000001000",
-        "0001111111111000",
-        "0011101111101110",
-        "0111111111111110",
-        "0101111111111010",
-        "0101000000001010",
-        "0000110000110000"
-    );
-
-    constant CF2 : icon := ( -- CF2 (Crab Frame 2) - Claws down
-        "0000000000000000",
-        "0001000000001000",
-        "0101111111111010",
-        "0111101111101110",
-        "0111111111111110",
-        "0011111111111100",
-        "0001000000001000",
-        "0010000000000100"
-    );
-
-    constant SF1 : icon := ( -- SF1 (Squid Frame 1) - Tentacles spread
-        "0000000110000000",
-        "0000001111000000",
-        "0000011111100000",
-        "0000110110110000",
-        "0000111111110000",
-        "0000010110100000",
-        "0000100000010000",
-        "0001000000001000"
-    );
-
-    constant SF2 : icon := ( -- SF2 (Squid Frame 2) - Tentacles together
-        "0000000110000000",
-        "0000001111000000",
-        "0000011111100000",
-        "0000110110110000",
-        "0000111111110000",
-        "0000010110100000",
-        "0000001001000000",
-        "0000010000100000"
-    );
-
-    constant CANNON : icon := ( -- Cannon - Player ship with detailed design
+    constant CANNON : icon := ( -- Cannon Player ship with detailed design
         "0000000110000000",
         "0000001111000000",
         "0000001111000000",
@@ -142,14 +87,28 @@ architecture RTL of ComponentMain is
     signal BTNC_sync: std_logic := '0';             -- Synchronized center button
     signal BTNC_prev: std_logic := '0';             -- Previous state of center button
     signal FrameTick: std_logic := '0';             -- 1 puls per frame (60 Hz)
-    signal FireEdge : std_logic := '0';             -- Edge detect for firing bullet
+    signal FireEdge: std_logic := '0';              -- Edge detect for firing bullet
 
-    constant BULLET_WIDTH  : integer := 4;
-    constant BULLET_HEIGHT : integer := 10;
-    constant BULLET_SPEED  : integer := 8;          -- pixels per frame
+    constant BULLET_WIDTH: integer := 4;
+    constant BULLET_HEIGHT: integer := 10;
+    constant BULLET_SPEED: integer := 8;            -- pixels per frame
 
+    -- Alien constanten and signalen
+    constant ALIEN_WIDTH: integer := 16;            -- Breedte van de alien icon (16 pixels)
+    constant ALIEN_HEIGHT: integer := 8;            -- Hoogte van de alien icon (8 pixels)
+    constant ALIEN_SCALE: integer := 3;             -- Schaal factor voor alien
+    constant ALIEN_DROP: integer := ALIEN_HEIGHT * ALIEN_SCALE; -- Hoeveel pixels naar beneden (eigen hoogte)
 
-    signal MainSpeedUp: std_logic; -- Signal from Leds component to indicate when to speed up aliens
+    signal AlienX: integer range 0 to 639 := 300;   -- Alien X positie (start in midden)
+    signal AlienY: integer range 0 to 479 := 20;    -- Alien Y positie (start bovenaan)
+    signal AlienDirRight: std_logic := '1';         -- '1' = beweegt naar rechts, '0' = naar links
+    signal AlienActive: std_logic := '1';           -- '1' = alien is actief/zichtbaar
+    signal AlienSpeed: integer range 1 to 20 := 1;  -- Huidige alien snelheid (start langzaam, verhoogt over tijd)
+    signal AlienFrame: std_logic := '0';            -- '0' = OF1, '1' = OF2 (animatie frame)
+    signal AlienFrameCounter: integer range 0 to 29 := 0; -- Teller voor frame wisseling (elke 30 frames)
+
+    signal MainSpeedUp: std_logic;                  -- Signal from Leds component to indicate when to speed up aliens
+    signal MainSpeedUp_prev: std_logic := '0';      -- Vorige staat voor edge detection
     component ComponentLeds -- LED control component
         port (
             Clk100MHz: in std_logic;
@@ -158,8 +117,8 @@ architecture RTL of ComponentMain is
         );
     end component;
 
-    signal MainLives: integer range 0 to 8;        -- Example lives value for 7-seg display
-    signal MainScore: integer range 0 to 9999;     -- Example score value for 7-seg display
+    signal MainLives: integer range 0 to 8 := 3;    -- Lives value for 7-seg display (start met 3 levens)
+    signal MainScore: integer range 0 to 9999 := 0; -- Score value for 7-seg display (start op 0)
     component Component7Seg -- 7-segment display component
         port (
             Clk100MHz: in std_logic;
@@ -175,7 +134,7 @@ begin
             ClkDivider <= ClkDivider + 1;
             if ClkDivider = 1 then
                 ClkDivider <= 0;
-                Clk25MHz <= not Clk25MHz;  -- Toggle every 2 cycles for ~50% duty
+                Clk25MHz <= not Clk25MHz;               -- Toggle every 2 cycles for ~50% duty
             end if;
         end if;
     end process CLOCK_DIVIDER;
@@ -203,6 +162,13 @@ begin
                 FireEdge <= '1';
             end if;
 
+            MainSpeedUp_prev <= MainSpeedUp;
+            if MainSpeedUp = '1' and MainSpeedUp_prev = '0' then
+                if AlienSpeed < 20 then
+                    AlienSpeed <= AlienSpeed + 1;
+                end if;
+            end if;
+
             if HCounter = 799 and VCounter = 524 then
                 if FireEdge = '1' and BulletActive = '0' then
                     BulletActive <= '1';
@@ -218,6 +184,54 @@ begin
                         BulletActive <= '0'; -- Bullet goes off screen
                     end if;
                 end if;
+
+                -- Alien animatie frame wisselen
+                if AlienFrameCounter >= 29 then
+                    AlienFrameCounter <= 0;
+                    AlienFrame <= not AlienFrame;
+                else
+                    AlienFrameCounter <= AlienFrameCounter + 1;
+                end if;
+
+                if AlienActive = '1' then
+                    if AlienDirRight = '1' then
+                        if AlienX + (ALIEN_WIDTH * ALIEN_SCALE) + AlienSpeed >= 639 then
+                            AlienX <= 639 - (ALIEN_WIDTH * ALIEN_SCALE);
+                            AlienY <= AlienY + ALIEN_DROP;
+                            AlienDirRight <= '0';
+                        else
+                            AlienX <= AlienX + AlienSpeed;
+                        end if;
+                    else
+                        if AlienX <= AlienSpeed then
+                            AlienX <= 1;
+                            AlienY <= AlienY + ALIEN_DROP;
+                            AlienDirRight <= '1';
+                        else
+                            AlienX <= AlienX - AlienSpeed;
+                        end if;
+                    end if;
+
+                    if AlienY + (ALIEN_HEIGHT * ALIEN_SCALE) >= 479 then
+                        AlienX <= 300;
+                        AlienY <= 20;
+                        AlienDirRight <= '1';
+                        if MainLives > 0 then
+                            MainLives <= MainLives - 1;
+                        end if;
+                    end if;
+
+                    if BulletActive = '1' then -- Check for collision with alien
+                        if BulletX + BULLET_WIDTH > AlienX and BulletX < AlienX + (ALIEN_WIDTH * ALIEN_SCALE) 
+                        and BulletY < AlienY + (ALIEN_HEIGHT * ALIEN_SCALE) and BulletY + BULLET_HEIGHT > AlienY then
+                            AlienX <= 300;
+                            AlienY <= 20;
+                            AlienDirRight <= '1';
+                            BulletActive <= '0';
+                            MainScore <= MainScore + 100;
+                        end if;
+                    end if;
+                end if;
             end if;
 
             BTNC_prev <= BTNC_sync;
@@ -225,10 +239,9 @@ begin
     end process GAME_LOGIC;
 
     CANNON_INPUTS: process(Clk100MHz)
-        constant MOVE_STEP : integer := CANNON_WIDTH * SCALE;  -- 16 * SCALE
+        constant MOVE_STEP : integer := CANNON_WIDTH * SCALE; -- 16 * SCALE
     begin
         if rising_edge(Clk100MHz) then
-            -- Input synchronisatie
             BTNL_prev <= BTNL_sync;
             BTNR_prev <= BTNR_sync;
 
@@ -267,7 +280,11 @@ begin
         end if;
 
         if HCounter <= 639 and VCounter <= 479 then -- Visible area
-            if HCounter = 0 or HCounter = 639 or VCounter = 0 or VCounter = 479 then -- Check for border pixels
+            if MainLives = 0 or MainScore >= 9999 then -- GAME OVER scherm
+                VGA_R <= COLOR_ELIASDH_R(7 downto 4);
+                VGA_G <= COLOR_ELIASDH_G(7 downto 4);
+                VGA_B <= COLOR_ELIASDH_B(7 downto 4);
+            elsif HCounter = 0 or HCounter = 639 or VCounter = 0 or VCounter = 479 then -- Check for border pixels
                 VGA_R <= "1111";
                 VGA_G <= "0000";
                 VGA_B <= "0000";
@@ -275,24 +292,42 @@ begin
                 VGA_R <= "1111";
                 VGA_G <= "1111";
                 VGA_B <= "1111";
-            end if;
 
-            if HCounter >= CannonX and HCounter < CannonX + (CANNON_WIDTH * SCALE) 
-            and VCounter >= CannonY and VCounter < CannonY + (CANNON_HEIGHT * SCALE) then -- Draw cannon
-
-                if CANNON((VCounter - CannonY) / SCALE)(15 - ((HCounter - CannonX) / SCALE)) = '1' then
-                    VGA_R <= COLOR_ELIASDH_R(7 downto 4);
-                    VGA_G <= COLOR_ELIASDH_G(7 downto 4);
-                    VGA_B <= COLOR_ELIASDH_B(7 downto 4);
+                if HCounter >= CannonX and HCounter < CannonX + (CANNON_WIDTH * SCALE) 
+                and VCounter >= CannonY and VCounter < CannonY + (CANNON_HEIGHT * SCALE) then -- Draw cannon
+                    if CANNON((VCounter - CannonY) / SCALE)(15 - ((HCounter - CannonX) / SCALE)) = '1' then
+                        VGA_R <= COLOR_ELIASDH_R(7 downto 4);
+                        VGA_G <= COLOR_ELIASDH_G(7 downto 4);
+                        VGA_B <= COLOR_ELIASDH_B(7 downto 4);
+                    end if;
                 end if;
-            end if;
 
-            if BulletActive = '1' then -- Draw bullet
-                if HCounter >= BulletX and HCounter < BulletX + BULLET_WIDTH and
-                VCounter >= BulletY and VCounter < BulletY + BULLET_HEIGHT then
-                    VGA_R <= "1111";
-                    VGA_G <= "0000";
-                    VGA_B <= "0000";
+                if BulletActive = '1' then -- Draw bullet
+                    if HCounter >= BulletX and HCounter < BulletX + BULLET_WIDTH
+                    and VCounter >= BulletY and VCounter < BulletY + BULLET_HEIGHT then
+                        VGA_R <= "1111";
+                        VGA_G <= "0000";
+                        VGA_B <= "0000";
+                    end if;
+                end if;
+
+                if AlienActive = '1' then -- Draw alien OF1/OF2 animatie
+                    if HCounter >= AlienX and HCounter < AlienX + (ALIEN_WIDTH * ALIEN_SCALE) 
+                    and VCounter >= AlienY and VCounter < AlienY + (ALIEN_HEIGHT * ALIEN_SCALE) then
+                        if AlienFrame = '0' then
+                            if OF1((VCounter - AlienY) / ALIEN_SCALE)(15 - ((HCounter - AlienX) / ALIEN_SCALE)) = '1' then
+                                VGA_R <= "0000";
+                                VGA_G <= "1111";
+                                VGA_B <= "0000";
+                            end if;
+                        else
+                            if OF2((VCounter - AlienY) / ALIEN_SCALE)(15 - ((HCounter - AlienX) / ALIEN_SCALE)) = '1' then
+                                VGA_R <= "0000";
+                                VGA_G <= "1111";
+                                VGA_B <= "0000";
+                            end if;
+                        end if;
+                    end if;
                 end if;
             end if;
         else
@@ -301,10 +336,6 @@ begin
             VGA_B <= "0000";
         end if;
     end process VGA_SYNC;
-
-    -- Temp values for testing
-    MainLives <= 5;
-    MainScore <= 1234;
 
     COMPONENTLEDS_INST: ComponentLeds port map (Clk100MHz => Clk100MHz, SpeedUp => MainSpeedUp, Leds => Leds); -- LED component instantiation
     COMPONENT7SEG_INST: Component7Seg port map (Clk100MHz => Clk100MHz, Cathodes => Cathodes, Anodes => Anodes, Lives => MainLives, Score => MainScore); -- 7-segment display component instantiation
