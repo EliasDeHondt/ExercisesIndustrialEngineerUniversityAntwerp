@@ -71,8 +71,8 @@ architecture RTL of ComponentMain is
     signal CannonX: integer := 286;                 -- Centered                       - Correct voor SCALE = 4
     signal CannonY: integer := 450;                 -- Bottom of 480p visible area    - Correct voor SCALE = 4
 
-    signal HCounter: integer range 0 to 799 := 0;   -- Horizontal pixel counter (0-based)
-    signal VCounter: integer range 0 to 524 := 0;   -- Vertical line counter (0-based)
+    signal HCounter: integer range 0 to 799 := 0;   -- Horizontal pixel counter
+    signal VCounter: integer range 0 to 524 := 0;   -- Vertical line counter
     signal Clk25MHz: std_logic := '0';              -- Derived 25 MHz clock for VGA timing
     signal ClkDivider: integer range 0 to 1 := 0;   -- Simplified divider counter for 50% duty
 
@@ -83,15 +83,14 @@ architecture RTL of ComponentMain is
 
     signal BulletActive: std_logic := '0';          -- Indicates if a bullet is currently active
     signal BulletX: integer range 0 to 639 := 0;
-    signal BulletY: integer range 0 to 479 := 479;  -- start buiten scherm
+    signal BulletY: integer range 0 to 479 := 479;  -- Start buiten scherm
     signal BTNC_sync: std_logic := '0';             -- Synchronized center button
     signal BTNC_prev: std_logic := '0';             -- Previous state of center button
-    signal FrameTick: std_logic := '0';             -- 1 puls per frame (60 Hz)
     signal FireEdge: std_logic := '0';              -- Edge detect for firing bullet
 
     constant BULLET_WIDTH: integer := 4;
     constant BULLET_HEIGHT: integer := 10;
-    constant BULLET_SPEED: integer := 8;            -- pixels per frame
+    constant BULLET_SPEED: integer := 8;            -- Pixels per frame
 
     -- Alien constanten and signalen
     constant ALIEN_WIDTH: integer := 16;            -- Breedte van de alien icon (16 pixels)
@@ -141,12 +140,10 @@ begin
 
     VGA_TIMING: process (Clk25MHz) is begin
         if rising_edge(Clk25MHz) then
-            FrameTick <= '0';                           -- Clear frame tick each pixel    
             if HCounter = 799 then                      -- End of line
                 HCounter <= 0;
                 if VCounter = 524 then                  -- End of frame
                     VCounter <= 0;
-                    FrameTick <= '1';                   -- Signal new frame
                 else
                     VCounter <= VCounter + 1;           -- Next line
                 end if;
@@ -158,12 +155,12 @@ begin
 
     GAME_LOGIC: process (Clk25MHz) begin
         if rising_edge(Clk25MHz) then
-            if BTNC_sync = '1' and BTNC_prev = '0' then
+            if BTNC_sync = '1' and BTNC_prev = '0' then -- CENTER button edge detect
                 FireEdge <= '1';
             end if;
 
             MainSpeedUp_prev <= MainSpeedUp;
-            if MainSpeedUp = '1' and MainSpeedUp_prev = '0' then
+            if MainSpeedUp = '1' and MainSpeedUp_prev = '0' then -- Edge detect for speed up
                 if AlienSpeed < 20 then
                     AlienSpeed <= AlienSpeed + 1;
                 end if;
@@ -186,15 +183,15 @@ begin
                 end if;
 
                 -- Alien animatie frame wisselen
-                if AlienFrameCounter >= 29 then
+                if AlienFrameCounter >= 29 then -- Elke 30 frames wisselen (1 Frame ~0.5sec 15sec for nieuwe Alien)
                     AlienFrameCounter <= 0;
                     AlienFrame <= not AlienFrame;
                 else
                     AlienFrameCounter <= AlienFrameCounter + 1;
                 end if;
 
-                if AlienActive = '1' then
-                    if AlienDirRight = '1' then
+                if AlienActive = '1' then -- Update alien position
+                    if AlienDirRight = '1' then -- Moving right
                         if AlienX + (ALIEN_WIDTH * ALIEN_SCALE) + AlienSpeed >= 639 then
                             AlienX <= 639 - (ALIEN_WIDTH * ALIEN_SCALE);
                             AlienY <= AlienY + ALIEN_DROP;
@@ -228,7 +225,7 @@ begin
                             AlienY <= 20;
                             AlienDirRight <= '1';
                             BulletActive <= '0';
-                            MainScore <= MainScore + 100;
+                            MainScore <= MainScore + 500; -- Increase score by 500
                         end if;
                     end if;
                 end if;
@@ -267,7 +264,7 @@ begin
         end if;
     end process CANNON_INPUTS;
 
-    VGA_SYNC: process (HCounter, VCounter) is begin     -- Standard 640x480@60Hz sync pulses
+    VGA_SYNC: process (HCounter, VCounter, MainLives, MainScore, CannonX, CannonY, BulletActive, BulletX, BulletY, AlienActive, AlienX, AlienY, AlienFrame) is begin -- Standard 640x480@60Hz sync pulses
         if VCounter >= 490 and VCounter <= 491 then     -- VSync pulse
             VSync <= '0';
         else
@@ -312,7 +309,7 @@ begin
                 end if;
 
                 if AlienActive = '1' then -- Draw alien OF1/OF2 animatie
-                    if HCounter >= AlienX and HCounter < AlienX + (ALIEN_WIDTH * ALIEN_SCALE) 
+                    if HCounter >= AlienX and HCounter < AlienX + (ALIEN_WIDTH * ALIEN_SCALE)
                     and VCounter >= AlienY and VCounter < AlienY + (ALIEN_HEIGHT * ALIEN_SCALE) then
                         if AlienFrame = '0' then
                             if OF1((VCounter - AlienY) / ALIEN_SCALE)(15 - ((HCounter - AlienX) / ALIEN_SCALE)) = '1' then

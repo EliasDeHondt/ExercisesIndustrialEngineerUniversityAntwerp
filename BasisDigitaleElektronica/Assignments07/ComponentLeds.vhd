@@ -1,3 +1,7 @@
+-- @author EliasDH Team
+-- @see https://eliasdh.com
+-- @since 01/01/2025
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -5,7 +9,7 @@ use IEEE.numeric_std.all;
 entity ComponentLeds is
     port (
         Clk100MHz: in std_logic := '0';
-        SpeedUp: out std_logic;  -- Renamed output to indicate when to increase alien speed
+        SpeedUp: out std_logic;  -- Output to indicate when to increase alien speed
         Leds: out std_logic_vector(15 downto 0)
         );
 end ComponentLeds;
@@ -17,7 +21,7 @@ architecture RTL of ComponentLeds is
 begin
     LEDS_PROCESS: process(Clk100MHz) begin
         if rising_edge(Clk100MHz) then
-            if ClkDivider = 49_999_999 then -- Clock divider (2Hz)
+            if ClkDivider = 49_999_999 then -- Clock divider (2Hz) - (100.000.000 / 2 / 2 = 25.000.000 cycles)
                 ClkDivider <= (others => '0');
 
                 -- Default output
@@ -25,7 +29,7 @@ begin
                 Leds    <= (others => '0');
                 Leds(Position) <= '1';
 
-                if DirectionDown = '1' then -- Bounce Beweging
+                if DirectionDown = '1' then -- Moving down (15 to 0)
                     if Position = 0 then
                         DirectionDown <= '0';
                         SpeedUp <= '1';

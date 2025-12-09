@@ -17,7 +17,7 @@ entity Component7Seg is
 end Component7Seg;
 
 architecture RTL of Component7Seg is
-    type DigitArray is array (0 to 9) of std_logic_vector(7 downto 0);
+    type DigitArray is array (0 to 9) of std_logic_vector(7 downto 0); 
     constant DIGITS : DigitArray := (
         0 => "00000011",  -- 0
         1 => "10011111",  -- 1
