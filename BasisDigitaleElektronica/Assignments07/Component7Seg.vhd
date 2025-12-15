@@ -17,7 +17,7 @@ entity Component7Seg is
 end Component7Seg;
 
 architecture RTL of Component7Seg is
-    type DigitArray is array (0 to 9) of std_logic_vector(7 downto 0); 
+    type DigitArray is array (0 to 9) of std_logic_vector(7 downto 0);
     constant DIGITS : DigitArray := (
         0 => "00000011",  -- 0
         1 => "10011111",  -- 1
@@ -45,9 +45,9 @@ architecture RTL of Component7Seg is
     signal DigitPatterns : PatternArray; -- Patterns for each of the 8 digits
 
     signal Clk8khz: std_logic := '0';
-    signal ClkDivider: unsigned(15 downto 0) := (others => '0');
-    signal DisplaySel: unsigned(2 downto 0) := (others => '0');
-    signal Segments: std_logic_vector(7 downto 0);
+    signal ClkDivider: unsigned(15 downto 0) := (others => '0');  -- Counter for clock division
+    signal DisplaySel: unsigned(2 downto 0) := (others => '0');   -- 3-bit counter to select which digit to display
+    signal Segments: std_logic_vector(7 downto 0);                -- Current segments to display
 begin
     CLOCK_DIVIDER: process(Clk100MHz) begin
         -- From 100 MHz to 8 kHz -> (100.000.000 / 8.000 / 2 = 6.250 cycles)

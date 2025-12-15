@@ -15,13 +15,13 @@ entity ComponentLeds is
 end ComponentLeds;
 
 architecture RTL of ComponentLeds is
-    signal ClkDivider: unsigned(26 downto 0) := (others => '0');   -- Counter voor clock division (~2Hz, groter voor langzamer)
-    signal Position: integer range 0 to 15 := 15;                  -- Huidige LED positie (start links, LED 15)
-    signal DirectionDown: std_logic := '1';                        -- '1' = dalend (links naar rechts, 15->0), '0' = stijgend
+    signal ClkDivider: unsigned(26 downto 0) := (others => '0');   -- Counter for clock division (~2Hz, larger for slower)
+    signal Position: integer range 0 to 15 := 15;                  -- Current LED position (start left, LED 15)
+    signal Direction: std_logic := '1';                            -- '1' = descending (left to right, 15->0), '0' = ascending
 begin
     LEDS_PROCESS: process(Clk100MHz) begin
         if rising_edge(Clk100MHz) then
-            if ClkDivider = 49_999_999 then -- Clock divider (2Hz) - (100.000.000 / 2 / 2 = 25.000.000 cycles)
+            if ClkDivider = 49_999_999 then -- Clock divider (2Hz) - (100.000.000 / 50.000.000 = 2Hz)
                 ClkDivider <= (others => '0');
 
                 -- Default output
@@ -29,16 +29,16 @@ begin
                 Leds    <= (others => '0');
                 Leds(Position) <= '1';
 
-                if DirectionDown = '1' then -- Moving down (15 to 0)
+                if Direction = '1' then -- Moving (15 to 0) left to right
                     if Position = 0 then
-                        DirectionDown <= '0';
+                        Direction <= '0';
                         SpeedUp <= '1';
                     else
                         Position <= Position - 1;
                     end if;
-                else
+                else -- Moving (0 to 15) right to left
                     if Position = 15 then
-                        DirectionDown <= '1';
+                        Direction <= '1';
                         SpeedUp <= '1';
                     else
                         Position <= Position + 1;

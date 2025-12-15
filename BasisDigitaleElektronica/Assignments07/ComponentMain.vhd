@@ -166,7 +166,7 @@ begin
                 end if;
             end if;
 
-            if HCounter = 799 and VCounter = 524 then
+            if HCounter = 799 and VCounter = 524 then -- End of frame, update game logic
                 if FireEdge = '1' and BulletActive = '0' then
                     BulletActive <= '1';
                     BulletX <= CannonX + (CANNON_WIDTH * SCALE)/2 - BULLET_WIDTH/2;
@@ -192,15 +192,15 @@ begin
 
                 if AlienActive = '1' then -- Update alien position
                     if AlienDirRight = '1' then -- Moving right
-                        if AlienX + (ALIEN_WIDTH * ALIEN_SCALE) + AlienSpeed >= 639 then
+                        if AlienX + (ALIEN_WIDTH * ALIEN_SCALE) + AlienSpeed >= 639 then -- Check for collision with right edge
                             AlienX <= 639 - (ALIEN_WIDTH * ALIEN_SCALE);
                             AlienY <= AlienY + ALIEN_DROP;
                             AlienDirRight <= '0';
                         else
                             AlienX <= AlienX + AlienSpeed;
                         end if;
-                    else
-                        if AlienX <= AlienSpeed then
+                    else -- Moving left
+                        if AlienX <= AlienSpeed then -- Check for collision with left edge
                             AlienX <= 1;
                             AlienY <= AlienY + ALIEN_DROP;
                             AlienDirRight <= '1';
@@ -209,7 +209,7 @@ begin
                         end if;
                     end if;
 
-                    if AlienY + (ALIEN_HEIGHT * ALIEN_SCALE) >= 479 then
+                    if AlienY + (ALIEN_HEIGHT * ALIEN_SCALE) >= 479 then -- Check for collision with bottom
                         AlienX <= 300;
                         AlienY <= 20;
                         AlienDirRight <= '1';
@@ -266,12 +266,12 @@ begin
 
     VGA_SYNC: process (HCounter, VCounter, MainLives, MainScore, CannonX, CannonY, BulletActive, BulletX, BulletY, AlienActive, AlienX, AlienY, AlienFrame) is begin -- Standard 640x480@60Hz sync pulses
         if VCounter >= 490 and VCounter <= 491 then     -- VSync pulse
-            VSync <= '0';
+            VSync <= '0'; -- Pulse LOW for 2 lines
         else
             VSync <= '1';
         end if;
         if HCounter >= 656 and HCounter <= 751 then     -- HSync pulse
-            HSync <= '0';
+            HSync <= '0'; -- Pulse LOW for 96 pixels
         else
             HSync <= '1';
         end if;
@@ -292,7 +292,7 @@ begin
 
                 if HCounter >= CannonX and HCounter < CannonX + (CANNON_WIDTH * SCALE) 
                 and VCounter >= CannonY and VCounter < CannonY + (CANNON_HEIGHT * SCALE) then -- Draw cannon
-                    if CANNON((VCounter - CannonY) / SCALE)(15 - ((HCounter - CannonX) / SCALE)) = '1' then
+                    if CANNON((VCounter - CannonY) / SCALE)(15 - ((HCounter - CannonX) / SCALE)) = '1' then -- Check pixel in icon
                         VGA_R <= COLOR_ELIASDH_R(7 downto 4);
                         VGA_G <= COLOR_ELIASDH_G(7 downto 4);
                         VGA_B <= COLOR_ELIASDH_B(7 downto 4);
