@@ -11,7 +11,7 @@ figure;
 count = 1;
 for m = m_values
     for E = E_values
-        g = 1 ./ (1 + (m./img).^E);
+        g = 1 ./ (1 + (m./img).^E); % Gammacorrectie
         subplot(3,3,count);
         imshow(g), title(['m=',num2str(m),', E=',num2str(E)])
         count = count+1;
