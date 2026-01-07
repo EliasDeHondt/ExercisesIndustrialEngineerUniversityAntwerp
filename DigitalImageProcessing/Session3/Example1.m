@@ -12,7 +12,6 @@ figure; imshow(img); title('Original Binary Image');
 se1 = strel('square',3);
 se2 = strel('disk',2);
 se3 = strel('line',5,0);
-se4 = strel('line',5,90);
 d1 = imdilate(img,se1);
 d2 = imdilate(img,se2);
 d3 = imdilate(img,se3);

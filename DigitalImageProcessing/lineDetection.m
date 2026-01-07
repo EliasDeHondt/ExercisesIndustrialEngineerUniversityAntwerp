@@ -15,7 +15,7 @@ function vertical_length_cm = detectLines(dcmFile, angleMin, angleMax)
     BW = imbinarize(d_gray);
     BW = ~BW;
     edges = edge(BW,'canny',[0.03 0.15]);
-    [H,theta,rho] = hough(edges);
+    [H, theta, rho] = hough(edges);
 
     % get region info for calibration
     info = dicominfo(dcmFile);
@@ -31,12 +31,9 @@ function vertical_length_cm = detectLines(dcmFile, angleMin, angleMax)
     H_only_horizontal(:, ~idx_horizontal) = 0;
 
     NumPeaks = 10;
-    P_all_horz = houghpeaks(H_only_horizontal, NumPeaks, ...
-                           'Threshold', 0.2*max(H_only_horizontal(:)), ...
-                           'NHoodSize', [11 11]);
+    P_all_horz = houghpeaks(H_only_horizontal, NumPeaks, 'Threshold', 0.2*max(H_only_horizontal(:)), 'NHoodSize', [11 11]);
 
-    lines_all_horz = houghlines(edges, theta, rho, P_all_horz, ...
-                                'FillGap', 70, 'MinLength', 100);
+    lines_all_horz = houghlines(edges, theta, rho, P_all_horz, 'FillGap', 70, 'MinLength', 100);
 
     % --- Remove lines near image edges --- %
     imgSize = size(tri_1);
@@ -64,16 +61,16 @@ function vertical_length_cm = detectLines(dcmFile, angleMin, angleMax)
         return;
     end
 
-    % sort by length
+    % Sort by length
     line_lengths = arrayfun(@(L) norm(L.point1 - L.point2), validLines);
     [~, sortedIdx] = sort(line_lengths, 'descend');
     sortedLines = validLines(sortedIdx);
 
-    % pick first (longest)
+    % Pick first (longest)
     selected = sortedLines(1);
     y_first = mean([selected.point1(2), selected.point2(2)]);
 
-    % find second line (with enough distance)
+    % Find second line (with enough distance)
     secondFound = false;
     for i = 2:length(sortedLines)
         y_candidate = mean([sortedLines(i).point1(2), sortedLines(i).point2(2)]);
@@ -90,7 +87,7 @@ function vertical_length_cm = detectLines(dcmFile, angleMin, angleMax)
     else
         selectedLines = [selected, second];
     end
-    vertical_length_cm = 0; % initialize output so function doesn't crash if length < 2
+    vertical_length_cm = 0; % Initialize output so function doesnt crash if length < 2
 
     % --- Visualization & Calculation --- %
     figure; imshow(tri_1); hold on;

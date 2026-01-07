@@ -4,14 +4,17 @@
 
 % Example 2
 brokentext = imread('broken-text.tif');
-text = bwareaopen(~brokentext, 20);
+text = bwareaopen(~brokentext, 20); % remove small objects
 text = ~text;
 se = strel('disk', 1);
 text = imclose(text, se);
+
 figure;
+
 subplot(1,2,1);
 imshow(brokentext);
 title('Original');
+
 subplot(1,2,2);
 imshow(text);
 title('Clean');
