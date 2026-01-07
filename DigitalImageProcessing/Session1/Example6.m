@@ -24,7 +24,7 @@ title('Binary Moon Image (Segmented Craters)');
 % 6.3. Detect objects using regionprops
 labeled = bwlabel(moon_bw); % Label connected components
 stats = regionprops(labeled, 'Centroid', 'Perimeter', 'BoundingBox'); % Measure properties
-min_perimeter = 50;
+min_perimeter = 10;
 selected = stats([stats.Perimeter] > min_perimeter);
 
 
