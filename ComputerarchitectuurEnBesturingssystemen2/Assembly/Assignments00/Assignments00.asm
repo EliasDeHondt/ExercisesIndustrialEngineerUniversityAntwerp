@@ -22,6 +22,28 @@
 ;   PORTB_DIR = 0x0620 + 0x00 = 0x0620
 ;   PORTB_OUT = 0x0620 + 0x04 = 0x0624
 ; -----------------------------------------------
+; Algorithm:
+;
+; 1. Init (once)
+;    - Set PORTC pin 5 as output and high (enable)
+;    - Set PORTA pin 7 (LED4) as output
+;    - Set PORTB pins 0,1,2 (LED1,LED2,LED3) as output
+;    - Turn off all LEDs
+;
+; 2. Main loop (repeat forever)
+;    - LED1 on, rest off -> wait 250ms
+;    - LED2 on, rest off -> wait 250ms
+;    - LED3 on, rest off -> wait 250ms
+;    - LED4 on, rest off -> wait 250ms
+;    - Jump back to start of main loop
+;
+; 3. Delay subroutine (~250ms at 2MHz)
+;    - r17 counts 0..255 (inner loop)
+;    - r18 counts 0..255 (middle loop)
+;    - r19 counts down from 2 (outer loop)
+;    - Total: 256 x 256 x 2 x 4 cycles = 524.288 cycles -> ~250ms
+;    - Return to caller
+; -----------------------------------------------
 
 .CSEG
 Init:
