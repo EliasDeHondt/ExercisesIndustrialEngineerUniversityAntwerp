@@ -9,7 +9,7 @@
 
 .CSEG
 Init:   ldi   r16,0b100000
-        sts   0x0640,r16            ; PORTC 
+        sts   0x0640,r16            ; PORTC
         sts   0x0644,r16
         ldi   r16,0b10000000
         sts   0x0600,r16            ; PORTA
