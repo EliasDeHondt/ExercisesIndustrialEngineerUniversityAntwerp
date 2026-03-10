@@ -7,8 +7,6 @@
 
 void DriverPowerInit(void) {
 	PORTC.DIRSET=1<<5;
-	
-	
 }
 
 void DriverPowerVccAuxSet(uint8_t State) {
