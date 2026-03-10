@@ -953,7 +953,7 @@ END GROUP
  *(.fini0)
                 0x00001a0e                _etext = .
 
-.data           0x00802000       0x3a load address 0x00001a0e
+.data           0x00802000       0x38 load address 0x00001a0e
                 0x00802000                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -961,55 +961,54 @@ END GROUP
                 0x00802000        0xe Drivers/DriverUSART.o
  *(.gnu.linkonce.d*)
  *(.rodata)
- .rodata        0x0080200e       0x2b main.o
+ .rodata        0x0080200e       0x2a main.o
  *(.rodata*)
  *(.gnu.linkonce.r*)
-                0x0080203a                . = ALIGN (0x2)
- *fill*         0x00802039        0x1 
-                0x0080203a                _edata = .
-                0x0080203a                PROVIDE (__data_end, .)
+                0x00802038                . = ALIGN (0x2)
+                0x00802038                _edata = .
+                0x00802038                PROVIDE (__data_end, .)
 
-.bss            0x0080203a       0x1f
-                0x0080203a                PROVIDE (__bss_start, .)
+.bss            0x00802038       0x1f
+                0x00802038                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.Twim_address
-                0x0080203a        0x1 Drivers/DriverTWIMaster.o
+                0x00802038        0x1 Drivers/DriverTWIMaster.o
  .bss.Twim_writeData
-                0x0080203b        0x2 Drivers/DriverTWIMaster.o
+                0x00802039        0x2 Drivers/DriverTWIMaster.o
  .bss.Twim_readData
-                0x0080203d        0x2 Drivers/DriverTWIMaster.o
+                0x0080203b        0x2 Drivers/DriverTWIMaster.o
  .bss.Twim_bytesToWrite
-                0x0080203f        0x1 Drivers/DriverTWIMaster.o
+                0x0080203d        0x1 Drivers/DriverTWIMaster.o
  .bss.Twim_bytesToRead
-                0x00802040        0x1 Drivers/DriverTWIMaster.o
+                0x0080203e        0x1 Drivers/DriverTWIMaster.o
  .bss.Twim_bytesWritten
-                0x00802041        0x1 Drivers/DriverTWIMaster.o
+                0x0080203f        0x1 Drivers/DriverTWIMaster.o
  .bss.Twim_bytesRead
-                0x00802042        0x1 Drivers/DriverTWIMaster.o
+                0x00802040        0x1 Drivers/DriverTWIMaster.o
  .bss.Twim_status
-                0x00802043        0x1 Drivers/DriverTWIMaster.o
+                0x00802041        0x1 Drivers/DriverTWIMaster.o
  .bss.Twim_result
-                0x00802044        0x1 Drivers/DriverTWIMaster.o
+                0x00802042        0x1 Drivers/DriverTWIMaster.o
  .bss.step.4175
-                0x00802045        0x1 main.o
+                0x00802043        0x1 main.o
  .bss.prevStick.4181
-                0x00802046        0x1 main.o
+                0x00802044        0x1 main.o
  *(COMMON)
- COMMON         0x00802047        0xc main.o
-                0x00802047                text
-                0x00802052                i
- COMMON         0x00802053        0x6 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avrxmega6\libc.a(iob.o)
-                0x00802053                __iob
-                0x00802059                PROVIDE (__bss_end, .)
+ COMMON         0x00802045        0xc main.o
+                0x00802045                text
+                0x00802050                i
+ COMMON         0x00802051        0x6 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avrxmega6\libc.a(iob.o)
+                0x00802051                __iob
+                0x00802057                PROVIDE (__bss_end, .)
                 0x00001a0e                __data_load_start = LOADADDR (.data)
-                0x00001a48                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00001a46                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00802059        0x0
+.noinit         0x00802057        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x00802059                _end = .
+                0x00802057                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
