@@ -48,7 +48,7 @@ int main(void) {
 		//SimpleFunction(); 		// Excercise 1
 		//RunningLight();			// Excercise 2
 		//CheckCursorstick();		// Excercise 3
-		TestMotor();			// Excercise 4
+		TestMotor();				// Excercise 4 and 5
 	}
 	return 0;
 }
