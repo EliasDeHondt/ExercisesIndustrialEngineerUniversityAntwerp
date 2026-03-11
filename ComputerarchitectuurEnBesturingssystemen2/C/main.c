@@ -19,12 +19,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-char text[11];
+char text[32];
 char i;
 
 void SimpleFunction(void);		// A simple function: print a counter (0 to 9) to the terminal
 void RunningLight(void);		// Running light loop
 void CheckCursorstick(void);	// Check cursorstick and print direction
+void TestMotor(void);			// Test motor driver with user input
 
 void init(void) {
 	// Initialize drivers
@@ -42,11 +43,12 @@ void init(void) {
 int main(void) {
 	init();
 	_delay_ms(500);
-	SimpleFunction();
 
 	while(1) {
-		RunningLight();
-		CheckCursorstick();
+		//SimpleFunction(); 		// Excercise 1
+		//RunningLight();			// Excercise 2
+		//CheckCursorstick();		// Excercise 3
+		TestMotor();			// Excercise 4
 	}
 	return 0;
 }
@@ -91,5 +93,16 @@ void CheckCursorstick(void) {
 		if (stick & 0x02) puts("RIGHT\r");    // B1 = SWR (0x02 = 0b00000010)
 		if (stick & 0x01) puts("CENTER\r");   // B0 = SWC (0x01 = 0b00000001)
 		prevStick = stick;
+	}
+}
+
+void TestMotor(void) {
+	int16_t speed = 0;
+
+	puts("Enter speed [-3000, +3000]: ");
+	if (scanf("%d", &speed) == 1) { // Read speed value from terminal
+		DriverMotorSet(speed, speed); // Apply same speed to both motors
+		sprintf(text, "Speed set to: %d\r", speed);
+		puts(text);
 	}
 }
