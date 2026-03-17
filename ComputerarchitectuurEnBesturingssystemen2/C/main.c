@@ -97,12 +97,23 @@ void CheckCursorstick(void) {
 }
 
 void TestMotor(void) {
-	int16_t speed = 0;
+	static uint8_t speedConfigured = 0;
+	static int16_t speed = 0;
+	EncoderStruct encoderPos;
 
-	puts("Enter speed [-3000, +3000]: ");
-	if (scanf("%d", &speed) == 1) { // Read speed value from terminal
-		DriverMotorSet(speed, speed); // Apply same speed to both motors
-		sprintf(text, "Speed set to: %d\r", speed);
-		puts(text);
+	if (!speedConfigured) {
+		puts("Enter speed [-3000, +3000]: ");
+		if (scanf("%d", &speed) == 1) {
+			DriverMotorSet(speed, speed); // Apply same speed to both motors
+			sprintf(text, "Speed set to: %d\r", speed);
+			puts(text);
+			speedConfigured = 1;
+		}
 	}
+
+	// Continuously print encoder values so wheel rotation is immediately visible.
+	encoderPos = DriverMotorGetEncoder();
+	sprintf(text, "Encoder A: %d, Encoder B: %d\r", encoderPos.Cnt1, encoderPos.Cnt2);
+	puts(text);
+	_delay_ms(100);
 }
