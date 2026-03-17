@@ -16,6 +16,7 @@
 
 #include <util/delay.h>
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -26,6 +27,7 @@ void SimpleFunction(void);		// A simple function: print a counter (0 to 9) to th
 void RunningLight(void);		// Running light loop
 void CheckCursorstick(void);	// Check cursorstick and print direction
 void TestMotor(void);			// Test motor driver with user input
+void sendByte(uint8_t value);	// Send one raw byte on USART
 
 void init(void) {
 	// Initialize drivers
@@ -49,6 +51,7 @@ int main(void) {
 		//RunningLight();			// Excercise 2
 		//CheckCursorstick();		// Excercise 3
 		TestMotor();				// Excercise 4 and 5
+		sendByte(0x55);				// Exercise 6 (0x55 = 0b01010101, alternating bits to make signal visible on oscilloscope)
 	}
 	return 0;
 }
@@ -116,4 +119,8 @@ void TestMotor(void) {
 	sprintf(text, "Encoder A: %d, Encoder B: %d\r", encoderPos.Cnt1, encoderPos.Cnt2);
 	puts(text);
 	_delay_ms(100);
+}
+
+void sendByte(uint8_t value) { // Simple function to send a byte over USART
+	putchar(value);
 }
