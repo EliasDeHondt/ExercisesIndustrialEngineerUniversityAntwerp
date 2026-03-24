@@ -1,57 +1,628 @@
-<html>
+<!DOCTYPE html>
+<html lang="nl">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SimpleCPU ASM → VHDL | Universiteit Antwerpen</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── UA Brand Tokens ──────────────────────────────────────────── */
+    :root {
+      --ua-red:        #BE1622;
+      --ua-red-dark:   #96101B;
+      --ua-red-light:  #f9e8ea;
+      --ua-navy:       #1B2A4A;
+      --ua-navy-mid:   #2d4270;
+      --ua-blue-tint:  #e8edf5;
+      --ua-white:      #ffffff;
+      --ua-grey-100:   #f6f6f6;
+      --ua-grey-200:   #ebebeb;
+      --ua-grey-400:   #b0b0b0;
+      --ua-grey-600:   #6b6b6b;
+      --ua-grey-900:   #1c1c1c;
+      --ua-orange:     #E87722;   /* invalid opcode indicator */
+      --ua-green:      #2e7d32;   /* valid opcode indicator   */
+      --radius:        4px;
+      --shadow-card:   0 1px 4px rgba(0,0,0,.12), 0 2px 12px rgba(0,0,0,.07);
+      --shadow-header: 0 2px 8px rgba(0,0,0,.18);
+    }
+
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 14px;
+      color: var(--ua-grey-900);
+      background-color: var(--ua-grey-100) !important; /* override JS bgColor */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────── */
+    .ua-header {
+      background-color: var(--ua-navy);
+      box-shadow: var(--shadow-header);
+      padding: 0;
+    }
+
+    .ua-header-inner {
+      max-width: 100%;
+      padding: 0 24px;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .ua-logo-block {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 24px 14px 0;
+      border-right: 1px solid rgba(255,255,255,0.12);
+      margin-right: 24px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .ua-u-symbol {
+      width: 44px;
+      height: 44px;
+      background-color: var(--ua-red);
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 28px;
+      font-weight: 600;
+      color: white;
+      line-height: 1;
+      flex-shrink: 0;
+      letter-spacing: -1px;
+    }
+
+    .ua-wordmark {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .ua-wordmark-top {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 11px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ua-wordmark-main {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ua-white);
+      letter-spacing: 0.01em;
+      white-space: nowrap;
+    }
+
+    .ua-tool-title {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 14px 0;
+    }
+
+    .ua-tool-title h1 {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--ua-white);
+      letter-spacing: 0.01em;
+    }
+
+    .ua-tool-title p {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+      font-style: italic;
+    }
+
+    /* ── Red accent bar ───────────────────────────────────────────── */
+    .ua-accent-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--ua-red) 0%, var(--ua-red-dark) 100%);
+    }
+
+    /* ── Info banner ──────────────────────────────────────────────── */
+    .ua-info-banner {
+      background-color: var(--ua-blue-tint);
+      border-bottom: 1px solid var(--ua-grey-200);
+      padding: 10px 24px;
+      font-size: 13px;
+      color: var(--ua-navy-mid);
+      line-height: 1.5;
+    }
+
+    .ua-info-banner a {
+      color: var(--ua-red);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .ua-info-banner a:hover { text-decoration: underline; }
+
+    /* ── Main workspace ───────────────────────────────────────────── */
+    .workspace {
+      flex: 1;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* ── Three-panel layout ───────────────────────────────────────── */
+    .panels {
+      display: grid;
+      grid-template-columns: 200px 1fr 1fr;
+      grid-template-rows: auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    /* ── Cards ────────────────────────────────────────────────────── */
+    .card {
+      background: var(--ua-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--ua-grey-200);
+      overflow: hidden;
+    }
+
+    .card-header {
+      background-color: var(--ua-navy);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-header-red { background-color: var(--ua-red); }
+
+    .card-header h2 {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ua-white);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .card-header .badge {
+      background: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.9);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: auto;
+    }
+
+    .card-body {
+      padding: 10px;
+      min-height: 80px;
+    }
+
+    /* ── Insert mode indicator ────────────────────────────────────── */
+    .insert-mode-row {
+      padding: 6px 14px;
+      background-color: var(--ua-grey-100);
+      border-top: 1px solid var(--ua-grey-200);
+      font-size: 11px;
+      color: var(--ua-grey-600);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .insert-mode-row #insMode {
+      font-size: 11px;
+    }
+
+    .insert-mode-row #insMode strong font[color="blue"] {
+      color: var(--ua-navy) !important;
+    }
+
+    /* ── Instruction table (left panel) ──────────────────────────── */
+    #instructionTable {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #instructionTable td {
+      padding: 7px 10px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ua-grey-900);
+      background-color: var(--ua-white) !important; /* override JS */
+      border-bottom: 1px solid var(--ua-grey-200);
+      cursor: pointer;
+      transition: background-color 0.12s ease, color 0.12s ease;
+      user-select: none;
+    }
+
+    #instructionTable td:hover {
+      background-color: var(--ua-red-light) !important;
+      color: var(--ua-red-dark) !important;
+    }
+
+    #instructionTable tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ── ASM program table (center panel) ────────────────────────── */
+    #asmTable {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #asmTable tr {
+      transition: border-top 0.05s;
+    }
+
+    #asmTable td {
+      padding: 5px 8px;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 12px;
+      border-bottom: 1px solid var(--ua-grey-200);
+      vertical-align: middle;
+      background-color: var(--ua-white) !important; /* override JS */
+      color: var(--ua-grey-900) !important;
+    }
+
+    /* Address column */
+    #asmTable td:nth-child(2) {
+      color: var(--ua-grey-600) !important;
+      font-size: 11px;
+      white-space: nowrap;
+      background-color: var(--ua-grey-100) !important;
+      border-right: 1px solid var(--ua-grey-200);
+    }
+
+    /* Instruction name column */
+    #asmTable td:nth-child(3) {
+      font-weight: 600;
+      background-color: var(--ua-white) !important;
+      color: var(--ua-navy) !important;
+    }
+
+    /* Opcode column */
+    #asmTable td:nth-child(4) {
+      font-size: 12px;
+      background-color: var(--ua-white) !important;
+    }
+
+    /* Trash column */
+    #asmTable td:nth-child(5),
+    #asmTable td:last-child {
+      text-align: center;
+      cursor: pointer;
+      background-color: var(--ua-white) !important;
+      width: 28px;
+      opacity: 0.45;
+      transition: opacity 0.12s;
+    }
+    #asmTable td:last-child:hover { opacity: 1; }
+
+    /* Opcode input */
+    #asmTable input[type="text"] {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 12px;
+      border: 1px solid var(--ua-grey-400);
+      border-radius: 2px;
+      padding: 2px 5px;
+      width: 30px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    /* valid opcode → green tint */
+    #asmTable input[type="text"][style*="background-color: rgb(204, 204, 0)"],
+    #asmTable input[type="text"][style*="background-color:#CCCC00"],
+    #asmTable input[type="text"][style*="background-color: #CCCC00"] {
+      background-color: #e6f4ea !important;
+      border-color: var(--ua-green) !important;
+    }
+
+    /* invalid opcode → orange tint */
+    #asmTable input[type="text"][style*="background-color: rgb(255, 102, 0)"],
+    #asmTable input[type="text"][style*="background-color:#FF6600"],
+    #asmTable input[type="text"][style*="background-color: #FF6600"] {
+      background-color: #fff3e0 !important;
+      border-color: var(--ua-orange) !important;
+    }
+
+    #asmTable input[type="text"]:focus {
+      border-color: var(--ua-navy);
+      box-shadow: 0 0 0 2px rgba(27,42,74,0.15);
+    }
+
+    /* cursor row highlight */
+    #asmTable tr[style*="border-top: 3px solid blue"] {
+      border-top: 2px solid var(--ua-red) !important;
+    }
+
+    /* ── VHDL output table ────────────────────────────────────────── */
+    #vhdlTable {
+      width: 100%;
+    }
+
+    #vhdlTable td {
+      font-family: 'Source Code Pro', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--ua-navy);
+      white-space: nowrap;
+      padding: 4px 2px;
+    }
+
+    /* ── Bottom toolbar ───────────────────────────────────────────── */
+    .toolbar {
+      background: var(--ua-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--ua-grey-200);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toolbar-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ua-grey-600);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .ua-divider {
+      width: 1px;
+      height: 28px;
+      background-color: var(--ua-grey-200);
+    }
+
+    /* ── Buttons ──────────────────────────────────────────────────── */
+    .btn {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.14s, transform 0.08s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1;
+      text-decoration: none;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background-color: var(--ua-red);
+      color: var(--ua-white);
+    }
+    .btn-primary:hover { background-color: var(--ua-red-dark); }
+
+    .btn-secondary {
+      background-color: var(--ua-navy);
+      color: var(--ua-white);
+    }
+    .btn-secondary:hover { background-color: var(--ua-navy-mid); }
+
+    .btn-ghost {
+      background-color: var(--ua-grey-100);
+      color: var(--ua-grey-900);
+      border: 1px solid var(--ua-grey-200);
+    }
+    .btn-ghost:hover { background-color: var(--ua-grey-200); }
+
+    /* File input hidden, styled as button */
+    .file-label {
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 16px;
+      border-radius: var(--radius);
+      background-color: var(--ua-grey-100);
+      color: var(--ua-grey-900);
+      border: 1px solid var(--ua-grey-200);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.14s;
+    }
+    .file-label:hover { background-color: var(--ua-grey-200); }
+
+    input[type="file"]#loadButton {
+      display: none;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────── */
+    .ua-footer {
+      background-color: var(--ua-navy);
+      color: rgba(255,255,255,0.45);
+      font-size: 11px;
+      text-align: center;
+      padding: 10px 24px;
+      margin-top: auto;
+    }
+    .ua-footer a { color: rgba(255,255,255,0.65); text-decoration: none; }
+    .ua-footer a:hover { color: white; text-decoration: underline; }
+
+    /* ── Scrollable panel bodies ──────────────────────────────────── */
+    .scroll-body {
+      max-height: calc(100vh - 320px);
+      overflow-y: auto;
+    }
+
+    .scroll-body::-webkit-scrollbar { width: 5px; }
+    .scroll-body::-webkit-scrollbar-track { background: var(--ua-grey-100); }
+    .scroll-body::-webkit-scrollbar-thumb { background: var(--ua-grey-400); border-radius: 3px; }
+
+    /* ── Arrow ────────────────────────────────────────────────────── */
+    .arrow-col {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 52px;
+    }
+
+    .arrow-icon {
+      font-size: 22px;
+      color: var(--ua-grey-400);
+    }
+
+    /* ── Hint text ────────────────────────────────────────────────── */
+    .hint {
+      font-size: 11px;
+      color: var(--ua-grey-600);
+      font-style: italic;
+      padding: 8px 10px;
+      border-top: 1px solid var(--ua-grey-200);
+    }
+  </style>
 </head>
-<body onLoad='startScripts();'>
-<center>
-<strong>
-SimpleCPU ASM to VHDL translator
-</strong>
-<br>
-<br>
-With this website, you can write your assembler program (in the middle table),<br>
-using the available instructions (in the left table)<br>
-and the program will be automatically translated into VHDL (the right table),<br>
-which can be copy pasted into the SimpleASM.vhd file of the SimpleCPU project.<br><br>
-You can add/change/delete the available assembler instructions in the ASM2VHDL.js file to match your custom version of the SimpleCPU.
-<br>
-<br>
-You can save your ASM program (including the available instructions) by clicking on the "Copy to clipboard" button and pasting this in a text file.<br>
-Afterward, you can reload this ASM program by selecting this file again.<br>
-<br>
-<br>
-Please report any bugs to <a href='mailto:koen.lostrie@uantwerpen.be'>koen.lostrie@uantwerpen.be</a>
-<br>
-</center>
-<script src='ASM2VHDL.js'></script>
-<center>
-<table border='1'>
-  <tr>
-    <td align='center'>Available instructions</td>
-    <td></td>
-    <td align='center'>Assembler program<br>click RMB to toggle insert mode:<div id='insMode'>currently <strong>OFF</strong></div></td>
-    <td></td>
-    <td align='center'>Machine language in VHDL format (for SimpleASM.vhd)<br>Any 'U's in this code come from invalid hex values in the according opcode (in orange).</td>
-  <tr>
-    <td width='*' valign='top'><table id='instructionTable' border='1'></table></td>
-    <td><font size='20'>&#8594;</font></td>
-    <td width='*' valign='top'><table id='asmTable' style='border-collapse:collapse;border-style:solid;border-width:0'></table></td>
-    <td align='center'><font size='20'>&#8594;</font><br><button id='convertButton' onclick='convertASM();'>Convert</button></td>
-    <td width='*' valign='top'><table id='vhdlTable' style='font-family: "Courier New"'><tr><td></td></tr></table></td>
-  </tr>
-  <tr>
-    <td colspan="3">
-      <center>
-      <label for="copyButton">Copy/paste ASM in a txt file</label>
-      <button id='copyButton' onclick='copyASM();'>Copy to clipboard</button><br>
-      <label for="loadButton">Load from file:</label>
-      <input type="file" id="loadButton" accept=".txt" onChange="loadASM()">
-      </center>
-    </td>
-    <td></td>
-    <td></td>
-    
-  </tr>
-</table>
-</center>
+<body onload="startScripts();">
+
+  <!-- ── UA Header ─────────────────────────────────────────────── -->
+  <header class="ua-header">
+    <div class="ua-header-inner">
+      <a class="ua-logo-block" href="https://www.uantwerpen.be" target="_blank" title="Universiteit Antwerpen">
+        <div class="ua-u-symbol">U</div>
+        <div class="ua-wordmark">
+          <span class="ua-wordmark-top">Universiteit</span>
+          <span class="ua-wordmark-main">Antwerpen</span>
+        </div>
+      </a>
+      <div class="ua-tool-title">
+        <h1>SimpleCPU &mdash; ASM naar VHDL Translator</h1>
+        <p>Departement Elektronica &amp; ICT &nbsp;·&nbsp; Digitale Systemen</p>
+      </div>
+    </div>
+  </header>
+  <div class="ua-accent-bar"></div>
+
+  <!-- ── Info banner ───────────────────────────────────────────── -->
+  <div class="ua-info-banner">
+    Schrijf je assemblerprogramma in de middelste kolom via de beschikbare instructies links.
+    Klik op <strong>Converteer</strong> om de VHDL-uitvoer rechts te genereren.
+    Sla op via <em>Kopieer naar klembord</em> en laad terug in via een <em>.txt</em>-bestand. &nbsp;|&nbsp;
+    Bugs melden: <a href="mailto:koen.lostrie@uantwerpen.be">koen.lostrie@uantwerpen.be</a>
+  </div>
+
+  <!-- ── Workspace ─────────────────────────────────────────────── -->
+  <main class="workspace">
+
+    <div class="panels">
+
+      <!-- LEFT: Available instructions -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Instructies</h2>
+          <span class="badge">klik om toe te voegen</span>
+        </div>
+        <div class="scroll-body">
+          <table id="instructionTable"></table>
+        </div>
+      </div>
+
+      <!-- CENTER: ASM program -->
+      <div class="card">
+        <div class="card-header card-header-red">
+          <h2>Assemblerprogramma</h2>
+          <span class="badge">RMB = insert-modus</span>
+        </div>
+        <div class="scroll-body">
+          <table id="asmTable" style="border-collapse:collapse;border-style:solid;border-width:0;width:100%"></table>
+        </div>
+        <div class="insert-mode-row">
+          <span>Insert-modus:</span>
+          <div id="insMode">currently <strong><font color="black">OFF</font></strong></div>
+        </div>
+        <div class="hint">Hover over een rij om de cursor te plaatsen. Rechtermuisklik om insert-modus aan/uit te zetten.</div>
+      </div>
+
+      <!-- RIGHT: VHDL output -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Machine Language &mdash; VHDL</h2>
+          <span class="badge">voor SimpleASM.vhd</span>
+        </div>
+        <div class="card-body scroll-body">
+          <table id="vhdlTable" style='font-family:"Source Code Pro",monospace'><tr><td></td></tr></table>
+        </div>
+        <div class="hint">Ongeldige opcodes (in oranje) verschijnen als <code>UUUUUUUU</code> in de uitvoer.</div>
+      </div>
+
+    </div>
+
+    <!-- ── Toolbar ──────────────────────────────────────────────── -->
+    <div class="toolbar">
+      <div class="toolbar-section">
+        <span class="toolbar-label">Converteer</span>
+        <button id="convertButton" class="btn btn-primary" onclick="convertASM();">
+          &#9654; Converteer naar VHDL
+        </button>
+      </div>
+
+      <div class="ua-divider"></div>
+
+      <div class="toolbar-section">
+        <span class="toolbar-label">Opslaan</span>
+        <button id="copyButton" class="btn btn-secondary" onclick="copyASM();">
+          &#128203; Kopieer naar klembord
+        </button>
+      </div>
+
+      <div class="ua-divider"></div>
+
+      <div class="toolbar-section">
+        <span class="toolbar-label">Laden</span>
+        <label class="file-label" for="loadButton">
+          &#128193; Laad uit bestand&hellip;
+        </label>
+        <input type="file" id="loadButton" accept=".txt" onchange="loadASM()">
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────────── -->
+  <footer class="ua-footer">
+    &copy; Universiteit Antwerpen &nbsp;&middot;&nbsp;
+    Departement Elektronica &amp; ICT &nbsp;&middot;&nbsp;
+    SimpleCPU project &nbsp;&middot;&nbsp;
+    <a href="mailto:koen.lostrie@uantwerpen.be">koen.lostrie@uantwerpen.be</a>
+  </footer>
+
+  <script src="ASM2VHDL.js"></script>
 </body>
 </html>
