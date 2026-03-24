@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="TB_SimpleCPU_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="TB_SimpleCPU" />
+            <top_module name="simpleasm" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="407.900210 us"></ZoomEndTime>
+      <Cursor1Time time="0.015000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="196"></NameColumnWidth>
+      <ValueColumnWidth column_width="83"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="9" />
+   <wvobject fp_name="/TB_SimpleCPU/Clk" type="logic">
+      <obj_property name="ElementShortName">Clk</obj_property>
+      <obj_property name="ObjectShortName">Clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/TB_SimpleCPU/Reset" type="logic">
+      <obj_property name="ElementShortName">Reset</obj_property>
+      <obj_property name="ObjectShortName">Reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="group61" type="group">
+      <obj_property name="label">Decoder</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Decoder_0/InstrCycle" type="other">
+         <obj_property name="ElementShortName">InstrCycle</obj_property>
+         <obj_property name="ObjectShortName">InstrCycle</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Decoder_0/Instruction" type="other">
+         <obj_property name="ElementShortName">Instruction</obj_property>
+         <obj_property name="ObjectShortName">Instruction</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Decoder_0/JumpInstruction" type="other">
+         <obj_property name="ElementShortName">JumpInstruction</obj_property>
+         <obj_property name="ObjectShortName">JumpInstruction</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Decoder_0/JumpNotTaken" type="other">
+         <obj_property name="ElementShortName">JumpNotTaken</obj_property>
+         <obj_property name="ObjectShortName">JumpNotTaken</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Decoder_0/CarryReg" type="logic">
+         <obj_property name="ElementShortName">CarryReg</obj_property>
+         <obj_property name="ObjectShortName">CarryReg</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Decoder_0/ZeroReg" type="logic">
+         <obj_property name="ElementShortName">ZeroReg</obj_property>
+         <obj_property name="ObjectShortName">ZeroReg</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group62" type="group">
+      <obj_property name="label">Control signals</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ProgramCounter" type="array">
+         <obj_property name="ElementShortName">ProgramCounter[7:0]</obj_property>
+         <obj_property name="ObjectShortName">ProgramCounter[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/MuxASel" type="logic">
+         <obj_property name="ElementShortName">MuxASel</obj_property>
+         <obj_property name="ObjectShortName">MuxASel</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/MuxBSel" type="logic">
+         <obj_property name="ElementShortName">MuxBSel</obj_property>
+         <obj_property name="ObjectShortName">MuxBSel</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/MuxCSel" type="logic">
+         <obj_property name="ElementShortName">MuxCSel</obj_property>
+         <obj_property name="ObjectShortName">MuxCSel</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/MuxDSel" type="logic">
+         <obj_property name="ElementShortName">MuxDSel</obj_property>
+         <obj_property name="ObjectShortName">MuxDSel</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/EnACC" type="logic">
+         <obj_property name="ElementShortName">EnACC</obj_property>
+         <obj_property name="ObjectShortName">EnACC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/EnPC" type="logic">
+         <obj_property name="ElementShortName">EnPC</obj_property>
+         <obj_property name="ObjectShortName">EnPC</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/EnInstr" type="logic">
+         <obj_property name="ElementShortName">EnInstr</obj_property>
+         <obj_property name="ObjectShortName">EnInstr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/EnOutput" type="logic">
+         <obj_property name="ElementShortName">EnOutput</obj_property>
+         <obj_property name="ObjectShortName">EnOutput</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/MuxDout" type="array">
+         <obj_property name="ElementShortName">MuxDout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">MuxDout[7:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group63" type="group">
+      <obj_property name="label">Accumulator</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/AccOut" type="array">
+         <obj_property name="ElementShortName">AccOut[7:0]</obj_property>
+         <obj_property name="ObjectShortName">AccOut[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/AluCF" type="logic">
+         <obj_property name="ElementShortName">AluCF</obj_property>
+         <obj_property name="ObjectShortName">AluCF</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/AluZF" type="logic">
+         <obj_property name="ElementShortName">AluZF</obj_property>
+         <obj_property name="ObjectShortName">AluZF</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group64" type="group">
+      <obj_property name="label">ALU</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ALU_0/A" type="array">
+         <obj_property name="ElementShortName">A[7:0]</obj_property>
+         <obj_property name="ObjectShortName">A[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ALU_0/B" type="array">
+         <obj_property name="ElementShortName">B[7:0]</obj_property>
+         <obj_property name="ObjectShortName">B[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ALU_0/Sel" type="array">
+         <obj_property name="ElementShortName">Sel[2:0]</obj_property>
+         <obj_property name="ObjectShortName">Sel[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ALU_0/Result" type="array">
+         <obj_property name="ElementShortName">Result[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Result[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ALU_0/Z" type="array">
+         <obj_property name="ElementShortName">Z[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Z[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ALU_0/CF" type="logic">
+         <obj_property name="ElementShortName">CF</obj_property>
+         <obj_property name="ObjectShortName">CF</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/ALU_0/ZF" type="logic">
+         <obj_property name="ElementShortName">ZF</obj_property>
+         <obj_property name="ObjectShortName">ZF</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group65" type="group">
+      <obj_property name="label">Memory</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Mem/Mem" type="array">
+         <obj_property name="ElementShortName">Mem[0:255][15:0]</obj_property>
+         <obj_property name="ObjectShortName">Mem[0:255][15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Mem/Addr" type="array">
+         <obj_property name="ElementShortName">Addr[7:0]</obj_property>
+         <obj_property name="ObjectShortName">Addr[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Mem/DataOut" type="array">
+         <obj_property name="ElementShortName">DataOut[15:0]</obj_property>
+         <obj_property name="ObjectShortName">DataOut[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Mem/DataIn" type="array">
+         <obj_property name="ElementShortName">DataIn[15:0]</obj_property>
+         <obj_property name="ObjectShortName">DataIn[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/Mem/WE" type="logic">
+         <obj_property name="ElementShortName">WE</obj_property>
+         <obj_property name="ObjectShortName">WE</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group66" type="group">
+      <obj_property name="label">Timer</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/TimerReg" type="array">
+         <obj_property name="ElementShortName">TimerReg[15:0]</obj_property>
+         <obj_property name="ObjectShortName">TimerReg[15:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/TimerStep" type="array">
+         <obj_property name="ElementShortName">TimerStep[2:0]</obj_property>
+         <obj_property name="ObjectShortName">TimerStep[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/TimerEnabled" type="logic">
+         <obj_property name="ElementShortName">TimerEnabled</obj_property>
+         <obj_property name="ObjectShortName">TimerEnabled</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/TimerNoOverflow" type="logic">
+         <obj_property name="ElementShortName">TimerNoOverflow</obj_property>
+         <obj_property name="ObjectShortName">TimerNoOverflow</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/SimpleCPU0/TimerMax" type="logic">
+         <obj_property name="ElementShortName">TimerMax</obj_property>
+         <obj_property name="ObjectShortName">TimerMax</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group67" type="group">
+      <obj_property name="label">I/O ports</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/TB_SimpleCPU/InPort" type="array">
+         <obj_property name="ElementShortName">InPort[7:0]</obj_property>
+         <obj_property name="ObjectShortName">InPort[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/OutPort" type="array">
+         <obj_property name="ElementShortName">OutPort[7:0]</obj_property>
+         <obj_property name="ObjectShortName">OutPort[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/PrevOutPort" type="array">
+         <obj_property name="ElementShortName">PrevOutPort[7:0]</obj_property>
+         <obj_property name="ObjectShortName">PrevOutPort[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/Green" type="logic">
+         <obj_property name="ElementShortName">Green</obj_property>
+         <obj_property name="ObjectShortName">Green</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/Orange" type="logic">
+         <obj_property name="ElementShortName">Orange</obj_property>
+         <obj_property name="ObjectShortName">Orange</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/Red" type="logic">
+         <obj_property name="ElementShortName">Red</obj_property>
+         <obj_property name="ObjectShortName">Red</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/Alert" type="logic">
+         <obj_property name="ElementShortName">Alert</obj_property>
+         <obj_property name="ObjectShortName">Alert</obj_property>
+      </wvobject>
+      <wvobject fp_name="/TB_SimpleCPU/WrongSensors" type="other">
+         <obj_property name="ElementShortName">WrongSensors</obj_property>
+         <obj_property name="ObjectShortName">WrongSensors</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
