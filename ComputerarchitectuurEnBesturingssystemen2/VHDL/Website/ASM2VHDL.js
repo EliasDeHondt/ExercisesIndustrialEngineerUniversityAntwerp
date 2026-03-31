@@ -21,7 +21,9 @@ const defAsmCodes = [
   ['JUMP C'     , 'AA' , '100110XXAAAAAAAA'],
   ['JUMP NZ'    , 'AA' , '100101XXAAAAAAAA'],
   ['JUMP NC'    , 'AA' , '100111XXAAAAAAAA'],
-  ['JUMP IND'   , 'MM' , '1011XXXXMMMMMMMM']];
+  ['JUMP IND'   , 'MM' , '1011XXXXMMMMMMMM'],
+  ['BITOR ACC'  , 'KK' , '1100XXXXKKKKKKKK'],
+  ['BITORZ ACC' , 'KK' , '1101XXXXKKKKKKKK']];
 var asmCodes = defAsmCodes; // can be overwritten by a load
 var asmTable;
 var instructionTable;

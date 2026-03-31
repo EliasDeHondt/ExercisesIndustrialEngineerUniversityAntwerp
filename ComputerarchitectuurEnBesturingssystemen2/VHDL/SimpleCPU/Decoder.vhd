@@ -51,7 +51,7 @@ architecture RTL of Decoder is
   type t_InstrCycle is (e_Fetch, e_Decode, e_Execute, e_Increment);
   signal InstrCycle : t_InstrCycle;
 
-  type t_Instruction is (e_Load, e_BitAnd, e_Add, e_AddInd, e_Sub, e_ReadMem, e_WriteMem, e_Input, e_Output, e_Jump, e_JumpZ, e_JumpC, e_JumpNZ, e_JumpNC, e_JumpInd, e_Error);
+  type t_Instruction is (e_Load, e_BitAnd, e_Add, e_AddInd, e_Sub, e_ReadMem, e_WriteMem, e_Input, e_Output, e_Jump, e_JumpZ, e_JumpC, e_JumpNZ, e_JumpNC, e_JumpInd, e_BitOr, e_BitOrZ, e_Error);
   signal Instruction : t_Instruction;
   signal JumpInstruction : boolean;
   signal JumpNotTaken    : boolean;
@@ -92,7 +92,10 @@ begin
       if SReset = '1' then
         CarryReg <= '0';
         ZeroReg  <= '0';
-      elsif InstrCycle = e_Execute and (Instruction = e_Add or Instruction = e_AddInd or Instruction = e_Sub or Instruction = e_BitAnd or Instruction = e_Load or Instruction = e_Input or Instruction = e_ReadMem) then
+      elsif InstrCycle = e_Execute and (Instruction = e_Add or Instruction = e_AddInd or Instruction = e_Sub or Instruction = e_BitAnd or Instruction = e_BitOr or Instruction = e_Load or Instruction = e_Input or Instruction = e_ReadMem) then
+        CarryReg <= CF;
+        ZeroReg  <= ZF;
+      elsif InstrCycle = e_Execute and Instruction = e_BitOrZ and ZeroReg = '1' then
         CarryReg <= CF;
         ZeroReg  <= ZF;
       end if;
@@ -114,6 +117,8 @@ begin
                 e_JumpNZ   when IR(7 downto 2) = "100101" else
                 e_JumpNC   when IR(7 downto 2) = "100111" else
                 e_JumpInd  when IR(7 downto 4) = "1011" else
+                e_BitOr    when IR(7 downto 4) = "1100" else
+                e_BitOrZ   when IR(7 downto 4) = "1101" else
                 e_Error;
   JumpInstruction <= true when Instruction = e_Jump or
                               Instruction = e_JumpZ or
@@ -124,11 +129,11 @@ begin
 
   MemWE <= '1' when InstrCycle = e_Execute and Instruction = e_WriteMem else '0';
   MuxA  <= '1' when InstrCycle = e_Increment else '0';
-  MuxB  <= '1' when (InstrCycle = e_Decode or InstrCycle = e_Execute) and (Instruction = e_Load or Instruction = e_BitAnd or Instruction = e_Add or Instruction = e_Sub) else '0';
+  MuxB  <= '1' when (InstrCycle = e_Decode or InstrCycle = e_Execute) and (Instruction = e_Load or Instruction = e_BitAnd or Instruction = e_Add or Instruction = e_Sub or Instruction = e_BitOr or Instruction = e_BitOrZ) else '0';
   MuxC  <= '1' when (InstrCycle = e_Decode or InstrCycle = e_Execute) and (Instruction = e_ReadMem or Instruction = e_WriteMem or Instruction = e_AddInd or Instruction = e_JumpInd) else '0';
   MuxD  <= '1' when (InstrCycle = e_Decode or InstrCycle = e_Execute) and (Instruction = e_Input) else '0';
   EnIR  <= '1' when InstrCycle = e_Fetch else '0';
-  EnACC <= '1' when InstrCycle = e_Execute and (Instruction = e_Load or Instruction = e_BitAnd or Instruction = e_Add or Instruction = e_AddInd or Instruction = e_Sub or Instruction = e_ReadMem or Instruction = e_Input) else '0';
+  EnACC <= '1' when InstrCycle = e_Execute and (Instruction = e_Load or Instruction = e_BitAnd or Instruction = e_Add or Instruction = e_AddInd or Instruction = e_Sub or Instruction = e_ReadMem or Instruction = e_Input or Instruction = e_BitOr or (Instruction = e_BitOrZ and ZeroReg = '1')) else '0';
   EnPC  <= '1' when (InstrCycle = e_Increment and JumpNotTaken) or -- Normal: next instruction
                     (InstrCycle = e_Execute and                    -- Branch instructions
                     (Instruction = e_Jump or                       -- Unconditional jump
@@ -174,5 +179,6 @@ begin
             "011" when (InstrCycle = e_Decode or InstrCycle = e_Execute) and Instruction = e_Sub else         -- ALU Z=A-B
             "100" when (InstrCycle = e_Decode or InstrCycle = e_Execute) and Instruction = e_BitAnd else      -- ALU Z=A&B
             "101" when InstrCycle = e_Increment else                                                          -- ALU Z=A+1
+            "110" when (InstrCycle = e_Decode or InstrCycle = e_Execute) and (Instruction = e_BitOr or (Instruction = e_BitOrZ and ZeroReg = '1')) else -- ALU Z=A|B
             "111";                                                                                            -- Unused
 end RTL;

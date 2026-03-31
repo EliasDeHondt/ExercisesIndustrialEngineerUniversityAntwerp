@@ -23,6 +23,7 @@ end ALU;
 --    Z=A-B
 --    Z=A&B (bitwise and)
 --    Z=A+1 (used for program counter)
+--    Z=A|B (bitwise or)
 
 -- Available flags:
 --    CF: carry flag (not always overflow!)
@@ -46,6 +47,7 @@ begin
             Sum (7 downto 0) when Sel = "011" else -- A-B
             A and B when Sel = "100" else          -- A&B
             Sum (7 downto 0) when Sel = "101" else -- A+1
+            A or B when Sel = "110" else -- A|B
             (others => '0');
   Z  <= Result;
 
