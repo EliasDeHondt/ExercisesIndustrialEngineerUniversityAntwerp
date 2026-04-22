@@ -213,4 +213,141 @@ void MemFunction() {
 }
 ```
 
-### Question 4f: Oplossing met heap_4.c
+
+### Question 4e: Heap-fragmentatie in Oefening 4D met heap_2.c
+
+**Analyse van LinebotOS-oef4D:**
+
+De code voert 6 stappen uit met 6 geheugenblokken:
+
+```c
+Step 1: Unallocated heap memory: 16000 bytes
+Step 2: Allocate 6 blocks (BlockSize = 2660 bytes each)
+Step 3: Free Block1 + Block2 (aanliggende blokken!)
+Step 4: ❌ FAALT - Allocate 2x BlockSize (5320 bytes)
+        Vrij geheugen: 5320 bytes totaal
+        Maar geen AANEENGESLOTEN blok van 5320 bytes!
+```
+
+**Geheugenvisualisatie:**
+
+```
+Na stap 2 (6 blokken gealloceerd):
+[Block1:2660] [Block2:2660] [Block3:2660] [Block4:2660] [Block5:2660] [Block6:2660]
+Heap vol (16000 bytes bezet)
+
+Na stap 3 (Block1 + Block2 vrijgegeven):
+[FREE:2660] [FREE:2660] [USED:2660] [USED:2660] [USED:2660] [USED:2660]
+Vrij totaal: 5320 bytes (2660+2660)
+
+Stap 4 probeert 5320 bytes te alloceren:
+PROBLEEM MET HEAP_2.C:
+- heap_2.c doet GEEN coalescing
+- Twee vrije blokken van elk 2660 bytes BLIJVEN APART
+- Eerste fit algoritme: Zoekt eerste vrije blok ≥ 5320 bytes
+- Maar: Geen enkel vrij blok is 5320 bytes groot!
+- Allocatie FAALT ❌
+```
+
+**Waarom faalt heap_2.c?**
+
+Uit FreeRTOS/heap_2.c commentaar:
+```
+"A sample implementation...that permits allocated blocks to be freed, 
+but does NOT COMBINE ADJACENT FREE BLOCKS into a single larger block 
+(and so will fragment memory)"
+```
+
+**Kern van het probleem:**
+
+1. **First-Fit algoritme:** Zoekt eerste vrije blok groot genoeg
+2. **Geen coalescing:** Aangrenzende vrije blokken worden NIET samengevoegd
+3. **Fragmentatie:** Vrij geheugen wordt verspreída in kleine stukken
+4. **Allocatie faalt:** Ondanks 5320 bytes vrij, geen aaneengesloten blok beschikbaar
+
+**Waarom is dit problematisch op embedded systemen?**
+- Beperkt geheugen (~16KB)
+- Herhaaldelijke alloc/dealloc patronen → fragmentatie
+- Na korte tijd: Veel kleine vrije blokken → niets kan meer worden gealloceerd
+
+### Question 4f: Waarom heap_4.c beter is (maar toch nog faalt)
+
+**Heap_4.c algoritme: First-Fit met Coalescing**
+
+```
+Na stap 3 (Block1 + Block2 vrijgegeven):
+[FREE:2660] [FREE:2660] [USED:2660] [USED:2660] [USED:2660] [USED:2660]
+
+HEAP_4.C COALESCING:
+Wanneer Block2 wordt vrijgegeven:
+- Controleert linker buur (Block1) → is FREE
+- Controleert rechter buur (Block3) → is USED
+- Merget met linker buur → [FREE:5320] [USED:2660] [USED:2660] [USED:2660] [USED:2660]
+
+Stap 4 SUCCESVOL:
+Allocatie van 5320 bytes ✅ → [USED:5320] [USED:2660] [USED:2660] [USED:2660] [USED:2660]
+```
+
+**Stap 5 en 6 in oef4D:**
+
+```
+Stap 5: Free Block4 + Block6 (NIET aanliggende!)
+[USED:5320] [USED:2660] [FREE:2660] [USED:2660] [FREE:2660]
+Vrij: 5320 bytes (twee aparte blokken van 2660)
+
+Stap 6: Allocate 2x BlockSize (5320 bytes)
+```
+
+**Waarom faalt het toch nog met heap_4.c?**
+
+Zelfs heap_4.c kan falen omdat:
+
+1. **Block4 en Block6 zijn NIET aanliggende:**
+   - Block4 is LINKS van Block5 (gebruikt)
+   - Block6 is RECHTS van Block5 (gebruikt)
+   - Block5 (USED) staat ertussen → geen merge mogelijk
+
+2. **Fragmentatie ondanks coalescing:**
+   ```
+   [USED:5320] [USED:2660] [FREE:2660] [USED:2660] [FREE:2660]
+                                 Block5 blokkeert merge!
+   
+   Heap_4 coalescing faalt:
+   - Linker FREE (Block4) heeft rechter USED (Block5)
+   - Rechter FREE (Block6) heeft linker USED (Block5)
+   - GEEN merge mogelijk door Block5!
+   ```
+
+3. **Resultaat:**
+   - Totaal vrij: 5320 bytes (2660+2660)
+   - Maar in twee aparte blokken
+   - Allocatie van 5320 bytes mislukt ❌
+
+**Visualisatie van het probleem:**
+
+```
+[        Block1 (5320)        ][Block2:2660]
+[Block3:2660][Block4:2660][Block5:2660][Block6:2660]
+             [  FREE   ]         [  FREE   ]
+                ^                      ^
+          GESCHEIDEN DOOR USED BLOK
+
+heap_4 kan NIET samenvoegen!
+```
+
+**Waarom faalt heap_4 toch nog?**
+
+- Coalescing werkt ALLEEN voor aangrenzende blokken
+- Block5 (USED) zit ertussen
+- Dus: 2660+2660 ≠ samengevoegd 5320 bytes
+- Allocatie van 5320 bytes faalt in stap 6
+
+**Beste praktijk:**
+
+- Vermijd fragmentatie door:
+  1. **Pool allocation:** Reserveer vaste geheugenblokken
+  2. **Predictable patterns:** Alloc/dealloc in vaste volgorde
+  3. **Monitor geheugen:** Check `xPortGetFreeHeapSize()` regelmatig
+  4. **Gebruik heap_5.c:** Voor complexe scenario's met meerdere heaps
+  5. **Alloceer vroeg:** Maak blokken aan startup, niet runtime
+
