@@ -18,6 +18,8 @@
 #include "DriverMPU6050.h"
 #include "DriverMotor.h"
 
+#include "Tasks/TerminalTask.h"
+
 #include <util/delay.h>
 
 #include <stdio.h>
@@ -45,6 +47,8 @@ int main(void) {
 
 	_delay_ms(10);
 
-	vTaskStartScheduler();	// Start scheduler loop
+	InitTerminalTask();			// Initialize terminal task
+
+	vTaskStartScheduler();		// Start scheduler loop
 	return 0;
 }

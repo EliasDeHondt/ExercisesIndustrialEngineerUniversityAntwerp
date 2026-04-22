@@ -335,6 +335,14 @@
       <SubType>compile</SubType>
       <Link>memmap.c</Link>
     </Compile>
+    <Compile Include="Tasks\TerminalTask.c">
+      <SubType>compile</SubType>
+      <Link>TerminalTask.c</Link>
+    </Compile>
+    <Compile Include="Tasks\TerminalTask.h">
+      <SubType>compile</SubType>
+      <Link>TerminalTask.h</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Drivers\" />

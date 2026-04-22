@@ -61,7 +61,8 @@ C_SRCS +=  \
 ../FreeRTOS/timers.c \
 ../hooks.c \
 ../main.c \
-../memmap.c
+../memmap.c \
+../Tasks/TerminalTask.c
 
 
 PREPROCESSING_SRCS +=  \
@@ -94,7 +95,8 @@ tasks.o \
 timers.o \
 hooks.o \
 main.o \
-memmap.o
+memmap.o \
+TerminalTask.o
 
 OBJS_AS_ARGS +=  \
 Drivers/Drivepl9823Bitbang.o \
@@ -119,7 +121,8 @@ tasks.o \
 timers.o \
 hooks.o \
 main.o \
-memmap.o
+memmap.o \
+TerminalTask.o
 
 C_DEPS +=  \
 Drivers/Drivepl9823Bitbang.d \
@@ -144,7 +147,8 @@ tasks.d \
 timers.d \
 hooks.d \
 main.d \
-memmap.d
+memmap.d \
+TerminalTask.d
 
 C_DEPS_AS_ARGS +=  \
 Drivers/Drivepl9823Bitbang.d \
@@ -169,7 +173,8 @@ tasks.d \
 timers.d \
 hooks.d \
 main.d \
-memmap.d
+memmap.d \
+TerminalTask.d
 
 OUTPUT_FILE_PATH +=LinebotTemplate1.elf
 
@@ -333,6 +338,13 @@ Drivers/DriverUSART.o: ../Drivers/DriverUSART.c
 	
 
 ./memmap.o: .././memmap.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\include" -I".." -I"../Drivers" -I"../FreeRTOS" -I"../Tasks"  -O0 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -mmcu=atxmega384c3 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\gcc\dev\atxmega384c3" -c -std=gnu99  -Werror=implicit-function-declaration -Werror=int-conversion -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./TerminalTask.o: ../Tasks/TerminalTask.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\include" -I".." -I"../Drivers" -I"../FreeRTOS" -I"../Tasks"  -O0 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -mmcu=atxmega384c3 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\gcc\dev\atxmega384c3" -c -std=gnu99  -Werror=implicit-function-declaration -Werror=int-conversion -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

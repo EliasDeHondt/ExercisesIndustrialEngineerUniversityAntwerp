@@ -48,3 +48,5 @@ main.c
 
 memmap.c
 
+Tasks\TerminalTask.c
+
