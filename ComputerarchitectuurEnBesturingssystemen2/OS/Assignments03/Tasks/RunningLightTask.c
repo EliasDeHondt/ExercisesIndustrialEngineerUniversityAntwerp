@@ -13,7 +13,6 @@
 
 #include <util/delay.h>
 
-// Global direction variable (modified by terminal task)
 volatile int8_t runningLightDirection = 1;
 
 static volatile uint8_t runningLightPosition = 0;
@@ -38,7 +37,6 @@ static void WorkerRunningLight(void *pvParameters) {
 		uint8_t ledPattern = (1 << runningLightPosition);
 		DriverLedWrite(ledPattern);
 
-		// Delay 500ms
 		_delay_ms(500);
 	}
 }
