@@ -1,4 +1,5 @@
-main.d main.o: .././main.c .././hwconfig.h \
+RunningLightTask.d RunningLightTask.o: ../Tasks/RunningLightTask.c \
+ ../hwconfig.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\sfr_defs.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\inttypes.h \
@@ -11,26 +12,17 @@ main.d main.o: .././main.c .././hwconfig.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\xmega.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\fuse.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h \
- ../FreeRTOS/FreeRTOS.h \
+ ../Tasks/RunningLightTask.h ../FreeRTOS/FreeRTOS.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stddef.h \
  ../FreeRTOSConfig.h ../FreeRTOS/projdefs.h ../FreeRTOS/portable.h \
  ../FreeRTOS/deprecated_definitions.h ../FreeRTOS/portmacro.h \
  ../FreeRTOS/mpu_wrappers.h ../FreeRTOS/task.h ../FreeRTOS/list.h \
- ../Drivers/DriverSysClk.h ../hwconfig.h ../Drivers/DriverUSART.h \
- ../Drivers/DriverCursorStick.h ../Drivers/DriverPower.h \
- ../Drivers/DriverTwiMaster.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h \
- ../Drivers/DriverAdc.h ../Drivers/DriverLed.h ../Drivers/DriverMPU6050.h \
- ../Drivers/DriverTWIMaster.h ../Drivers/DriverMotor.h \
- .././Tasks/RunningLightTask.h .././Tasks/TerminalTask.h \
+ ../Drivers/DriverLed.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdio.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdarg.h \
- c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h
+ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h
 
-.././hwconfig.h:
+../hwconfig.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\io.h:
 
@@ -56,6 +48,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\lock.h:
 
+../Tasks/RunningLightTask.h:
+
 ../FreeRTOS/FreeRTOS.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stddef.h:
@@ -76,42 +70,10 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\
 
 ../FreeRTOS/list.h:
 
-../Drivers/DriverSysClk.h:
-
-../hwconfig.h:
-
-../Drivers/DriverUSART.h:
-
-../Drivers/DriverCursorStick.h:
-
-../Drivers/DriverPower.h:
-
-../Drivers/DriverTwiMaster.h:
-
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\avr\interrupt.h:
-
-../Drivers/DriverAdc.h:
-
 ../Drivers/DriverLed.h:
-
-../Drivers/DriverMPU6050.h:
-
-../Drivers/DriverTWIMaster.h:
-
-../Drivers/DriverMotor.h:
-
-.././Tasks/RunningLightTask.h:
-
-.././Tasks/TerminalTask.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h:
-
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdio.h:
-
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\lib\gcc\avr\5.4.0\include\stdarg.h:
-
-c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\stdlib.h:
