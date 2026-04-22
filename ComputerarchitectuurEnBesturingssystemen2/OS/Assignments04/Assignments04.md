@@ -1,11 +1,9 @@
 ![logo](https://eliasdh.com/assets/media/images/logo-github.png)
-# 💙🤍OS🤍💙
+# 💙🤍Assignments04🤍💙
 
 ## Assignments04
 
-### Deel 1: pvPortMalloc() en xPortGetFreeHeapSize() testen
-
-#### Question 4a: Output pvPortMalloc() en xPortGetFreeHeapSize() test
+### Question 4a: Output pvPortMalloc() en xPortGetFreeHeapSize() test
 
 **Testresultaten:**
 
@@ -68,13 +66,85 @@ SRAM stop:	     	       	       	       0x9fff
 - TCB IDLE: 0x2b58 - 0x2b87 = 0x30 (48 bytes)
 
 
-### Question 4c: Geheugenaddressen van variabelen (Oefening 4A)
+### Question 4c: Geheugenaddressen van variabelen
 
+**Testresultaten**
+
+```
+=== OEFENING 4A - GEHEUGENADDRESSEN ===
+Globale variabelen:
+  Var1 adres: 0x246E
+  Var2 adres: 0x2016
+
+Lokale variabelen in WorkerMemTask():
+  Var4 adres: 0x287C (lokaal)
+  Var5 adres: 0x2468 (static)
+  Var6 adres: 0x2018 (static geïnitialiseerd)
+
+Geheugenmapping:
+MEMORY MAP:
+-----------
+IO registers start:	    	       	       0x0000
+IO registers end:	      	       	       0x0fff
+EEPROM start:	  	       	       	       0x1000
+EEPROM end:	    	       	       	       0x1fff
+SRAM start:	    	       	       	       0x2000
+	.DATA start:	   	       	           0x2000
+	.DATA end:	     	       	           0x23af
+	.BSS start:	    	       	           0x23b0
+	.BSS end:	      	       	           0x247b
+	.HEAP start:	   	       	           0x247e
+	Task name: mem
+		STACK end:	     	               0x2483
+		TCB start:	     	               0x2887
+		TCB end:	       	               0x28b6
+	Task name: IDLE
+		STACK end:	     	               0x28bb
+		TCB start:	     	               0x29bf
+		TCB end:	       	               0x29ee
+	.HEAP end:	     	       	           0x647d
+	.Bare metal STACK end:	 	           0x647e
+	.Bare metal STACK start:	           0x9fff
+SRAM stop:	    	       	               0x9fff
+```
+
+**Analyse per variabele met adressen:**
+
+| Variabele | Type | Initialisatie | Adres | Sectie | Reden |
+|-----------|------|----------------|-------|--------|--------|
+| **Var1** | `volatile int` globaal | Nee | 0x246E | **.BSS** | Ongeïnitialiseerd globaal in .BSS (0x23b0-0x247b) |
+| **Var2** | `volatile int` globaal | Ja (=50) | 0x2016 | **.DATA** | Geïnitialiseerd globaal in .DATA (0x2000-0x23af) |
+| **Var3** | `volatile int` lokaal in main() | Ja (=10) | [main-stack] | **STACK** | Lokale variabelen in main() op main stack (niet zichtbaar hier) |
+| **Var4** | `int` lokaal in WorkerMemTask() | Nee | 0x287C | **STACK** | Lokale variabele in mem task stack (0x2483-0x2886) |
+| **Var5** | `static int` in WorkerMemTask() | Nee | 0x2468 | **.BSS** | Static ongeïnitialiseerd in .BSS (0x23b0-0x247b) |
+| **Var6** | `static int` in WorkerMemTask() | Ja (=10) | 0x2018 | **.DATA** | Static geïnitialiseerd in .DATA (0x2000-0x23af) |
+
+**Verklaring per sectie:**
+
+- **.DATA sectie (0x2000 - 0x23af):** 
+  - Bevat alle **geïnitialiseerde globale en statische variabelen**
+  - Deze waarden zijn in het programmageheugen opgeslagen en worden bij boot in SRAM geladen
+  - Var2 (0x2016) en Var6 (0x2018) worden hier opgeslagen
+  
+- **.BSS sectie (0x23b0 - 0x247b):**
+  - Bevat alle **ongeïnitialiseerde globale en statische variabelen**
+  - Deze worden geïnitialiseerd op 0 bij het opstarten
+  - Var1 (0x246E) en Var5 (0x2468) worden hier opgeslagen
+  - `volatile` modifier voorkomt compiler optimalisatie
+  
+- **STACK sectie (per task):**
+  - Bevat **lokale variabelen** (automatische storage duration)
+  - mem task STACK: 0x2483 - 0x2886 (groeit omhoog)
+  - Var4 (0x287C) wordt op mem task stack geplaatst
+  - Var3 op main task stack (niet zichtbaar in mem task view)
+  
+**TCB-grootte afleiden:**
+- mem task TCB: 0x2887 - 0x28b6 = **48 bytes** (0x30)
+- IDLE task TCB: 0x29bf - 0x29ee = **48 bytes** (0x30)
+- Beide tasks hebben dezelfde TCB-grootte van 48 bytes
 
 ### Question 4d: MemFunction geheugenlek (Oefening 4B vs 4C)
 
-
 ### Question 4e: Heap-fragmentatie in Oefening 4D
-
 
 ### Question 4f: Oplossing met heap_4.c
