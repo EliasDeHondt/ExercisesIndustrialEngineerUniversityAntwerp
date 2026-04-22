@@ -145,6 +145,72 @@ SRAM stop:	    	       	               0x9fff
 
 ### Question 4d: MemFunction geheugenlek (Oefening 4B vs 4C)
 
-### Question 4e: Heap-fragmentatie in Oefening 4D
+**Code analyse:**
+
+**LinebotOS-oef4B (WERKT CORRECT):**
+```c
+void MemFunction() {
+    int num[100];           // Stack-array: 400 bytes
+    int a;
+    
+    for (a=0; a<100; a++) {
+        num[a] = a;
+    }
+    printf("Complete!\r\n");
+}
+// Stack-array wordt AUTOMATISCH freed wanneer functie eindigt
+```
+
+**LinebotOS-oef4C (FAALT met Memory Allocation Error):**
+```c
+void MemFunction() {
+    int *num;
+    int a;
+    
+    num = pvPortMalloc(sizeof(int) * 100);  // Dynamische allocatie: 400+ bytes
+    
+    for (a=0; a<100; a++) {
+        num[a] = a;
+    }
+    printf("Complete!\r\n");
+    // GEEN vPortFree(num) !!!
+}
+// Geheugen blijft gealloceerd, wordt NIET vrijgegeven!
+```
+
+**Het probleem:**
+
+1. **Geheugenlek in 4C:**
+   - `MemFunction()` wordt elke 100ms aangeroepen
+   - Elke keer: `pvPortMalloc(400)` alloceert geheugen
+   - Maar: Geen corresponderende `vPortFree()` 
+   - Na ~10 seconden (100+ iteraties): **Heap vol!**
+   - `pvPortMalloc()` faalt → returns NULL
+   - Pointer is NULL → crash of hang
+
+2. **Waarom werkt 4B wel:**
+   - Array op stack: `int num[100]`
+   - Stack-geheugen wordt AUTOMATISCH teruggegeven na functie-einde
+   - Geen geheugenlek, geen fragmentatie
+   - Stack is klein (400 bytes) → geen probleem
+
+**Correctie voor 4C:**
+
+```c
+void MemFunction() {
+    int *num;
+    int a;
+
+    num = pvPortMalloc(sizeof(int) * 100);
+
+    if (num != NULL) {  // ALTIJD checken op NULL!
+        for (a=0; a<100; a++) num[a] = a;
+
+        printf("Complete!\r\n");
+
+        vPortFree(num);  // ALTIJD vrijgeven!
+    } else printf("ERROR: pvPortMalloc failed!\r\n");
+}
+```
 
 ### Question 4f: Oplossing met heap_4.c
