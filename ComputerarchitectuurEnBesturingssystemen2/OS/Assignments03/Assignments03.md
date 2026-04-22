@@ -19,8 +19,6 @@ slower or inconsistent.
 `vTaskGetRunTimeStats()` confirms this: the terminal task is allocated almost all
 processor time, leaving only a small slice for the running light task.
 
----
-
 ### Question 3b: Effect of raising the running light task priority by 1
 
 When the running light task has a higher priority than the terminal task, the FreeRTOS
@@ -29,8 +27,6 @@ whenever it is ready. The terminal task only gets CPU time when the running ligh
 is inside its `_delay_ms()` busy-wait — but since `_delay_ms()` never yields, the
 terminal task never runs at all. As a result the terminal becomes completely
 unresponsive: characters typed are never processed and the direction cannot be changed.
-
----
 
 ### Question 3c: Difference between `_delay_ms()` and `vTaskDelayUntil()`
 
@@ -45,8 +41,6 @@ unresponsive: characters typed are never processed and the direction cannot be c
 waiting. The scheduler can run other tasks, and the running light task wakes up exactly
 at the intended absolute tick count.
 
----
-
 ### Question 3d: Difference between `vTaskDelayUntil()` and `vTaskDelay()`
 
 | | `vTaskDelay()` | `vTaskDelayUntil()` |
@@ -58,8 +52,6 @@ at the intended absolute tick count.
 Example: if the task body takes 5 ms and you call `vTaskDelay(100)`, the effective
 period is 105 ms. With `vTaskDelayUntil(&lastWake, 100)` the period stays exactly
 100 ms regardless of how long the task body took.
-
----
 
 ### Question 3e: Effect of `configUSE_PREEMPTION = 0` (Cooperative Scheduling)
 
