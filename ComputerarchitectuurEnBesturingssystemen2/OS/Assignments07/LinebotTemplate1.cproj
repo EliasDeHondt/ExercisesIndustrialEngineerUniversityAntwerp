@@ -335,6 +335,14 @@
       <SubType>compile</SubType>
       <Link>memmap.c</Link>
     </Compile>
+    <Compile Include="Tasks\CursorstickTask.c">
+      <SubType>compile</SubType>
+      <Link>Tasks\CursorstickTask.c</Link>
+    </Compile>
+    <Compile Include="Tasks\CursorstickTask.h">
+      <SubType>compile</SubType>
+      <Link>Tasks\CursorstickTask.h</Link>
+    </Compile>
     <Compile Include="Tasks\RunningLightTask.c">
       <SubType>compile</SubType>
       <Link>RunningLightTask.c</Link>

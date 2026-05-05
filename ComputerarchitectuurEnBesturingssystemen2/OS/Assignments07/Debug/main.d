@@ -23,6 +23,7 @@ main.d main.o: .././main.c .././hwconfig.h \
  ../Drivers/DriverAdc.h ../Drivers/DriverLed.h ../Drivers/DriverMPU6050.h \
  ../Drivers/DriverTWIMaster.h ../Drivers/DriverMotor.h \
  .././Tasks/RunningLightTask.h .././Tasks/TerminalTask.h \
+ .././Tasks/CursorstickTask.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay_basic.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\math.h \
@@ -103,6 +104,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\
 .././Tasks/RunningLightTask.h:
 
 .././Tasks/TerminalTask.h:
+
+.././Tasks/CursorstickTask.h:
 
 c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\avr8\avr8-gnu-toolchain\avr\include\util\delay.h:
 

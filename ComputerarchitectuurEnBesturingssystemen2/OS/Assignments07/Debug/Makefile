@@ -62,6 +62,7 @@ C_SRCS +=  \
 ../hooks.c \
 ../main.c \
 ../memmap.c \
+../Tasks/CursorstickTask.c \
 ../Tasks/RunningLightTask.c \
 ../Tasks/TerminalTask.c
 
@@ -97,6 +98,7 @@ timers.o \
 hooks.o \
 main.o \
 memmap.o \
+Tasks/CursorstickTask.o \
 RunningLightTask.o \
 TerminalTask.o
 
@@ -124,6 +126,7 @@ timers.o \
 hooks.o \
 main.o \
 memmap.o \
+Tasks/CursorstickTask.o \
 RunningLightTask.o \
 TerminalTask.o
 
@@ -151,6 +154,7 @@ timers.d \
 hooks.d \
 main.d \
 memmap.d \
+Tasks/CursorstickTask.d \
 RunningLightTask.d \
 TerminalTask.d
 
@@ -178,6 +182,7 @@ timers.d \
 hooks.d \
 main.d \
 memmap.d \
+Tasks/CursorstickTask.d \
 RunningLightTask.d \
 TerminalTask.d
 
@@ -343,6 +348,13 @@ Drivers/DriverUSART.o: ../Drivers/DriverUSART.c
 	
 
 ./memmap.o: .././memmap.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\include" -I".." -I"../Drivers" -I"../FreeRTOS" -I"../Tasks"  -O0 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -mmcu=atxmega384c3 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\gcc\dev\atxmega384c3" -c -std=gnu99  -Werror=implicit-function-declaration -Werror=int-conversion -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+Tasks/CursorstickTask.o: ../Tasks/CursorstickTask.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\include" -I".." -I"../Drivers" -I"../FreeRTOS" -I"../Tasks"  -O0 -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -mmcu=atxmega384c3 -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAC_DFP\1.1.50\gcc\dev\atxmega384c3" -c -std=gnu99  -Werror=implicit-function-declaration -Werror=int-conversion -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

@@ -20,6 +20,7 @@
 
 #include "Tasks/RunningLightTask.h"
 #include "Tasks/TerminalTask.h"
+#include "Tasks/CursorstickTask.h"
 
 #include <util/delay.h>
 
@@ -43,6 +44,7 @@ int initDrivers(void) { 		// Initialize all hardware drivers
 int initTasks(void) {			// Initialize all FreeRTOS tasks
 	InitRunningLightTask();		// Initialize running light task
 	InitTerminalTask();			// Initialize terminal task
+	InitCursorstickTask();		// Initialize cursorstick FIFO queue task
 	return 0;
 }
 

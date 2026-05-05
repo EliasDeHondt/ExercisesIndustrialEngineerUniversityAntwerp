@@ -5,6 +5,7 @@
 **/
 #include "hwconfig.h"
 #include "TerminalTask.h"
+#include "CursorstickTask.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -28,6 +29,7 @@ static void WorkerTerminal(void *pvParameters) {
 	printf("  links   - richting links\r\n");
 	printf("  rechts  - richting rechts\r\n");
 	printf("  stats   - CPU statistieken\r\n");
+	printf("  fifo    - lees cursorstick FIFO queue\r\n");
 	printf("Input> ");
 	fflush(stdout);
 
@@ -44,6 +46,7 @@ static void WorkerTerminal(void *pvParameters) {
 					printf(">>> RICHTING: LINKS\r\n");
 				}
 				else if (strcmp(inputBuffer, "rechts") == 0) {
+					runningLightDirection = 1;
 					printf(">>> RICHTING: RECHTS\r\n");
 				}
 				else if (strcmp(inputBuffer, "stats") == 0) {
@@ -51,6 +54,22 @@ static void WorkerTerminal(void *pvParameters) {
 					printf("\r\n=== CPU STATISTIEKEN ===\r\n");
 					vTaskGetRunTimeStats(pcWriteBuffer);
 					printf("%s\r\n", pcWriteBuffer);
+				}
+				else if (strcmp(inputBuffer, "fifo") == 0) {
+					uint8_t action;
+					uint8_t count = 0;
+					printf("\r\n=== FIFO CURSORSTICK QUEUE ===\r\n");
+					while (CursorstickGetAction(&action)) {
+						count++;
+						printf("  Actie %u: ", count);
+						if (action & CURSORSTICK_UP)     printf("BOVEN");
+						if (action & CURSORSTICK_LEFT)   printf("LINKS");
+						if (action & CURSORSTICK_DOWN)   printf("ONDER");
+						if (action & CURSORSTICK_RIGHT)  printf("RECHTS");
+						if (action & CURSORSTICK_CENTER) printf("INDRUKKEN");
+						printf("\r\n");
+					}
+					if (count == 0) printf("  (queue is leeg)\r\n");
 				}
 				else printf(">>> ONBEKEND: '%s'\r\n", inputBuffer);
 			}

@@ -48,6 +48,8 @@ main.c
 
 memmap.c
 
+Tasks\CursorstickTask.c
+
 Tasks\RunningLightTask.c
 
 Tasks\TerminalTask.c
