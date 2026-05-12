@@ -1,10 +1,19 @@
 /**
-    * @author EliasDH Team
-    * @see https://eliasdh.com
-    * @since 10/03/2026
-**/
+ * Linebot Power management driver
+ * \file DriverPower.h
+ * \brief Linebot Power management driver
+*/
+
 #include "hwconfig.h"
 
+/**
+ * \brief Initialize power management driver
+*/
 void DriverPowerInit(void);
 
+
+/**
+ * \brief Set auxillary vcc state
+ * \param State: 0=OFF, 1=ON
+*/
 void DriverPowerVccAuxSet(uint8_t State);

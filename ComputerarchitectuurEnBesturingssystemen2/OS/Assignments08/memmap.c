@@ -12,7 +12,8 @@
 #include <avr/io.h>
 #include "task.h"
 
-#define MAX_TASKS 20 // Max number of tasks to process
+#define MAX_TASKS 20 //Max number of tasks to process
+
 
 const uint32_t MEM_IO_REGS_START=	0x0000;
 const uint32_t MEM_IO_REGS_STOP=	0x0FFF;
@@ -27,6 +28,7 @@ extern uint8_t __bss_start[];
 extern uint8_t __bss_end[];
 extern uint8_t __heap_start[];
 extern uint8_t *ucHeap;
+
 
 int SelectNextTask(int PrevAddr, TaskStatus_t *TaskArray);
 
@@ -76,6 +78,5 @@ void MemMap() {
 	printf ("\t.Bare metal STACK end:\t\t0x%04x\r\n",ucHeap+configTOTAL_HEAP_SIZE);
 	printf ("\t.Bare metal STACK start:\t0x%04x\r\n",MEM_SRAM_STOP);
 	printf("SRAM stop:\t\t\t\t0x%04x\r\n",MEM_SRAM_STOP);
-
 	printf("-----------\r\n");
 }

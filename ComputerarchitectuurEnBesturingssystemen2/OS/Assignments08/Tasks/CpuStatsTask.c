@@ -43,8 +43,7 @@ static void WorkerCpuStats(void *pvParameters) {
 		xQueueOverwrite(CpuInfoQueue,&CpuStats);
 
 		OldIdleTime=IdleTime;
-		OldTotalRunTime=TotalRunTime;		
-
+		OldTotalRunTime=TotalRunTime;
 		vTaskDelay(100);
 	}
 }

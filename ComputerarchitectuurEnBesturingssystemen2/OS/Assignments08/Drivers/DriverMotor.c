@@ -2,125 +2,182 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 
-#define SPEED_SCALE 3000 // Maximum absolute speed command accepted by DriverMotorSet().
-#define PWM_TOP 3199     // Timer TOP value for PWM period.
+#define SPEED_SCALE 3000 // Maximale waarde voor snelheid bij DriverMotorSet
+#define PWM_TOP 3199 // bovenste PWM telwaarde, bepaalt frequentie
 
-// Must be volatile because these counters are updated inside ISRs.
-// Without volatile, the compiler may cache values and miss interrupt-driven updates.
-static volatile int16_t encoderPosA = 0; // Encoder pulse counter for motor A.
-static volatile int16_t encoderPosB = 0; // Encoder pulse counter for motor B.
+// volatile: elke lees/schrijfactie wordt gegarandeerd uitgevoerd, nooit gecached door de compiler
+// waarde wordt bij elke toegang opnieuw uit het register gelezen zodat interrupt-wijzigingen correct worden gedetecteerd
+static volatile uint16_t encoderPosA = 1;
+static volatile uint16_t encoderPosB = 1;
 
-// Interrupt for encoder A, phase A (PC6).
+// ISR voor PC6 (fase A van encoder motor A)
+// Bepaalt de rijrichting aan de hand van PC6 en PC7:
+//   PC6 stijgend & PC7=0 -> vooruit  | PC6 stijgend & PC7=1 -> achteruit
+//   PC6 dalend  & PC7=0 -> achteruit | PC6 dalend  & PC7=1 -> vooruit
 ISR(PORTC_INT0_vect) {
-	uint8_t pins = PORTC.IN; 										// Read both encoder input levels once.
-	if (pins & PIN6_bm) encoderPosA += (pins & PIN7_bm) ? -1 : +1; 	// (If phase A is currently high) Direction depends on phase B.
-	else encoderPosA += (pins & PIN7_bm) ? +1 : -1; 				// (If phase A is currently low) Direction depends on phase B.
-	PORTC.INTFLAGS = PORT_INT0IF_bm; 								// Clear INT0 interrupt flag on PORTC.
+	uint8_t pins = PORTC.IN;
+	if (pins & PIN6_bm) {
+		encoderPosA += (pins & PIN7_bm) ? -1 : +1;
+		} else {             
+		encoderPosA += (pins & PIN7_bm) ? +1 : -1;
+	}
+	PORTC.INTFLAGS = PORT_INT0IF_bm;
 }
 
-// Interrupt for encoder A, phase B (PC7).
+// ISR voor PC7 (fase B van encoder motor A)
+// Bepaalt de rijrichting aan de hand van PC6 en PC7:
+//   PC7 stijgend & PC6=0 -> achteruit | PC7 stijgend & PC6=1 -> vooruit
+//   PC7 dalend  & PC6=0 -> vooruit    | PC7 dalend  & PC6=1 -> achteruit
 ISR(PORTC_INT1_vect) {
-	uint8_t pins = PORTC.IN;										// Read both encoder input levels once.
-	if (pins & PIN7_bm) encoderPosA += (pins & PIN6_bm) ? +1 : -1; 	// (If phase B is currently high) Direction depends on phase A.
-	else encoderPosA += (pins & PIN6_bm) ? -1 : +1;					// (If phase B is currently low) Direction depends on phase A.
-	PORTC.INTFLAGS = PORT_INT1IF_bm;								// Clear INT1 interrupt flag on PORTC.
+	uint8_t pins = PORTC.IN;
+	if (pins & PIN7_bm) { 
+		encoderPosA += (pins & PIN6_bm) ? +1 : -1;
+		} else {              
+		encoderPosA += (pins & PIN6_bm) ? -1 : +1;
+	}
+	PORTC.INTFLAGS = PORT_INT1IF_bm;
 }
 
-// Interrupt for encoder B, phase A (PE4).
+// ISR voor PE4 (fase A van encoder motor B)
+// Zelfde logica als PC6, maar op PE4/PE5
 ISR(PORTE_INT0_vect) {
-	uint8_t pins = PORTE.IN;										// Read both encoder input levels once.
-	if (pins & PIN4_bm) encoderPosB += (pins & PIN5_bm) ? -1 : +1; 	// (If phase A is currently high) Direction depends on phase B.
-	else encoderPosB += (pins & PIN5_bm) ? +1 : -1;					// (If phase A is currently low) Direction depends on phase B.
-	PORTE.INTFLAGS = PORT_INT0IF_bm;								// Clear INT0 interrupt flag on PORTE.
+	uint8_t pins = PORTE.IN;
+	if (pins & PIN4_bm) {
+		encoderPosB += (pins & PIN5_bm) ? -1 : +1;
+		} else {
+		encoderPosB += (pins & PIN5_bm) ? +1 : -1;
+	}
+	PORTE.INTFLAGS = PORT_INT0IF_bm;
 }
 
-// Interrupt for encoder B, phase B (PE5).
+// ISR voor PE5 (fase B van encoder motor B)
+// Zelfde logica als PC7, maar op PE4/PE5
 ISR(PORTE_INT1_vect) {
-	uint8_t pins = PORTE.IN;										// Read both encoder input levels once.
-	if (pins & PIN5_bm) encoderPosB += (pins & PIN4_bm) ? +1 : -1; 	// (If phase B is currently high) Direction depends on phase A.
-	else encoderPosB += (pins & PIN4_bm) ? -1 : +1;					// (If phase B is currently low) Direction depends on phase A.
-	PORTE.INTFLAGS = PORT_INT1IF_bm;								// Clear INT1 interrupt flag on PORTE.
+	uint8_t pins = PORTE.IN;
+	if (pins & PIN5_bm) {
+		encoderPosB += (pins & PIN4_bm) ? +1 : -1;
+		} else {
+		encoderPosB += (pins & PIN4_bm) ? -1 : +1;
+	}
+	PORTE.INTFLAGS = PORT_INT1IF_bm;
 }
 
-void DriverMotorInit(void) {
-	// Enable medium-level interrupts in PMIC.
-	PMIC.CTRL |= 0x02;
+void DriverMotorInit(void)
+{
+	//GPIO init
+	// Zet medium level interrupts aan (bit 1 = 1)
+	PMIC.CTRL |= 0b00000010;
+	
+	//Timer init, hbridge
+	// PF0 - 4 als output
+	PORTF.DIR |= 0b00011111;
+	PORTF.PIN0CTRL = 0b00000000;
+	PORTF.PIN1CTRL = 0b00000000;
+	PORTF.PIN2CTRL = 0b00000000;
+	PORTF.PIN3CTRL = 0b00000000;
+	// Pull up op MOTOR-SLEEP
+	PORTF.PIN4CTRL = 0b00011000;
 
-	PORTF.DIR |= 0x1F;      // PF0..PF4 as outputs for motor driver control signals.
-	PORTF.PIN0CTRL = 0x00;  // Disable special input options on PF0.
-	PORTF.PIN1CTRL = 0x00;  // Disable special input options on PF1.
-	PORTF.PIN2CTRL = 0x00;  // Disable special input options on PF2.
-	PORTF.PIN3CTRL = 0x00;  // Disable special input options on PF3.
-	PORTF.PIN4CTRL = 0x18;  // Enable pull-up on PF4 (motor sleep control line).
+	// Zet motors aan, bit 5 = sleep pin
+	PORTF.OUT |= 0b00010000;
+	
+	// PWM timer configuratie
+	// bits 7-4: CCD/CCC/CCB/CCA ingeschakeld | bits 1-0: single-slope PWM modus
+	TCF0.CTRLB = 0b11110011;
+	// geen events
+	TCF0.CTRLD = 0b00000000;
+	// geen byte mode
+	TCF0.CTRLE = 0b00000000;
+	// PWM periode
+	TCF0.PER = PWM_TOP;	
+	// Systemclock, geen prescaler
+	TCF0.CTRLA = 0b00000001;
+	
+	//Encoder A
+	// PC6-7 input
+	PORTC.DIR &= ~0b11000000;
+	PORTC.PIN6CTRL = 0b00000000;
+	PORTC.PIN7CTRL = 0b00000000;
+	
+	//PC6 triggered INT0
+	PORTC.INT0MASK |= 0b01000000;
+	//PC7 triggered INT1
+	PORTC.INT1MASK |= 0b10000000;
+	// Zet beide interrupts op medium priority
+	PORTC.INTCTRL = (PORTC.INTCTRL & ~0b00001111) | 0b00001010;
+	
+	//Encoder B
+	// PE4-5 input
+	PORTE.DIR &= ~0b00110000;
+	PORTE.PIN4CTRL = 0b00000000;
+	PORTE.PIN5CTRL = 0b00000000;
 
-	PORTF.OUT |= 0x10;      // Drive sleep pin high to enable the motor driver.
-	TCF0.CTRLB = 0xF3;      // Single-slope PWM + enable compare channels A/B/C/D.
-	TCF0.CTRLD = 0x00;      // No event actions.
-	TCF0.CTRLE = 0x00;      // Normal 16-bit mode.
-	TCF0.PER = PWM_TOP;     // Set PWM period.
-	TCF0.CTRLA = 0x01;      // Start timer with clk/1 (no prescaler).
-
-	// Configure encoder A pins and route both lines to interrupts on any edge.
-	PORTC.DIR &= ~0xC0;                         // PC6 and PC7 as inputs.
-	PORTC.PIN6CTRL = 0x00;                      // Default pin sense/control for PC6.
-	PORTC.PIN7CTRL = 0x00;                      // Default pin sense/control for PC7.
-	PORTC.INTFLAGS = PORT_INT0IF_bm | PORT_INT1IF_bm; // Clear stale pending flags.
-	PORTC.INT0MASK |= 0x40;                     // Connect PC6 to PORTC INT0 group.
-	PORTC.INT1MASK |= 0x80;                     // Connect PC7 to PORTC INT1 group.
-	PORTC.INTCTRL = (PORTC.INTCTRL & ~0x0F) | 0x0A; // INT0 and INT1 at medium level.
-
-	// Configure encoder B pins and route both lines to interrupts on any edge.
-	PORTE.DIR &= ~0x30;                         // PE4 and PE5 as inputs.
-	PORTE.PIN4CTRL = 0x00;                      // Default pin sense/control for PE4.
-	PORTE.PIN5CTRL = 0x00;                      // Default pin sense/control for PE5.
-	PORTE.INTFLAGS = PORT_INT0IF_bm | PORT_INT1IF_bm; // Clear stale pending flags.
-	PORTE.INT0MASK |= 0x10;                     // Connect PE4 to PORTE INT0 group.
-	PORTE.INT1MASK |= 0x20;                     // Connect PE5 to PORTE INT1 group.
-	PORTE.INTCTRL = (PORTE.INTCTRL & ~0x0F) | 0x0A; // INT0 and INT1 at medium level.
-
-	// Enable global interrupts so encoder ISRs can run.
-	sei();
+	//PE4 triggered INT0
+	PORTE.INT0MASK |= 0b00010000;
+	//PE5 triggered INT1
+	PORTE.INT1MASK |= 0b00100000;
+	//Zet beide interrupts op medium priority
+	PORTE.INTCTRL = (PORTE.INTCTRL & ~0b00001111) | 0b00001010;
 }
 
-void DriverMotorSet(int16_t MotorLeft, int16_t MotorRight) {
-	if (MotorLeft > SPEED_SCALE)  MotorLeft = SPEED_SCALE;   // Clamp left command to max.
-	if (MotorLeft < -SPEED_SCALE) MotorLeft = -SPEED_SCALE;  // Clamp left command to min.
-	if (MotorRight > SPEED_SCALE)  MotorRight = SPEED_SCALE; // Clamp right command to max.
-	if (MotorRight < -SPEED_SCALE) MotorRight = -SPEED_SCALE;// Clamp right command to min.
+// Stelt snelheid en richting van de motoren in
+// positief: vooruit, negatief: achteruit
+void DriverMotorSet(int16_t MotorLeft, int16_t MotorRight)
+{
+	// Rescale input speed
+	if (MotorLeft > SPEED_SCALE)  MotorLeft = SPEED_SCALE;
+	if (MotorLeft < -SPEED_SCALE) MotorLeft = -SPEED_SCALE;
+	if (MotorRight > SPEED_SCALE)  MotorRight = SPEED_SCALE;
+	if (MotorRight < -SPEED_SCALE) MotorRight = -SPEED_SCALE;
 
-	// Convert absolute speed commands to PWM compare values.
+	// Zet speed om	naar PWM duty cycle
 	uint16_t dutyL = (uint32_t)(MotorLeft  < 0 ? -MotorLeft  : MotorLeft)  * PWM_TOP / SPEED_SCALE;
 	uint16_t dutyR = (uint32_t)(MotorRight < 0 ? -MotorRight : MotorRight) * PWM_TOP / SPEED_SCALE;
-
+	
+	// Motor Links: CCA = achteruit, CCB = vooruit
     if (MotorLeft > 0) {
-        TCF0.CCA = 0;     // Disable backward channel for left motor.
-        TCF0.CCB = dutyL; // Drive forward channel for left motor.
+        TCF0.CCA = 0;
+        TCF0.CCB = dutyL;
     } else if (MotorLeft < 0) {
-        TCF0.CCA = dutyL; // Drive backward channel for left motor.
-        TCF0.CCB = 0;     // Disable forward channel for left motor.
+        TCF0.CCA = dutyL;
+        TCF0.CCB = 0;
     } else {
-		TCF0.CCA = 0; // Stop left motor backward PWM.
-		TCF0.CCB = 0; // Stop left motor forward PWM.
+		TCF0.CCA = 0;
+		TCF0.CCB = 0;
 	}
 
+    // Motor Rechts: CCC = vooruit, CCD = achteruit
     if (MotorRight >= 0) {
-        TCF0.CCC = dutyR; // Drive forward channel for right motor.
-        TCF0.CCD = 0;     // Disable backward channel for right motor.
+        TCF0.CCC = dutyR;
+        TCF0.CCD = 0;
     } else if (MotorRight < 0){
-        TCF0.CCC = 0;     // Disable forward channel for right motor.
-        TCF0.CCD = dutyR; // Drive backward channel for right motor.
+        TCF0.CCC = 0;
+        TCF0.CCD = dutyR;
     } else {
-		TCF0.CCC = 0; // Stop right motor forward PWM.
-		TCF0.CCD = 0; // Stop right motor backward PWM.
+		TCF0.CCC = 0;
+		TCF0.CCD = 0;
 	}
 }
 
-EncoderStruct DriverMotorGetEncoder(void) {
-	EncoderStruct encoderPos; // Local copy returned to caller.
-	uint8_t sreg_save = SREG; // Save global interrupt enable state.
-	cli(); // Disable interrupts for an atomic read of both counters.
-	encoderPos.Cnt1 = encoderPosA; // Copy motor A encoder count.
-	encoderPos.Cnt2 = encoderPosB; // Copy motor B encoder count.
-	SREG = sreg_save; // Restore previous interrupt state.
-	return encoderPos; // Return consistent snapshot of both encoder counters.
+// Lees de encoder posities van beide motoren
+// Omdat de encoder posities door interrupts worden bijgewerkt moet het lezen atomair gebeuren
+// Hierdoor zetten we interrupts tijdelijk uit.
+EncoderStruct DriverMotorGetEncoder(void)
+{
+	EncoderStruct encoderPos;
+
+	// sla interrupt toestand op
+	uint8_t sreg_save = SREG;
+
+	// zet interrupts tijdelijk uit
+	cli();
+
+	// kopieer encoder waarden
+	encoderPos.Cnt1 = encoderPosA;
+	encoderPos.Cnt2 = encoderPosB;
+
+	// herstel interrupts
+	SREG = sreg_save;
+
+	return encoderPos;
 }

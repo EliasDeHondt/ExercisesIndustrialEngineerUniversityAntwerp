@@ -1,13 +1,16 @@
-/**
-    * @author EliasDH Team
-    * @see https://eliasdh.com
-    * @since 10/03/2026
-**/
 #ifndef PINGUARD_H
 #define PINGUARD_H
+/**
+ * Linebot pin guard monitor
+ * \file PinGuard.h
+ * \brief Linebot LED driver
+*/
 
 #include "hwconfig.h"
 
+/**
+ * \brief Initialize pin guard monitor
+*/
 void PinGuardInit(void);
 
 void PinGuardDIR(void);

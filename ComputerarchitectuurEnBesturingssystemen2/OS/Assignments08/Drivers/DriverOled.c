@@ -1,11 +1,7 @@
-/**
-    * @author EliasDH Team
-    * @see https://eliasdh.com
-    * @since 10/03/2026
-**/
 #include "DriverOled.h"
 
 #define ADDRESS 0x3c
+//#define COMMAND 0x00
 #define COMMAND 0x80
 #define DATA 0x40
 
@@ -14,10 +10,12 @@
 #define LCD_X_RES 128
 #define LCD_Y_RES 64
 
+// Hardware parameters
 const uint8_t __osc_freq = 0x08;
 const uint8_t __clk_div = 0x00;
 const uint8_t __mux_ratio = 0x3F;
 
+// Fundamental commands
 const uint8_t __entire_display_on = 0xa4;
 const uint8_t __normal_display = 0xa6;
 
@@ -125,7 +123,8 @@ const uint8_t font_16x16[][32] PROGMEM = {
 	{0x00, 0x00, 0x00, 0x00, 0x1F, 0x1C, 0x3B, 0x9C, 0x39, 0xDC, 0x38, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},  // ~
 };
 
-const unsigned char font_6x8 [][5] = {
+const unsigned char font_6x8 [][5] =
+{
 	{ 0x00, 0x00, 0x00, 0x00, 0x00}, // sp
 	{ 0x00, 0x00, 0x2f, 0x00, 0x00}, // !
 	{ 0x00, 0x07, 0x00, 0x07, 0x00}, // "
@@ -269,6 +268,7 @@ void set_column_address() {
 }
 
 void DriverOLEDUpdate() {
+	
 	uint8_t Buffer[17];
 
 	if (!DriverOLEDInitialized) return;
@@ -277,12 +277,15 @@ void DriverOLEDUpdate() {
 
 	for(int j = 0; j < 64; j++) {
 		Buffer[0]=DATA;
-		for(int i = 0; i < 16; i++) Buffer[i+1]=buffer[16*j + i];
+		for(int i = 0; i < 16; i++) {
+			Buffer[i+1]=buffer[16*j + i];
+		}
 		TWIMWrite(ADDRESS,Buffer,17);
 	}
 }
 
 void DriverOLEDPrintText(uint8_t row, char *text) {
+
 	uint16_t offset;
 	int counter = 0;
 	uint16_t ia;
@@ -290,21 +293,28 @@ void DriverOLEDPrintText(uint8_t row, char *text) {
 	if (!DriverOLEDInitialized) return;
 	if (row < 0) row = 0;
 
-	if (GlobOrientation==0) {
+	if (GlobOrientation==0) //Landscape
+	{
 		offset=0;
 		if (row <= (LCD_Y_RES/16 - 1)) {
 			while(*text != 0) {
 				if (counter < 8) {
 					uint16_t data[16];
 					uint16_t temp[16];
-					for(int i = 0; i < 16; i++) temp[i] = (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2]) << 8 | (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2 +1]);
+					for(int i = 0; i < 16; i++) {
+						temp[i] = (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2]) << 8 | (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2 +1]);
+					}
+				
 					for(int i = 0; i < 16; i++) {
 						data[i] = 0;
-						for(int j = 0; j < 16; j++) data[i] |= !!(temp[j] & (1 << (15-i))) << j;
+						for(int j = 0; j < 16; j++) {
+							data[i] |= !!(temp[j] & (1 << (15-i))) << j;
+						}
 					}
 					for(int i = 0; i < 16; i++) {
 						buffer[(row*2 * LCD_X_RES) + i + offset] = data[i] & 0xFF;
 						buffer[((row*2 + 1) * LCD_X_RES) + i + offset] = data[i] >> 8;
+					
 					}
 					counter++;
 				}
@@ -313,14 +323,19 @@ void DriverOLEDPrintText(uint8_t row, char *text) {
 			}
 		}
 	}
-	else if (GlobOrientation==1) {
+	else if (GlobOrientation==1) //Portrait
+	{
 		offset=LCD_X_RES-1;
 		if (row <= (LCD_X_RES/16 - 1)) {
 			while(*text != 0) {
 				if (counter < 4) {
 					uint16_t data[16];
 					uint16_t temp[16];
-					for(int i = 0; i < 16; i++) temp[i] = (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2]) << 8 | (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2 +1]);
+					for(int i = 0; i < 16; i++) {
+						temp[i] = (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2]) << 8 | (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2 +1]);
+					}
+					
+					
 					for(int i = 0; i < 16; i++) {
 						data[i] = 0;
 						ia=temp[i];
@@ -342,83 +357,109 @@ void DriverOLEDPrintText(uint8_t row, char *text) {
 			}
 		}		
 	}
-	else if (GlobOrientation==2) {
-		offset=0;
-		if (row <= (LCD_Y_RES/16 - 1)) {
-			while(*text != 0) {
-				if (counter < 8) {
-					uint16_t data[16];
-					uint16_t temp[16];
-					for(int i = 0; i < 16; i++) temp[i] = (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2]) << 8 | (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2 +1]);
-					for(int i = 0; i < 16; i++) {
-						data[i] = 0;
-						for(int j = 0; j < 16; j++) data[i] |= !!(temp[j] & (1 << (16-i))) << (16-j);
+	
+	else if (GlobOrientation==2) //Landscape inverted
+		{
+			offset=0;
+			if (row <= (LCD_Y_RES/16 - 1)) {
+				while(*text != 0) {
+					if (counter < 8) {
+						uint16_t data[16];
+						uint16_t temp[16];
+						for(int i = 0; i < 16; i++) {
+							temp[i] = (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2]) << 8 | (uint8_t)pgm_read_word(&font_16x16[*text - 32][i*2 +1]);
+						}
+						
+						for(int i = 0; i < 16; i++) {
+							data[i] = 0;
+							for(int j = 0; j < 16; j++) {
+								data[i] |= !!(temp[j] & (1 << (16-i))) << (16-j);
+							}
+						}
+						for(int i = 0; i < 16; i++) {
+							buffer[(  (LCD_Y_RES/16-row-1)*2 * LCD_X_RES) + LCD_X_RES-(i + offset)] = data[i] & 0xFF;
+							buffer[(( (LCD_Y_RES/16-row-1)*2 + 1) * LCD_X_RES) + LCD_X_RES-(i + offset)] = data[i] >> 8;
+							
+						}
+						counter++;
 					}
-					for(int i = 0; i < 16; i++) {
-						buffer[(  (LCD_Y_RES/16-row-1)*2 * LCD_X_RES) + LCD_X_RES-(i + offset)] = data[i] & 0xFF;
-						buffer[(( (LCD_Y_RES/16-row-1)*2 + 1) * LCD_X_RES) + LCD_X_RES-(i + offset)] = data[i] >> 8;
-					}
-					counter++;
+					offset += 16;
+					text++;
 				}
-				offset += 16;
-				text++;
 			}
 		}
-	}
+	
 }
 
-void DriverOLEDPrintSmChar(unsigned char x, unsigned char y, unsigned char ch, uint8_t scr) {
+void DriverOLEDPrintSmChar(unsigned char x, unsigned char y, unsigned char ch, uint8_t scr)
+{
 	unsigned int index = 0;
 	unsigned int i = 0;
 	uint8_t xi,yi,xc,yc;
 
 	if (!DriverOLEDInitialized) return;
+	// check for out off range
 	if ((x > LCD_X_RES)||(x < 0)) return;
 	if ((y > LCD_Y_RES)||(y < 0)) return;
 	
-	if (GlobOrientation==0) {
+	if (GlobOrientation==0)
+	{//Landscape
 		if (!scr) {
 			if (x * 6 > (LCD_X_RES - 6)) {
 				x = 0;
 				y += 1;
 			}
 		}
+		
 		index = (unsigned int) x * 6  + (unsigned int) y * LCD_X_RES;
 
-		for (i = 0; i < 6; i++) {
-			if (i==5) buffer[index++] = 0x00;
-			else buffer[index++] = font_6x8[ch - 32][i];
+		for (i = 0; i < 6; i++)
+		{
+			if (i==5)
+			buffer[index++] = 0x00;
+			else
+			buffer[index++] = font_6x8[ch - 32][i];
 		}
 	}
-	else if (GlobOrientation==1) {
+	else if (GlobOrientation==1)
+	{//Portrait
 	x*=6;
 	y*=8;
 	for (yi=y,yc=0;yi<y+8;yi++,yc++)
-		for (xi=x,xc=0;xi<x+5;xi++,xc++) {
-			if ((font_6x8[ch-32][xc]>>yc) & 0x01) DriverOLEDDrawPixel(xi,yi);
-			else DriverOLEDClearPixel(xi,yi); 
-		}
+		for (xi=x,xc=0;xi<x+5;xi++,xc++)
+		{
+			if ((font_6x8[ch-32][xc]>>yc) & 0x01)  
+				DriverOLEDDrawPixel(xi,yi);
+			else
+				DriverOLEDClearPixel(xi,yi); 
+		}	
 	}
-	else if (GlobOrientation==2) {
+	else if (GlobOrientation==2)
+	{//Landscape inverted
 	x*=6;
 	y*=8;
 	for (yi=y,yc=0;yi<y+8;yi++,yc++)
-		for (xi=x,xc=0;xi<x+5;xi++,xc++) {
-			if ((font_6x8[ch-32][xc]>>(yc)) & 0x01) DriverOLEDDrawPixel(xi,yi);
-			else DriverOLEDClearPixel(xi,yi);
-		}
-	}
+		for (xi=x,xc=0;xi<x+5;xi++,xc++)
+			{
+				if ((font_6x8[ch-32][xc]>>(yc)) & 0x01)
+				DriverOLEDDrawPixel(xi,yi);
+				else
+				DriverOLEDClearPixel(xi,yi);
+			}
+	}	
+	
 }
 
-void DriverOLEDPrintSmText(unsigned char row,char *dataPtr, uint8_t scr) {
-	unsigned char x = 0;
+void DriverOLEDPrintSmText(unsigned char row,char *dataPtr, uint8_t scr) {   //print small font text, input is row on LCD, text to print, should the text be scrollable(0/1)
+	unsigned char x = 0;         // variable for X coordinate
 
 	if (!DriverOLEDInitialized) return;
 	if (row < 0) row = 0;
-
-	if (GlobOrientation==0 || GlobOrientation==2) {
+	
+	if (GlobOrientation==0 || GlobOrientation==2) //Landscape,landscape inverted
+	{
 		if (row <= (LCD_Y_RES/8 - 1)) {
-			while (*dataPtr) {
+			while (*dataPtr) {           // loop to the end of string
 				DriverOLEDPrintSmChar(x, row, *dataPtr, scr);
 				if (!scr) {
 					if (x * 6 > (LCD_X_RES - 6)) {
@@ -431,9 +472,10 @@ void DriverOLEDPrintSmText(unsigned char row,char *dataPtr, uint8_t scr) {
 			}
 		}
 	}
-	else if (GlobOrientation==1) {
+	else if (GlobOrientation==1) //Portrait
+	{
 		if (row <= (LCD_X_RES/8 - 1)) {
-			while (*dataPtr) {
+			while (*dataPtr) {           // loop to the end of string
 				DriverOLEDPrintSmChar(x, row, *dataPtr, scr);
 				if (!scr) {
 					if (x * 6 > (LCD_Y_RES - 6)) {
@@ -463,54 +505,86 @@ void DriverOLEDNormalScreen() {
 	send_command(0xa6);
 }
 
-void DriverOLEDDrawPixel(unsigned char x, unsigned char y) {
+void DriverOLEDDrawPixel(unsigned char x, unsigned char y)
+{
 	unsigned int index = 0;
 	unsigned int i = 0;
 	if (!DriverOLEDInitialized) return;
 
-	if (GlobOrientation==0) {
+	if (GlobOrientation==0) //Landscape
+	{
+			// check for out off range
 			if ((x >= LCD_X_RES)||(x < 0)) return;
 			if ((y >= LCD_Y_RES)||(y < 0)) return;
+
 			index = (unsigned int) x + ((unsigned int) (y/8))*LCD_X_RES ;
+
 			buffer[index] |= 1<<(y%8);
 	}	
-	else if (GlobOrientation==1) {
+	else if (GlobOrientation==1)//Portrait
+	{
+		// check for out off range
 		if ((x >= LCD_Y_RES)||(x < 0)) return;
 		if ((y >= LCD_X_RES)||(y < 0)) return;
+
 		index = (unsigned int) (LCD_X_RES-y-1) + ((unsigned int) (x/8))*LCD_X_RES ;
+
 		buffer[index] |= 1<<(x%8);
 	}
-	else if (GlobOrientation==2) {
+	else if (GlobOrientation==2) //Landscape inverted
+	{
+		// check for out off range
 		if ((x >= LCD_X_RES)||(x < 0)) return;
 		if ((y >= LCD_Y_RES)||(y < 0)) return;
+
 		index = (unsigned int) (LCD_X_RES-x-1) + ((unsigned int) ((LCD_Y_RES-y-1)/8))*LCD_X_RES ;
+
 		buffer[index] |= 1<<(7-(y%8));
+		
+
 	}
+
 }
 
-void DriverOLEDClearPixel(unsigned char x, unsigned char y) {
+void DriverOLEDClearPixel(unsigned char x, unsigned char y)
+{
 	unsigned int index = 0;
 	unsigned int i = 0;
 
 	if (!DriverOLEDInitialized) return;
-	if (GlobOrientation==0) {
+	if (GlobOrientation==0) //Landscape
+	{
+		// check for out off range
 		if ((x >= LCD_X_RES)||(x < 0)) return;
 		if ((y >= LCD_Y_RES)||(y < 0)) return;
+
 		index = (unsigned int) x + ((unsigned int) (y/8))*LCD_X_RES ;
+
 		buffer[index] &= ~(1<<(y%8));
+		
+
 	}
-	else if (GlobOrientation==1) {
+	else if (GlobOrientation==1)//Portrait
+	{
+		// check for out off range
 		if ((x >= LCD_Y_RES)||(x < 0)) return;
 		if ((y >= LCD_X_RES)||(y < 0)) return;
+
 		index = (unsigned int) (LCD_X_RES-y-1) + ((unsigned int) (x/8))*LCD_X_RES ;
+
 		buffer[index] &= ~(1<<(x%8));
 	}
-	else if (GlobOrientation==2) {
-		if ((x >= LCD_X_RES)||(x < 0)) return;
-		if ((y >= LCD_Y_RES)||(y < 0)) return;
-		index = (unsigned int) (LCD_X_RES-x-1) + ((unsigned int) ((LCD_Y_RES-y-1)/8))*LCD_X_RES ;
-		buffer[index] &= ~(1<<(7-(y%8)));
-	}
+	else if (GlobOrientation==2) //Landscape inverted
+		{
+			// check for out off range
+			if ((x >= LCD_X_RES)||(x < 0)) return;
+			if ((y >= LCD_Y_RES)||(y < 0)) return;
+
+			index = (unsigned int) (LCD_X_RES-x-1) + ((unsigned int) ((LCD_Y_RES-y-1)/8))*LCD_X_RES ;
+
+			buffer[index] &= ~(1<<(7-(y%8)));
+		}
+
 }
 
 void DriverOLEDDrawLine (int x1, int y1, int x2, int y2) {
@@ -539,7 +613,7 @@ void DriverOLEDDrawLine (int x1, int y1, int x2, int y2) {
 	return;
 }
 
-void DriverOLEDDrawRectangle (int x1, int y1, int x2, int y2) {
+void DriverOLEDDrawRectangle (int x1, int y1, int x2, int y2) {  //draw a rectangle
 	DriverOLEDDrawLine (x1, y1, x1, y2);
 	DriverOLEDDrawLine (x1, y1, x2, y1);
 	DriverOLEDDrawLine (x2, y1, x2, y2);
@@ -547,15 +621,17 @@ void DriverOLEDDrawRectangle (int x1, int y1, int x2, int y2) {
 	return;
 }
 
-void DriverOLEDDrawSolidRectangle (int x1, int y1, int x2, int y2) {
+void DriverOLEDDrawSolidRectangle (int x1, int y1, int x2, int y2) {  //draw a solid rectangle
 	int i = 0;
 	if (x2>x1)
-	for (i=x1; i<=x2;i++) DriverOLEDDrawLine (i, y1, i, y2);
-	else for (i=x2; i<=x1;i++) DriverOLEDDrawLine (i, y1, i, y2);
+	for (i=x1; i<=x2;i++)
+	DriverOLEDDrawLine (i, y1, i, y2);
+	else for (i=x2; i<=x1;i++)
+	DriverOLEDDrawLine (i, y1, i, y2);
 	return;
 }
 
-void Ellipse4Points (int CX, int CY, int X, int Y) {
+void Ellipse4Points (int CX, int CY, int X, int Y) {  //function needed for drawing an ellipse
 	DriverOLEDDrawPixel (CX+X, CY+Y);
 	DriverOLEDDrawPixel (CX-X, CY+Y);
 	DriverOLEDDrawPixel (CX-X, CY-Y);
@@ -563,7 +639,7 @@ void Ellipse4Points (int CX, int CY, int X, int Y) {
 	return;
 }
 
-void DriverOLEDDrawEllipse (int CX, int CY, int XRadius, int YRadius) {
+void DriverOLEDDrawEllipse (int CX, int CY, int XRadius, int YRadius) {   //draw an ellipse & fix radius if negative
 	int X, Y, XChange, YChange, EllipseError, TwoASquare, TwoBSquare, StoppingX, StoppingY;
 	if (XRadius<0) XRadius=-XRadius;
 	if (YRadius<0) YRadius=-YRadius;
@@ -578,7 +654,7 @@ void DriverOLEDDrawEllipse (int CX, int CY, int XRadius, int YRadius) {
 	StoppingX = TwoBSquare*XRadius;
 	StoppingY = 0;
 
-	while (StoppingX >= StoppingY) {
+	while (StoppingX >= StoppingY) {          // 1st set of points, y'> -1
 		Ellipse4Points (CX, CY, X, Y);
 		Y++;
 		StoppingY = StoppingY + TwoASquare;
@@ -599,7 +675,7 @@ void DriverOLEDDrawEllipse (int CX, int CY, int XRadius, int YRadius) {
 		StoppingX = 0;
 		StoppingY = TwoASquare * YRadius;
 
-		while (StoppingX <= StoppingY) {
+		while (StoppingX <= StoppingY) {        // 2nd set of points, y'< -1
 			Ellipse4Points (CX, CY, X, Y);
 			X++;
 			StoppingX = StoppingX + TwoBSquare;
@@ -614,32 +690,36 @@ void DriverOLEDDrawEllipse (int CX, int CY, int XRadius, int YRadius) {
 			return;
 		}
 
-void DriverOLEDDrawCircle (int x, int y, int r) {
-	DriverOLEDDrawEllipse (x, y, r, r);
-	return;
-}
+void DriverOLEDDrawCircle (int x, int y, int r) {   //draw a circle
+			DriverOLEDDrawEllipse (x, y, r, r);
+			return;
+		}
 
-void DriverOLEDDrawTriangle (int x1, int y1, int x2, int y2, int x3, int y3) {
-	DriverOLEDDrawLine (x1, y1, x2, y2);
-	DriverOLEDDrawLine (x2, y2, x3, y3);
-	DriverOLEDDrawLine (x3, y3, x1, y1);
-	return;
-}
-void DriverOLEDSleep() {
+void DriverOLEDDrawTriangle (int x1, int y1, int x2, int y2, int x3, int y3) {   //draw a triangle
+			DriverOLEDDrawLine (x1, y1, x2, y2);
+			DriverOLEDDrawLine (x2, y2, x3, y3);
+			DriverOLEDDrawLine (x3, y3, x1, y1);
+			return;
+		}
+void DriverOLEDSleep()
+{
 	if (!DriverOLEDInitialized) return;
 	send_command(0xAE);	
 }
 
-void DriverOLEDWake() {
+void DriverOLEDWake()
+{
 	if (!DriverOLEDInitialized) return;
 	send_command(0xAF);
 }
 
-void DriverOLEDInit(uint8_t Orientation) {
+void DriverOLEDInit(uint8_t Orientation)
+{
 	uint8_t res;
 	DriverOLEDInitialized=0;
 	GlobOrientation=Orientation;
 
+	
 	res=send_command(0xAE);
 	if (!res) return;
 	send_command_data(0xD5, __osc_freq << 4 | __clk_div);
@@ -651,13 +731,18 @@ void DriverOLEDInit(uint8_t Orientation) {
 	send_command(0xa4);
 	send_command(0xa1);
 	send_command(0xc8);
+	// Horizontal mode
 	send_command(0x20);
 	send_command(0x00);
+
 	send_command_data(0xda, 0x12);
 	send_command_data(0x81, __contrast);
+	
 	send_command_data(0xd9, 0xf1);
 	send_command_data(0xdb, 0x40);
 	send_command(0xaf);
+
+
 	DriverOLEDClearScreen();
 	DriverOLEDUpdate();
 	DriverOLEDInitialized=1;

@@ -48,7 +48,9 @@ main.c
 
 memmap.c
 
-Tasks\RunningLightTask.c
+Tasks\LoopLichtTask.c
+
+Tasks\TemplateTask.c
 
 Tasks\TerminalTask.c
 

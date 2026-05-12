@@ -1,11 +1,14 @@
 /**
-    * @author EliasDH Team
-    * @see https://eliasdh.com
-    * @since 10/03/2026
-**/
+ * \brief Initialize USART module
+*/
+
+
 #ifndef DRIVER_USART_H
 #define DRIVER_USART_H
 
+/**
+ * \brief Initialize USART defined in hwconfig.h, bind to stdin, stdout
+*/
 void DriverUSARTInit(void); 
 
 #endif

@@ -1,8 +1,9 @@
 /**
-    * @author EliasDH Team
-    * @see https://eliasdh.com
-    * @since 10/03/2026
-**/
+ * PL9823 RGB LED driver
+ * \file Driverpl9823.h
+ * \brief PL9823 RGB LED driver
+*/
+
 #ifndef DRIVER_PL9823_H
 #define DRIVER_PL9823_H
 
@@ -19,8 +20,18 @@
 #define PL9823_PURPLE PL9823_RGB(255,0,255)
 #define PL9823_BLANK PL9823_RGB(0,0,0)
 
+/**
+ * \brief Initialize PL9823 driver
+*/
 void DriverPL9823Init();
 
+/**
+ * \brief Set LED status. Color is in format 0bBBBBBBBBGGGGGGGGRRRRRRRR
+ * \param FrontLeft: Respective LED color. 
+ * \param FrontRight: Respective LED color. 
+ * \param RearRight: Respective LED color. 
+ * \param RearLeft: Respective LED color. 
+*/
 void DriverPL9823Set(uint32_t FrontLeft,uint32_t FrontRight,uint32_t RearRight,uint32_t RearLeft);
 
 #endif

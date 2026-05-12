@@ -17,9 +17,8 @@
 #include "DriverLed.h"
 #include "DriverMPU6050.h"
 #include "DriverMotor.h"
-
-#include "Tasks/RunningLightTask.h"
-#include "Tasks/TerminalTask.h"
+#include "LoopLichtTask.h"
+#include "TerminalTask.h"
 
 #include <util/delay.h>
 
@@ -27,37 +26,28 @@
 #include <stdlib.h>
 
 uint8_t *ucHeap;
-
-int initDrivers(void) { 		// Initialize all hardware drivers
-	DriverSysClkXtalInit();		// Clock init
-	DriverUSARTInit();			// USART init and link to stdio
-	DriverTWIMInit();			// Initialize TWI in master mode
-	DriverCursorstickInit();	// Initialize cursor stick
-	DriverLedInit();			// Initialize LED's
-	DriverPowerInit();			// Initialize aux power driver
-	DriverAdcInit();			// Initialize ADC driver
-	DriverPowerVccAuxSet(1);	// Enable Auxillary power line
-	return 0;
-}
-
-int initTasks(void) {			// Initialize all FreeRTOS tasks
-	InitRunningLightTask();		// Initialize running light task
-	InitTerminalTask();			// Initialize terminal task
-	return 0;
-}
+static volatile uint8_t isDirectionRight = 1;
 
 int main(void) {
-	// Allocate FreeRTOS heap
 	ucHeap=malloc(configTOTAL_HEAP_SIZE);
 	if (ucHeap==NULL) while(1);
+	
+	DriverSysClkXtalInit();			//Clock init
+	DriverUSARTInit();				//USART init and link to stdio
+	DriverTWIMInit();				//Initialize TWI in master mode
+	DriverCursorstickInit();		//Initialize cursor stick
+	DriverLedInit();				//Initialize LED's
+	DriverPowerInit();				//Initialize aux power driver
+	DriverAdcInit();				//Initialize ADC driver
+	DriverPowerVccAuxSet(1);		//Enable Auxillary power line
 
-	// Enable interrupts
-	PMIC.CTRL=0b111;		
+	PMIC.CTRL=0b111;
 	sei();
 
-	initDrivers();
-	initTasks();
+	_delay_ms(10);
 
-	vTaskStartScheduler();		// Start scheduler loop
+	InitLoopLichtTask(&isDirectionRight);
+	InitTerminalTask(&isDirectionRight);
+	vTaskStartScheduler();	//Start scheduler loop
 	return 0;
 }

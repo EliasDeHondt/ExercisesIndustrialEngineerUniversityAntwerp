@@ -3,9 +3,9 @@
     * @see https://eliasdh.com
     * @since 10/03/2026
 **/
-#ifndef TERMINAL_TASK_H
-#define TERMINAL_TASK_H
+#ifndef TERMINALTASK_H_
+#define TERMINALTASK_H_
 
-void InitTerminalTask(void);
+void InitTerminalTask(void *pvParameters);
 
 #endif
