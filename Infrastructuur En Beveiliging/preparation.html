@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voorbereiding IEB</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #5b6068; --line: #d5d8dd; --card: #f6f7f9;
+    --accent: #1f5fbf; --accent-fg: #ffffff;
+    --ok: #1a7f37; --ok-bg: rgba(26,127,55,0.13); --bad: #c62828; --bad-bg: rgba(198,40,40,0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181c; --fg: #e6e6e6; --muted: #9aa0a8; --line: #3a3d44; --card: #1e2126;
+      --accent: #6aa5ff; --accent-fg: #0d1117;
+      --ok: #5fd07f; --ok-bg: rgba(95,208,127,0.15); --bad: #ff7b7b; --bad-bg: rgba(255,123,123,0.15);
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.65; user-select: text; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 0.4rem; }
+  h2 { font-size: 1.3rem; line-height: 1.3; margin: 0 0 0.75rem; }
+  h3 { font-size: 1.05rem; margin: 1.75rem 0 0.5rem; }
+  p { margin: 0 0 1rem; }
+  a { color: var(--accent); }
+  .muted { color: var(--muted); font-size: 0.95rem; }
+  .ui, button, .badge { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+
+  .menu { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 10px; }
+  .menu a, .menu .off { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: inherit; text-decoration: none; }
+  .menu a:hover { border-color: var(--accent); }
+  .menu .off { opacity: 0.6; }
+  .menu .num { font-weight: 700; margin-right: 8px; font-family: system-ui, sans-serif; }
+  .badge { font-size: 0.8rem; padding: 2px 9px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; color: var(--muted); }
+  .badge.best { color: var(--ok); border-color: var(--ok); }
+
+  .top { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; font-family: system-ui, sans-serif; font-size: 0.95rem; }
+  .btn { font: inherit; font-family: system-ui, sans-serif; font-size: 1rem; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-fg); cursor: pointer; }
+  .btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+  .cta { margin: 2.5rem 0 0; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+  .cta p { margin-bottom: 0.75rem; }
+
+  .bar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; margin-bottom: 1rem; background: var(--bg); border-bottom: 1px solid var(--line); font-family: system-ui, sans-serif; }
+  .timer { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .timer.low { color: var(--bad); }
+
+  .q { margin: 0 0 1.5rem; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; }
+  .q-text { font-weight: 600; margin: 0 0 0.6rem; }
+  .opt { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; margin: 0 0 6px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+  .opt:hover { background: var(--card); }
+  .opt input { margin-top: 0.4rem; flex: none; }
+  .review .opt { cursor: default; }
+  .review .opt:hover { background: transparent; }
+  .opt.correct { border-color: var(--ok); background: var(--ok-bg); }
+  .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
+  .verdict { margin: 0.6rem 0 0; font-size: 0.95rem; }
+  .ok { color: var(--ok); font-weight: 600; }
+  .no { color: var(--bad); font-weight: 600; }
+
+  .score { margin: 0 0 1.5rem; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); font-family: system-ui, sans-serif; }
+  .score .big { font-size: 2rem; font-weight: 700; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin: 1rem 0 0; }
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+/* ===================================================================== */
+/* DATA                                                                  */
+/* ===================================================================== */
+
+var TEST_MINUTES = 15;
+
+var LABS = [
+  {
+    n: 1,
+    title: "Introduction to OpenWrt and switching",
+    note: "Voor Lab 1 is er in het echte vak geen voorbereidingstest. Deze test is enkel om te oefenen.",
+    kb: `
+<h3>Waar gaat dit labo over</h3>
+<p>In dit labo maken we kennis met OpenWrt, een Linux-besturingssysteem voor netwerktoestellen. We werken met twee toestellen die beide OpenWrt draaien: de Netgear GS108T, die we de switch noemen, en de Asus RT-AX53U, die we de router noemen. Een nieuw of gereset toestel is standaard bereikbaar op 192.168.1.1 met gebruiker root en zonder wachtwoord, wat enkel in het labo aanvaardbaar is. Je mag nooit de stroom van een toestel halen terwijl het herstart of reset, want dan kan het onherstelbaar beschadigd raken.</p>
+
+<h3>Wat je in het labo doet</h3>
+<p>Je begint met de webinterface LuCI via http://192.168.1.1. De switch heeft geen DHCP-server, dus de laptop heeft daar een statisch IP nodig, bijvoorbeeld 192.168.1.10/24 zonder gateway. De router heeft wel een DHCP-server, waardoor de laptop automatisch een IP in 192.168.1.x krijgt met 192.168.1.1 als gateway. Daarna verken je de menu's.</p>
+<p>Vervolgens ga je via SSH (ssh root@192.168.1.1) op de command line en inspecteer je het toestel met commando's zoals ubus call system board, uptime, free -h, df -h, ip a, ip route, ifstatus, uci show network en logread. Er is geen onderscheid tussen een gebruikersmodus en een bevoorrechte modus zoals bij Cisco: je bent meteen root. Connectiviteit test je met ping, nslookup en fping.</p>
+<p>Daarna volgt pakketbeheer met opkg: opkg update, opkg list-upgradable, opkg upgrade en opkg install tcpdump. Daarvoor moet het toestel internet hebben. Bij de router volstaat de WAN-poort, bij de switch moet je een poort uit de bridge halen en als DHCP-client-interface instellen. De systeemdatum moet kloppen, anders mislukt de controle van de HTTPS-certificaten, en je kan ze zetten met date -s. Pakketten kunnen ook via LuCI geïnstalleerd worden onder System en dan Software.</p>
+<p>Dan verbind je twee hosts met elkaar via een switch en een router. De host aan de switch krijgt 10.1.1.10/16 met de switch op 10.1.1.1, de host aan de router krijgt 10.1.2.10/16 met de router op 10.1.2.1, en tussen de switch en een LAN-poort van de router loopt een kabel. De firewall zet je uit met /etc/init.d/firewall stop en het management-IP pas je aan via Network, Interfaces en LAN.</p>
+<p>Als laatste maak je een backup van de configuratie en zet je die terug via System, Backup / Flash Firmware (sysupgrade -b en sysupgrade -r), en reset je het toestel met de reset-knop (ongeveer 10 seconden) of met firstboot -y &amp;&amp; reboot. Die reset doe je op het einde van elk labo.</p>
+
+<h3>Kernpunten</h3>
+<p>De configuratie van OpenWrt zit in UCI (de bestanden in /etc/config/) en kan via de GUI of de command line aangepast worden, want beide wijzigen dezelfde configuratie. Als je het IP van het toestel wijzigt, verlies je de verbinding. Je laptop moet dan ook een IP in het nieuwe subnet krijgen en je moet naar het nieuwe adres surfen. Binnen hetzelfde subnet, hier 10.1.0.0/16, is geen default gateway nodig.</p>
+<p>In dit labo gebruiken we de LAN-poorten, die in een bridge zitten en dus als Layer 2 switch werken, en niet de WAN-poort, want dat is een apart gerouteerd netwerk met eigen subnet, firewall-zone en NAT. Een configuratie-backup bevat enkel instellingen, terwijl een firmware image het volledige besturingssysteem is. Na een restore kan het toestel tijdelijk onbereikbaar zijn omdat het herstart en het management-IP uit de backup kan verschillen van het adres dat je browser of host gebruikt.</p>
+`,
+    qs: [
+      { q: "Wat zijn de standaard instellingen om een vers OpenWrt-toestel in het labo te beheren?",
+        o: ["IP 10.1.1.1, gebruiker admin, wachtwoord admin", "IP 192.168.1.1, gebruiker root, geen wachtwoord", "IP 192.168.0.1, gebruiker root, wachtwoord root", "IP 192.168.1.254, gebruiker admin, geen wachtwoord"],
+        a: 1, e: "Een vers of gereset toestel is bereikbaar op 192.168.1.1 met root zonder wachtwoord. Dat is enkel in het labo aanvaardbaar." },
+      { q: "Waarom heeft de laptop aan de switch een statisch IP nodig, terwijl de laptop aan de router er automatisch een krijgt?",
+        o: ["De switch ondersteunt geen IP-adressen", "De router draait standaard een DHCP-server op LAN, de switch niet", "De router gebruikt geen subnetmasker", "Een switch kan enkel IPv6"],
+        a: 1, e: "In het labo is de DHCP-server op de switch uitgeschakeld (te zwaar voor het toestel). De router levert wel automatisch een IP in 192.168.1.x." },
+      { q: "Je krijgt de waarschuwing 'host identification has changed' bij ssh. Wat doe je?",
+        o: ["Het toestel resetten", "ssh-keygen -R 192.168.1.1 uitvoeren en opnieuw verbinden", "De firewall uitzetten", "Het wachtwoord van root instellen"],
+        a: 1, e: "Na het reflashen of verwisselen van toestellen verandert de host key. Met ssh-keygen -R verwijder je de oude entry." },
+      { q: "Waarom mislukt opkg update als de systeemdatum fout is?",
+        o: ["Omdat opkg alleen op werkdagen werkt", "Omdat de HTTPS-certificaten een geldigheidsperiode hebben en de controle faalt bij een verkeerde datum", "Omdat DNS dan niet werkt", "Omdat de overlay vol zit"],
+        a: 1, e: "De pakketlijsten worden via HTTPS opgehaald. Bij een verkeerde klok lijkt het certificaat ongeldig (wget: SSL verify error)." },
+      { q: "Wat bevat /overlay in de uitvoer van df -h?",
+        o: ["Het read-only basis-image van het besturingssysteem", "Het schrijfbare deel met configuratie en geïnstalleerde pakketten", "Tijdelijke bestanden in RAM", "De bootloader"],
+        a: 1, e: "/ is een read-only squashfs en /tmp zit in RAM. De overlay bevat wijzigingen en pakketten en wordt bij een reset gewist." },
+      { q: "Welk commando toont de netwerkconfiguratie in UCI-notatie?",
+        o: ["ip route", "ifstatus lan", "uci show network", "logread -e network"],
+        a: 2, e: "uci show network toont /etc/config/network. ifstatus geeft de runtime-status van een interface." },
+      { q: "Wat doet logread -f?",
+        o: ["Wist het systeemlog", "Toont enkel firewall-regels", "Volgt het systeemlog live", "Filtert op fouten"],
+        a: 2, e: "-f staat voor follow, zoals tail -f. Stoppen kan met Ctrl+C. Met -e filter je op een patroon." },
+      { q: "Wat doet /etc/init.d/firewall stop?",
+        o: ["Verwijdert de firewall-configuratie permanent", "Stopt de firewall-service nu, maar na een herstart draait ze weer tenzij je ze disabled", "Zet alle poorten uit", "Reset het toestel"],
+        a: 1, e: "Het stopt de service tijdelijk. Met /etc/init.d/firewall disable zou ze ook na een herstart uit blijven." },
+      { q: "Waarom gebruikt oefening 4 LAN-poorten en niet de WAN-poort om switch en router te verbinden?",
+        o: ["De WAN-poort is trager", "De LAN-poorten zitten in een bridge, waardoor de router als Layer 2 switch in hetzelfde subnet werkt; de WAN-poort is een apart gerouteerd netwerk", "De WAN-poort ondersteunt geen Ethernet", "LAN-poorten hebben geen IP nodig"],
+        a: 1, e: "Alle toestellen moeten in 10.1.0.0/16 zitten. Via de WAN-poort zou je tussen twee netwerken routeren." },
+      { q: "Moet je in oefening 4 een default gateway instellen op de hosts?",
+        o: ["Ja, 10.1.1.1", "Ja, 192.168.1.1", "Nee, alle toestellen zitten in hetzelfde /16-subnet", "Nee, maar enkel omdat de firewall uit staat"],
+        a: 2, e: "Binnen hetzelfde subnet communiceren hosts rechtstreeks (ARP). Een gateway is enkel nodig voor andere subnetten." },
+      { q: "Je wijzigt het IP van de router naar 10.1.2.1/16. Wat gebeurt er met je browser?",
+        o: ["Niets, de pagina blijft werken", "De verbinding valt weg, want het toestel luistert niet meer op 192.168.1.1; je laptop moet in 10.1.0.0/16 zitten en naar http://10.1.2.1 gaan", "De router herstelt automatisch het oude adres", "LuCI is niet meer bereikbaar tot een reset"],
+        a: 1, e: "De laptop heeft nog zijn oude 192.168.1.x-adres en zit niet meer in hetzelfde netwerk. Pas de laptop aan en gebruik het nieuwe adres." },
+      { q: "Wat is het verschil tussen een configuratie-backup en een firmware image?",
+        o: ["Er is geen verschil", "Een backup bevat enkel de instellingen, een firmware image is het volledige besturingssysteem", "Een backup bevat ook de kernel", "Een firmware image bevat enkel de gebruikersinstellingen"],
+        a: 1, e: "De backup (.tar.gz met o.a. /etc/config) wordt op het bestaande systeem toegepast. Een firmware image vervangt het besturingssysteem." },
+      { q: "Je hebt een backup teruggezet en kan het toestel even niet bereiken. Wat is een waarschijnlijke oorzaak?",
+        o: ["De backup was beschadigd", "Het toestel herstart en heeft het management-IP uit de backup, terwijl je host/browser een ander adres gebruikt", "De firewall blokkeert SSH permanent", "De restore heeft de root-gebruiker verwijderd"],
+        a: 1, e: "Het IP uit de backup kan verschillen van wat je gebruikt. Wacht op de herstart, ga naar het herstelde adres en pas zo nodig je host aan." },
+      { q: "Hoe reset je een toestel met de hardware-knop?",
+        o: ["Kort drukken en uitsteken", "Ongeveer 10 seconden ingedrukt houden, loslaten en NIET uitsteken", "Dubbelklikken en wachten", "Stroom 10 seconden uitsteken"],
+        a: 1, e: "Het toestel doet een factory reset en herstart. Tijdens de herstart mag je het niet uitsteken, anders kan het onherstelbaar beschadigd raken." },
+      { q: "Wat gebeurt er met geïnstalleerde pakketten en configuratie bij een factory reset?",
+        o: ["Ze blijven behouden", "Ze worden gewist doordat de schrijfbare overlay leeggemaakt wordt", "Enkel de pakketten worden gewist", "Enkel de configuratie wordt gewist"],
+        a: 1, e: "Een reset maakt de overlay leeg. Het toestel keert terug naar het schone image met 192.168.1.1." }
+    ]
+  },
+  {
+    n: 2,
+    title: "Layer 2 switching and Layer 3 routing",
+    note: "",
+    kb: `
+<h3>Waar gaat dit labo over</h3>
+<p>Dit labo introduceert de basis van Layer 2 switching en Layer 3 routing met een reeks hands-on oefeningen. Je leert het effect van het subnetmasker en de default gateway op de communicatie, je configureert en controleert routing tussen verschillende subnetten, je analyseert ARP-, ICMP- en routingverkeer in Wireshark, en je stelt statische routes en dynamische routing (RIP en OSPF) in. Elke groep werkt met echte switches, routers en hosts. Als je een oefening afrondt, verwittig je de lector voor je verdergaat.</p>
+
+<h3>De oefeningen</h3>
+<p>In oefening 1 bouw je een Layer 2 opstelling met switches en hosts in een /16-subnet, zonder default gateway. Je pingt je eigen switch, een andere switch, je partner en andere hosts, en je bekijkt in Wireshark wat er gebeurt: ARP, ICMP, welke adressen in het Ethernet-frame zitten en welke in de payload. Je gebruikt ook fping met een tekstbestand met IP-adressen om meerdere hosts tegelijk te testen. In oefening 2 hou je dezelfde fysieke opstelling en dezelfde IP-adressen, maar wijzig je het masker naar /24 (255.255.255.0), nog steeds zonder gateway. Je ziet welke bereikbaarheid wegvalt en waarom.</p>
+<p>In oefening 3 zet je de hosts in verschillende subnetten: de host met IP 10.1.x.10 krijgt een /16, de host met 10.1.x.11 blijft in het /24 en de switches blijven op /24. Het doel is niet om te zien of het werkt, maar om uit te leggen waarom een ping wel of niet vertrekt. In oefening 4 voeg je routers toe. Je installeert de FRR-pakketten, zet de firewall uit, haalt LAN2 uit de bridge en maakt een nieuwe interface lan2 met een statisch IP. Elk duo zit in een ander /24-netwerk en er is nog geen gateway. Je merkt dat je geen volledige connectiviteit hebt.</p>
+<p>In oefening 5 stel je de default gateways in: de gateway van de .10-host wijst naar de ene kant, die van de .11-host naar de andere kant. De routers blijven ongewijzigd. Je kan nu de buur bereiken, maar niet alles, want de routers kennen enkel hun directe netwerken. In oefening 6 voeg je statische routes toe op elke router (twee per router) voor volledige bereikbaarheid, controleer je de routingtabel en bekijk je in Wireshark welke MAC-adressen en IP-velden bij het doorsturen veranderen. In oefening 7 vervang je de statische routes door dynamische routing met FRR: eerst RIP, daarna OSPF. Je vergelijkt de routes (traceroute), de convergentietijd bij het loskoppelen van een kabel en je ontleedt de pakketten in Wireshark.</p>
+
+<h3>Vorm van de test</h3>
+<p>Aan het begin van het labo is er een meerkeuzetest via Blackboard. Je hebt 15 minuten om hem te starten en hij is gesloten boek, dus zonder internet en zonder AI. De voorbereidingstests tellen voor 15% van het labo en als je niet slaagt voor een test, moet je een verslag schrijven over dat labo. Volgens de labtekst moet je geen commando's, syntax of getallen zoals timerwaarden kennen. Je moet kunnen uitleggen wat er in een netwerk gebeurt en waarom.</p>
+
+<h3>Bron voor de voorbereiding</h3>
+<p>In Lab2.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: de reeks Packet Traveling van Practical Networking (host-to-host, via een switch en via een router), het artikel Role of Subnet Mask, het artikel Understanding Routing in Computer Networks over statische en dynamische routing, korte video's over RIP en OSPF en een artikel dat RIP en OSPF vergelijkt. De links staan niet in de PDF. De offline referenties staan op Blackboard onder practicum en dan referenties. Wat hieronder staat komt uit mijn eigen kennis van die onderwerpen. Ik heb de artikels zelf niet kunnen lezen, dus lees ze ook zelf door.</p>
+
+<h3>A. Hoe een pakket reist</h3>
+<p>Ethernet werkt met MAC-adressen (Layer 2) en IP met IP-adressen (Layer 3). Een host kent het IP-adres van de bestemming, maar moet het MAC-adres van de volgende hop nog opzoeken met ARP. Bij ARP stuurt de host een broadcast (bestemming ff:ff:ff:ff:ff:ff) met de vraag wie een bepaald IP heeft, en de eigenaar antwoordt met een unicast. Het resultaat komt in de ARP-cache. Daarom is het eerste frame dat je in Wireshark bij een nieuwe ping ziet meestal een ARP-broadcast, en is het ICMP-verkeer erna (echo request en reply) unicast.</p>
+<p>Een switch werkt op Layer 2. Hij leert uit het bronadres van binnenkomende frames welk MAC-adres aan welke poort hangt (de MAC-tabel). Frames voor een onbekende bestemming en broadcasts gaat hij naar alle andere poorten sturen (flooding), frames voor een bekende bestemming enkel naar de juiste poort. Een switch past geen MAC- of IP-adressen aan en heeft enkel een IP-adres om beheerd te worden.</p>
+<p>Een router werkt op Layer 3, verbindt verschillende netwerken en kiest de volgende hop met zijn routingtabel. Als een router een pakket doorstuurt, blijven het bron-IP en bestemmings-IP hetzelfde, maar worden de MAC-adressen bij elke hop vervangen. De TTL daalt met 1 en de checksum verandert mee. Wanneer een host een pakket naar een ander subnet stuurt, is het bestemmings-MAC in het Ethernet-frame dat van de default gateway en niet dat van de eindbestemming, terwijl het bestemmings-IP wel dat van de eindbestemming blijft.</p>
+
+<h3>B. Subnetmasker en default gateway</h3>
+<p>De host past het masker toe op zijn eigen IP en op het bestemmings-IP en vergelijkt de twee resultaten. Zijn ze gelijk, dan zit de bestemming in hetzelfde subnet en verstuurt de host rechtstreeks, met ARP voor de bestemming zelf. Zijn ze verschillend, dan stuurt de host het naar de default gateway, met ARP voor de gateway. Is er geen default gateway ingesteld, dan wordt het pakket niet verstuurd. De default gateway moet zelf in het eigen subnet liggen.</p>
+<p>Een /16 is 255.255.0.0, waardoor alle adressen 10.1.x.y in hetzelfde subnet zitten. Een /24 is 255.255.255.0, waardoor elke waarde van x een eigen subnet is. Als twee hosts verschillende maskers hebben, kan het gebeuren dat verkeer in de ene richting wel vertrekt en in de andere richting niet, omdat de ene host de andere als lokaal ziet en de andere niet. Het antwoord komt dan niet terug. Als je in het labo van /16 naar /24 gaat, verlies je daarom de bereikbaarheid met hosts en switches van andere groepen, want die zitten dan in een ander subnet en er is geen gateway.</p>
+
+<h3>C. Statische en dynamische routing</h3>
+<p>Een router kent standaard enkel zijn rechtstreeks verbonden netwerken. Voor elk ander netwerk heeft hij een route nodig. Hosts hebben een default gateway nodig, routers hebben routes nodig, en een router moet IP-forwarding aan hebben om pakketten door te geven.</p>
+<p>Statische routes stel je handmatig in als een bestemmingsprefix met een next hop. Ze zijn eenvoudig, voorspelbaar en veroorzaken geen extra verkeer, maar ze vragen veel handwerk als het netwerk groeit en passen zich niet automatisch aan als een link of router uitvalt. Bij dynamische routing wisselen routers onderling informatie uit en passen ze hun routes automatisch aan. Dat schaalt beter en past zich aan bij wijzigingen, maar het kost meer rekenkracht en geheugen, geeft extra verkeer en is complexer om te configureren. Het tijdstip waarop alle routers na een wijziging weer dezelfde, juiste kijk op het netwerk hebben, noemen we convergentie.</p>
+
+<h3>D. RIP</h3>
+<p>RIP is een distance-vector protocol. Elke router stuurt periodiek (ongeveer elke 30 seconden) zijn volledige routingtabel naar zijn buren en zo leren routers hop per hop over verre netwerken. De metric is het aantal hops, met een maximum van 15, want 16 betekent onbereikbaar. RIP versie 2 gebruikt multicast naar 224.0.0.9 (UDP-poort 520).</p>
+<p>RIP convergeert traag. Slecht nieuws reist traag, omdat routes pas na timeouts verlopen (bijvoorbeeld 180 seconden), en er kunnen routing-loops en het probleem count to infinity ontstaan, waartegen mechanismen zoals split horizon en route poisoning bestaan. RIP kiest het pad met het minste aantal hops, ook als dat een trage link is, dus dat is niet altijd het beste pad. Het is eenvoudig en vraagt weinig resources, en is daarom geschikt voor kleine netwerken.</p>
+
+<h3>E. OSPF</h3>
+<p>OSPF is een link-state protocol. Elke router deelt informatie over zijn eigen links (Link State Advertisements, LSAs) met alle routers in het gebied, waardoor elke router dezelfde kaart van het netwerk krijgt, de Link State Database (LSDB). Elke router berekent daarna zelf het kortste pad met het algoritme van Dijkstra. De metric is de cost, gebaseerd op de bandbreedte van de link, en een lagere cost is beter.</p>
+<p>OSPF gebruikt Hello-pakketten om buren te ontdekken en te onderhouden (multicast 224.0.0.5 en 224.0.0.6, IP-protocol 89). De toestanden van een buur zijn Down, Init, 2-Way, ExStart, Exchange, Loading en Full, waarbij Full betekent dat de databases van beide buren volledig gesynchroniseerd zijn. Area 0 is de backbone-area en elke router heeft een unieke router-ID. OSPF convergeert veel sneller dan RIP en schaalt naar grote netwerken, maar vraagt meer CPU en geheugen en is complexer.</p>
+
+<h3>F. Verschil tussen RIP en OSPF</h3>
+<p>RIP deelt zijn volledige tabel enkel met zijn directe buren en vertrouwt op wat de buren zeggen (distance-vector). OSPF deelt informatie over links met alle routers in het gebied en elke router rekent zelf het beste pad uit (link-state). RIP gebruikt hops als metric, convergeert traag en past bij kleine netwerken. OSPF gebruikt cost, convergeert snel en past bij grotere netwerken.</p>
+`,
+    qs: [
+      { q: "Een host wil een ping sturen naar een andere host in hetzelfde subnet. Hij kent enkel het IP-adres. Wat is het eerste relevante frame dat hij verstuurt?",
+        o: ["Een ICMP echo request als broadcast", "Een ARP-request als broadcast", "Een ARP-request als unicast naar de default gateway", "Een DNS-query naar de switch"],
+        a: 1, e: "Het MAC-adres van de bestemming is nog onbekend. De host stuurt een ARP-broadcast (ff:ff:ff:ff:ff:ff) en de eigenaar antwoordt met een unicast." },
+      { q: "Hoe wordt het ICMP-verkeer verstuurd nadat de ARP-uitwisseling is afgerond?",
+        o: ["Als broadcast zodat iedereen het ziet", "Als unicast, want het MAC-adres zit nu in de ARP-cache", "Altijd via de default gateway", "Het wordt door de switch geblokkeerd"],
+        a: 1, e: "Na ARP kent de host het MAC-adres en worden echo request en reply als unicast verstuurd." },
+      { q: "Wat doet een switch met een frame waarvan het bestemmings-MAC niet in zijn MAC-tabel staat?",
+        o: ["Hij gooit het frame weg", "Hij stuurt het naar alle andere poorten (flooding)", "Hij stuurt het enkel naar de default gateway", "Hij vervangt het bestemmings-MAC door zijn eigen MAC"],
+        a: 1, e: "Een onbekende bestemming of een broadcast gaat naar alle andere poorten. De switch leert MAC-adressen uit het bronadres van binnenkomende frames." },
+      { q: "Een router stuurt een pakket door naar het volgende netwerk. Wat verandert er?",
+        o: ["Enkel het bestemmings-IP", "Bron-IP en bestemmings-IP", "Bron- en bestemmings-MAC en de TTL (min 1)", "Niets, de router werkt transparant"],
+        a: 2, e: "De IP-adressen blijven hetzelfde, de MAC-adressen worden bij elke hop vervangen en de TTL daalt met 1 (de checksum verandert mee)." },
+      { q: "Een host pingt een host in een ander subnet. Welk bestemmings-MAC staat in het Ethernet-frame?",
+        o: ["Het MAC van de eindbestemming", "Het MAC van de default gateway", "ff:ff:ff:ff:ff:ff", "Het MAC van de switch"],
+        a: 1, e: "De host geeft het pakket eerst aan de default gateway. Het bestemmings-IP blijft dat van de eindbestemming, maar het MAC is dat van de gateway." },
+      { q: "Twee hosts zitten allebei in 10.1.0.0/16. Is er een default gateway nodig om elkaar te bereiken?",
+        o: ["Ja, altijd", "Ja, maar enkel voor ICMP", "Nee, ze zitten in hetzelfde subnet en communiceren rechtstreeks via ARP", "Nee, maar enkel als er een router tussen zit"],
+        a: 2, e: "Bestemming AND masker is gelijk aan het eigen netwerk, dus de host verstuurt rechtstreeks. Een gateway is enkel nodig voor andere subnetten." },
+      { q: "Host 10.1.1.10/24 pingt 10.1.2.10 en heeft geen default gateway. Wat gebeurt er?",
+        o: ["De ping lukt via ARP", "De ping wordt niet verstuurd, want het is een ander subnet en er is geen gateway", "De switch routeert het pakket", "De ping lukt, maar er komt geen antwoord"],
+        a: 1, e: "10.1.2.10 valt buiten 10.1.1.0/24 en er is geen gateway. Het pakket vertrekt niet eens (je ziet ook geen ARP voor 10.1.2.10)." },
+      { q: "Alle hosts en switches gaan van /16 naar /24 en er is geen gateway. Wat verlies je?",
+        o: ["Niets, /24 en /16 gedragen zich hetzelfde", "De bereikbaarheid met toestellen van andere groepen (10.1.y.z met een andere y)", "De bereikbaarheid met de eigen switch", "De bereikbaarheid met je partner op dezelfde switch"],
+        a: 1, e: "Met een /24 ligt een toestel met een ander derde octet in een ander subnet. Zonder gateway wordt er niets naartoe verstuurd. Eigen switch en partner zitten nog in hetzelfde /24." },
+      { q: "Host A is 10.1.1.10/16, host B is 10.1.2.11/24 en er is geen gateway. A pingt B. Wat gebeurt er?",
+        o: ["Niets vertrekt bij A", "Het echo request vertrekt en komt aan, maar B kan niet antwoorden omdat 10.1.1.10 buiten zijn /24 valt en er geen gateway is", "De ping lukt volledig", "B antwoordt via de switch met een broadcast"],
+        a: 1, e: "Voor A ligt B in zijn /16, dus A verstuurt rechtstreeks. Voor B ligt A buiten zijn /24 en zonder gateway weet hij niet waar hij het antwoord naartoe moet sturen. Resultaat: timeout." },
+      { q: "Waarom werkt een ping naar een ver subnet niet als de routers enkel hun direct verbonden netwerken kennen?",
+        o: ["De hosts hebben geen IP-adres", "De router heeft geen route naar dat verre netwerk, dus het pakket wordt niet verder gestuurd", "ARP werkt niet over routers", "De switch blokkeert het verkeer"],
+        a: 1, e: "Zonder statische of dynamische routes kent een router enkel de direct verbonden netwerken. Voor een ver netwerk is er geen route en het pakket stopt daar." },
+      { q: "Wat is het belangrijkste nadeel van statische routes in een groot netwerk?",
+        o: ["Ze verbruiken veel bandbreedte", "Ze moeten handmatig aangepast worden en passen zich niet automatisch aan bij uitval", "Ze werken enkel met RIP", "Ze zijn trager dan dynamische routes"],
+        a: 1, e: "Statische routes zijn eenvoudig maar vragen handwerk bij elke wijziging. Als een link of router uitvalt, blijft de route bestaan en past het netwerk zich niet aan." },
+      { q: "Wat is de metric van RIP?",
+        o: ["Bandbreedte van de link", "Aantal hops (maximum 15)", "Vertraging in milliseconden", "De kost berekend met het algoritme van Dijkstra"],
+        a: 1, e: "RIP telt hops. 16 hops betekent onbereikbaar. De snelheid van een link telt niet mee." },
+      { q: "Wat is het fundamentele verschil tussen RIP en OSPF?",
+        o: ["RIP is link-state, OSPF is distance-vector", "RIP deelt zijn tabel met buren (distance-vector), OSPF deelt linkinformatie met alle routers en elke router rekent zelf het kortste pad uit (link-state)", "RIP werkt enkel op Layer 2", "OSPF gebruikt geen metric"],
+        a: 1, e: "RIP: distance-vector, hops, traag. OSPF: link-state, elke router bouwt de LSDB en rekent zelf met Dijkstra, snel en schaalbaar." },
+      { q: "Wat betekent de OSPF-toestand Full tussen twee buren?",
+        o: ["De link is volledig bezet", "De buur is gevonden, maar nog niet gesynchroniseerd", "De link-state databases van beide buren zijn volledig gesynchroniseerd", "De buur is uitgevallen"],
+        a: 2, e: "Full is de eindtoestand van de adjacency: beide routers hebben dezelfde LSDB." },
+      { q: "Welk protocol convergeert meestal sneller na het uitvallen van een link?",
+        o: ["RIP", "OSPF", "Beide even snel", "Geen van beide, enkel statische routes passen aan"],
+        a: 1, e: "OSPF detecteert het via Hello-pakketten, verspreidt een update en elke router herberekent meteen. RIP wacht op timeouts en verspreidt het nieuws hop per hop." }
+    ]
+  },
+  { n: 3, title: "Spanning Tree Protocol (STP)", kb: null, qs: [] },
+  { n: 4, title: "VLANs, VLAN trunking and VLAN routing", kb: null, qs: [] },
+  { n: 5, title: "Firewalls", kb: null, qs: [] },
+  { n: 6, title: "Client-to-Site VPN with WireGuard", kb: null, qs: [] },
+  { n: 7, title: "Site-to-Site VPN with IPsec", kb: null, qs: [] },
+  { n: 8, title: "Network security validation", kb: null, qs: [] }
+];
+
+/* ===================================================================== */
+/* HELPERS                                                               */
+/* ===================================================================== */
+
+var app = document.getElementById("app");
+var timerId = null;
+var test = null;
+
+function el(tag, attrs, html) {
+  var n = document.createElement(tag);
+  if (attrs) { for (var k in attrs) { n.setAttribute(k, attrs[k]); } }
+  if (html !== undefined) { n.innerHTML = html; }
+  return n;
+}
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function shuffle(a) {
+  var r = a.slice();
+  for (var i = r.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = r[i]; r[i] = r[j]; r[j] = t;
+  }
+  return r;
+}
+function letter(i) { return String.fromCharCode(65 + i); }
+function fmt(sec) {
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+}
+function getLab(n) {
+  for (var i = 0; i < LABS.length; i++) { if (LABS[i].n === n) { return LABS[i]; } }
+  return null;
+}
+function ready(lab) { return lab && lab.kb && lab.qs.length > 0; }
+function saveBest(n, score, total) {
+  try {
+    var key = "ieb-best-lab" + n;
+    var old = parseInt(localStorage.getItem(key), 10);
+    if (isNaN(old) || score > old) { localStorage.setItem(key, String(score)); }
+    localStorage.setItem("ieb-total-lab" + n, String(total));
+  } catch (e) { /* opslag niet beschikbaar */ }
+}
+function loadBest(n) {
+  try {
+    var b = localStorage.getItem("ieb-best-lab" + n);
+    var t = localStorage.getItem("ieb-total-lab" + n);
+    if (b !== null && t !== null) { return b + " / " + t; }
+  } catch (e) { /* opslag niet beschikbaar */ }
+  return null;
+}
+function stopTimer() {
+  if (timerId) { clearInterval(timerId); timerId = null; }
+}
+
+/* ===================================================================== */
+/* VIEWS                                                                 */
+/* ===================================================================== */
+
+function viewMenu() {
+  stopTimer(); test = null;
+  document.title = "Voorbereiding IEB";
+  var html = '<h1>Voorbereiding Infrastructuur en Beveiliging</h1>' +
+    '<p class="muted ui">Kies een labo. Je krijgt eerst een uitleg (kennisbasis) en daarna een test van 15 vragen in 15 minuten, zoals de voorbereidingstest op Blackboard.</p>' +
+    '<ul class="menu">';
+  LABS.forEach(function (lab) {
+    if (ready(lab)) {
+      var best = loadBest(lab.n);
+      html += '<li><a href="#/lab/' + lab.n + '"><span><span class="num">Lab ' + lab.n + '</span>' + esc(lab.title) + '</span>' +
+        '<span class="badge' + (best ? ' best' : '') + '">' + (best ? 'Beste: ' + best : 'Nog niet gemaakt') + '</span></a></li>';
+    } else {
+      html += '<li><div class="off"><span><span class="num ui">Lab ' + lab.n + '</span>' + esc(lab.title) + '</span>' +
+        '<span class="badge">Nog geen data</span></div></li>';
+    }
+  });
+  html += '</ul>';
+  app.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function viewLab(n) {
+  stopTimer(); test = null;
+  var lab = getLab(n);
+  if (!ready(lab)) { location.hash = "#/"; return; }
+  document.title = "Lab " + lab.n + " - Voorbereiding IEB";
+  var html = '<div class="top"><a href="#/">&larr; Alle labo\'s</a><span class="muted">Kennisbasis</span></div>' +
+    '<h1>Lab ' + lab.n + ': ' + esc(lab.title) + '</h1>' + lab.kb +
+    '<div class="cta"><p class="ui"><strong>Klaar om te testen?</strong> ' + lab.qs.length + ' meerkeuzevragen, ' + TEST_MINUTES + ' minuten. De timer start zodra je op de knop klikt.</p>' +
+    (lab.note ? '<p class="muted ui">' + esc(lab.note) + '</p>' : '') +
+    '<a class="btn" href="#/lab/' + lab.n + '/test" style="display:inline-block;text-decoration:none">Start test</a></div>';
+  app.innerHTML = html;
+  window.scrollTo(0, 0);
+}
+
+function viewTest(n) {
+  stopTimer();
+  var lab = getLab(n);
+  if (!ready(lab)) { location.hash = "#/"; return; }
+  document.title = "Test Lab " + lab.n + " - Voorbereiding IEB";
+
+  test = {
+    lab: lab,
+    items: shuffle(lab.qs).map(function (q) {
+      var order = shuffle(q.o.map(function (_, i) { return i; }));
+      return { q: q, order: order, picked: null };
+    }),
+    end: Date.now() + TEST_MINUTES * 60 * 1000,
+    done: false
+  };
+
+  var html = '<div class="bar"><a href="#/lab/' + lab.n + '" id="leave">&larr; Stoppen</a>' +
+    '<span class="muted" id="progress"></span><span class="timer" id="timer">' + fmt(TEST_MINUTES * 60) + '</span></div>' +
+    '<h2>Test Lab ' + lab.n + ': ' + esc(lab.title) + '</h2><div id="questions"></div>' +
+    '<div class="row"><button type="button" class="btn" id="submit">Inleveren</button></div>';
+  app.innerHTML = html;
+
+  var box = document.getElementById("questions");
+  test.items.forEach(function (it, qi) {
+    var q = el("div", { "class": "q" });
+    q.appendChild(el("p", { "class": "q-text" }, (qi + 1) + ". " + esc(it.q.q)));
+    it.order.forEach(function (origIdx, pos) {
+      var lbl = el("label", { "class": "opt" });
+      var inp = el("input", { type: "radio", name: "q" + qi, value: String(origIdx) });
+      inp.addEventListener("change", function () { it.picked = origIdx; updateProgress(); });
+      lbl.appendChild(inp);
+      lbl.appendChild(el("span", null, letter(pos) + ". " + esc(it.q.o[origIdx])));
+      q.appendChild(lbl);
+    });
+    box.appendChild(q);
+  });
+
+  document.getElementById("submit").addEventListener("click", function () {
+    var open = test.items.filter(function (it) { return it.picked === null; }).length;
+    if (open > 0 && !window.confirm("Je hebt nog " + open + " onbeantwoorde vragen. Toch inleveren?")) { return; }
+    finish(false);
+  });
+
+  updateProgress();
+  tick();
+  timerId = setInterval(tick, 250);
+  window.scrollTo(0, 0);
+}
+
+function updateProgress() {
+  var done = test.items.filter(function (it) { return it.picked !== null; }).length;
+  var p = document.getElementById("progress");
+  if (p) { p.textContent = done + " / " + test.items.length + " beantwoord"; }
+}
+
+function tick() {
+  if (!test || test.done) { return; }
+  var left = Math.max(0, Math.ceil((test.end - Date.now()) / 1000));
+  var t = document.getElementById("timer");
+  if (t) {
+    t.textContent = fmt(left);
+    t.className = "timer" + (left <= 120 ? " low" : "");
+  }
+  if (left <= 0) { finish(true); }
+}
+
+function finish(timeUp) {
+  if (!test || test.done) { return; }
+  test.done = true;
+  stopTimer();
+  var lab = test.lab;
+  var total = test.items.length;
+  var score = 0;
+  test.items.forEach(function (it) { if (it.picked === it.q.a) { score++; } });
+  var used = Math.min(TEST_MINUTES * 60, Math.round((TEST_MINUTES * 60 * 1000 - Math.max(0, test.end - Date.now())) / 1000));
+  saveBest(lab.n, score, total);
+
+  var pct = Math.round(score / total * 100);
+  var html = '<div class="top"><a href="#/">&larr; Alle labo\'s</a><span class="muted">Resultaat</span></div>' +
+    '<h2>Resultaat Lab ' + lab.n + ': ' + esc(lab.title) + '</h2>' +
+    '<div class="score"><div class="big">' + score + ' / ' + total + '</div>' +
+    '<div>' + pct + '%' + (timeUp ? ' &middot; de tijd was om' : ' &middot; tijd gebruikt: ' + fmt(used)) + '</div>' +
+    '<div class="row"><button type="button" class="btn" id="again">Opnieuw proberen</button>' +
+    '<a class="btn ghost" href="#/lab/' + lab.n + '" style="text-decoration:none">Terug naar kennisbasis</a></div></div>' +
+    '<div class="review" id="review"></div>';
+  app.innerHTML = html;
+
+  document.getElementById("again").addEventListener("click", function () { viewTest(lab.n); });
+  var review = document.getElementById("review");
+  test.items.forEach(function (it, qi) {
+    var q = el("div", { "class": "q" });
+    q.appendChild(el("p", { "class": "q-text" }, (qi + 1) + ". " + esc(it.q.q)));
+    it.order.forEach(function (origIdx, pos) {
+      var cls = "opt";
+      if (origIdx === it.q.a) { cls += " correct"; }
+      else if (origIdx === it.picked) { cls += " wrong"; }
+      var d = el("div", { "class": cls }, '<span>' + letter(pos) + '. ' + esc(it.q.o[origIdx]) + '</span>');
+      q.appendChild(d);
+    });
+    var correctPos = it.order.indexOf(it.q.a);
+    var verdict;
+    if (it.picked === null) {
+      verdict = '<span class="no">Niet beantwoord.</span> Juiste antwoord: ' + letter(correctPos) + '. ';
+    } else if (it.picked === it.q.a) {
+      verdict = '<span class="ok">Juist.</span> ';
+    } else {
+      verdict = '<span class="no">Fout.</span> Juiste antwoord: ' + letter(correctPos) + '. ';
+    }
+    q.appendChild(el("p", { "class": "verdict" }, verdict + esc(it.q.e)));
+    review.appendChild(q);
+  });
+  window.scrollTo(0, 0);
+}
+
+/* ===================================================================== */
+/* ROUTER                                                                */
+/* ===================================================================== */
+
+function route() {
+  stopTimer();
+  var parts = location.hash.replace(/^#\/?/, "").split("/");
+  if (parts[0] === "lab" && parts[1]) {
+    var n = parseInt(parts[1], 10);
+    if (parts[2] === "test") { viewTest(n); } else { viewLab(n); }
+  } else {
+    viewMenu();
+  }
+}
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
