@@ -169,9 +169,11 @@ var LABS = [
 <h3>B. Subnetmasker en default gateway</h3>
 <p>De host past het masker toe op zijn eigen IP en op het bestemmings-IP en vergelijkt de twee resultaten. Zijn ze gelijk, dan zit de bestemming in hetzelfde subnet en verstuurt de host rechtstreeks, met ARP voor de bestemming zelf. Zijn ze verschillend, dan stuurt de host het naar de default gateway, met ARP voor de gateway. Is er geen default gateway ingesteld, dan wordt het pakket niet verstuurd. De default gateway moet zelf in het eigen subnet liggen.</p>
 <p>Een /16 is 255.255.0.0, waardoor alle adressen 10.1.x.y in hetzelfde subnet zitten. Een /24 is 255.255.255.0, waardoor elke waarde van x een eigen subnet is. Als twee hosts verschillende maskers hebben, kan het gebeuren dat verkeer in de ene richting wel vertrekt en in de andere richting niet, omdat de ene host de andere als lokaal ziet en de andere niet. Het antwoord komt dan niet terug. Als je in het labo van /16 naar /24 gaat, verlies je daarom de bereikbaarheid met hosts en switches van andere groepen, want die zitten dan in een ander subnet en er is geen gateway.</p>
+<p>Twee hosts met IP-adressen in verschillende bereiken, bijvoorbeeld 192.168.1.10 en 192.168.2.20, kunnen elkaar zonder gateway enkel bereiken als het masker beide adressen in hetzelfde subnet plaatst. Dat kan met 255.255.0.0 (/16), maar niet met 255.255.255.0 (/24) of 255.255.255.128 (/25), want dan liggen ze in verschillende subnetten. Dat ze aan dezelfde switch hangen, maakt niets uit: de host kijkt enkel naar het masker. Hangen ze aan dezelfde switch maar zitten ze in verschillende subnetten, dan is er altijd een router nodig.</p>
 
 <h3>C. Statische en dynamische routing</h3>
 <p>Een router kent standaard enkel zijn rechtstreeks verbonden netwerken. Voor elk ander netwerk heeft hij een route nodig. Hosts hebben een default gateway nodig, routers hebben routes nodig, en een router moet IP-forwarding aan hebben om pakketten door te geven.</p>
+<p>Als een router een pakket krijgt voor een bestemming die niet in zijn routingtabel staat en hij heeft geen default route, dan gooit hij het pakket weg (discard). Hij stuurt het niet terug naar de bron, hij flood het niet naar alle interfaces en hij doet geen ARP voor een bestemming in een ander netwerk, want ARP werkt alleen op het eigen netwerk. Meestal stuurt hij wel een ICMP-bericht "destination unreachable" terug, maar het pakket zelf is weg. Een ping heeft altijd twee richtingen. Het request moet de bestemming bereiken, maar ook het antwoord moet terug raken, en dat kan via een ander pad en andere routers lopen. Een bestemming die het request ontvangt maar waarvan de gateway-router geen route naar het bronnetwerk heeft, geeft dus nog altijd een mislukte ping omdat die router het antwoord weggooit. Een host die een default gateway heeft, heeft zelf wel een route, dus dat is dan niet het probleem.</p>
 <p>Statische routes stel je handmatig in als een bestemmingsprefix met een next hop. Ze zijn eenvoudig, voorspelbaar en veroorzaken geen extra verkeer, maar ze vragen veel handwerk als het netwerk groeit en passen zich niet automatisch aan als een link of router uitvalt. Bij dynamische routing wisselen routers onderling informatie uit en passen ze hun routes automatisch aan. Dat schaalt beter en past zich aan bij wijzigingen, maar het kost meer rekenkracht en geheugen, geeft extra verkeer en is complexer om te configureren. Het tijdstip waarop alle routers na een wijziging weer dezelfde, juiste kijk op het netwerk hebben, noemen we convergentie.</p>
 
 <h3>D. RIP</h3>
@@ -230,7 +232,74 @@ var LABS = [
         a: 2, e: "Full is de eindtoestand van de adjacency: beide routers hebben dezelfde LSDB." },
       { q: "Welk protocol convergeert meestal sneller na het uitvallen van een link?",
         o: ["RIP", "OSPF", "Beide even snel", "Geen van beide, enkel statische routes passen aan"],
-        a: 1, e: "OSPF detecteert het via Hello-pakketten, verspreidt een update en elke router herberekent meteen. RIP wacht op timeouts en verspreidt het nieuws hop per hop." }
+        a: 1, e: "OSPF detecteert het via Hello-pakketten, verspreidt een update en elke router herberekent meteen. RIP wacht op timeouts en verspreidt het nieuws hop per hop." },
+
+      /* Vragen uit de echte Test Lab 2 (19-10-2026). Eigen score: 7/10. */
+      { q: "Three routers are connected in a chain: R1 – R2 – R3. Host A (10.1.0.10/24) is connected to R1. Its default gateway is R1. Host C (10.3.0.10/24) is connected to R3. Its default gateway is R3. No dynamic routing is used. Each router knows its directly connected networks, and the administrator has added only these two static routes: on R1: 10.3.0.0/24 via R2; on R2: 10.3.0.0/24 via R3. No router has a default route. Host A pings Host C. What happens?",
+        o: ["The ping fails: Host C receives the request, but R3 discards the reply, because R3 has no route to 10.1.0.0/24",
+            "The ping fails: R2 discards the request, because R2 has no route to Host A's network 10.1.0.0/24",
+            "The ping fails: Host C receives the request, but does not reply, because Host C itself has no route to 10.1.0.0/24",
+            "The ping succeeds: Host C receives the request, and the reply travels back along the same path",
+            "The ping fails: Host C receives the request, but R2 discards the reply, because R2 has no route to 10.1.0.0/24"],
+        a: 0, e: "Het request komt aan: R1 en R2 hebben een route naar 10.3.0.0/24. Het antwoord gaat van Host C naar zijn gateway R3, en R3 kent 10.1.0.0/24 niet, dus R3 gooit het weg. Host C zelf heeft wel een route, want hij heeft een default gateway. R2 komt in het antwoord niet eens aan bod, want het antwoord stopt al bij R3. (Juist beantwoord in de echte test.)" },
+      { q: "Which statement correctly describes what routers exchange with RIP and with OSPF?",
+        o: ["RIP and OSPF: each router periodically sends its complete routing table to its neighbors",
+            "RIP and OSPF: each router sends information about its own links to all routers in the area",
+            "RIP: each router periodically sends its complete routing table to its neighbors. OSPF: each router sends information about its own links to all routers in the area",
+            "RIP: each router sends information about its own links to all routers in the area. OSPF: each router periodically sends its complete routing table to its neighbors"],
+        a: 2, e: "RIP is distance-vector: periodiek de volledige routingtabel naar de buren. OSPF is link-state: informatie over de eigen links (LSA's) naar alle routers in de area. Optie D draait die twee om. (Fout beantwoord in de echte test: optie D gekozen.)" },
+      { q: "A network has redundant paths. A link fails. Why does the network switch to the alternative path faster when all routers run OSPF than when all routers run RIP?",
+        o: ["OSPF always uses the path with the fewest hops, so fewer routers need to update their routing tables",
+            "OSPF routers send their complete routing table to their neighbors more often than RIP routers do",
+            "OSPF routers forward data packets faster than RIP routers, so traffic reaches the alternative path sooner",
+            "OSPF routers send an update as soon as a change occurs, while RIP routers exchange routing information only at regular intervals"],
+        a: 3, e: "OSPF verstuurt een update (LSA) meteen bij een wijziging en elke router herberekent. RIP wisselt enkel op vaste tijdstippen informatie uit en wacht op timeouts. OSPF kiest op cost en niet op hops, het stuurt niet zijn volledige tabel en doorsturen van data is even snel. (Juist beantwoord in de echte test.)" },
+      { q: "Which of the following is an advantage of static routing compared with dynamic routing?",
+        o: ["It requires no routing protocol, so it uses fewer router resources",
+            "Routes adapt automatically when a link fails",
+            "Routers automatically choose the best path based on current network conditions",
+            "It scales more easily to large networks"],
+        a: 0, e: "Statische routing heeft geen protocol, dus geen extra CPU, geheugen of verkeer. De andere drie opties zijn voordelen van dynamische routing. (Juist beantwoord in de echte test.)" },
+      { q: "A router forwards a packet from one network to another. No address translation is used. What happens to the MAC and IP addresses in the packet?",
+        o: ["MAC addresses: the router uses a new source and a new destination MAC address. IP addresses: stay the same.",
+            "MAC addresses: stay the same. IP addresses: the router replaces the destination IP address with the IP address of the next router.",
+            "MAC addresses: stay the same. IP addresses: stay the same.",
+            "MAC addresses: only the destination MAC address changes; the source MAC address remains that of the original sender. IP addresses: stay the same.",
+            "MAC addresses: stay the same. IP addresses: the router replaces the source IP address with its own IP address."],
+        a: 0, e: "Het Ethernet-frame wordt bij elke hop vervangen: nieuw bron-MAC (de uitgaande interface van de router) en nieuw bestemmings-MAC (de volgende hop). De IP-adressen blijven hetzelfde zolang er geen NAT is. Enkel TTL en checksum veranderen. (Juist beantwoord in de echte test.)" },
+      { q: "Host A wants to send a packet to Host B, which is in a different network. To which device does Host A send the packet, so that the packet can be forwarded to Host B's network?",
+        o: ["To all hosts on its own network, because Host A does not know where Host B is",
+            "To its default gateway, because Host B is outside Host A's network",
+            "To the Layer 2 switch it is connected to, because the switch forwards packets based on Host B's IP address",
+            "Directly to Host B, because Host A knows Host B's IP address"],
+        a: 1, e: "Een bestemming buiten het eigen subnet bereik je via de default gateway. Een switch kijkt naar MAC-adressen en niet naar IP-adressen, en rechtstreeks versturen kan enkel binnen hetzelfde subnet. (Juist beantwoord in de echte test.)" },
+      { q: "Router R1 has the following static route: 192.168.3.0/24 via 10.0.0.2. What does this route mean?",
+        o: ["R1 forwards packets for the network 192.168.3.0/24 to the next-hop router with IP address 10.0.0.2",
+            "R1 forwards packets for the network 192.168.3.0/24 to the next-hop router with IP address 10.0.0.2, and automatically uses another router if 10.0.0.2 becomes unreachable",
+            "R1 forwards packets that it receives from 10.0.0.2 to the network 192.168.3.0/24",
+            "R1 replaces the destination IP address of packets for the network 192.168.3.0/24 with 10.0.0.2"],
+        a: 0, e: "Een statische route is een bestemmingsprefix met een next hop (de gateway). Het bestemmings-IP in het pakket blijft ongewijzigd, enkel het MAC wordt dat van de next hop. Een statische route past zich niet automatisch aan bij uitval. (Juist beantwoord in de echte test.)" },
+      { q: "Host A (192.168.1.10) and Host B (192.168.2.20) are connected to the same switch. Neither host has a default gateway. Both hosts are configured with the same subnet mask. With which subnet mask can the two hosts ping each other?",
+        o: ["With none of these masks, because hosts in different IP address ranges always need a router",
+            "255.255.255.128",
+            "255.255.255.0",
+            "With any of these masks, because the hosts are connected to the same switch",
+            "255.255.0.0"],
+        a: 4, e: "Enkel met 255.255.0.0 (/16) liggen 192.168.1.10 en 192.168.2.20 in hetzelfde subnet (192.168.0.0/16), zodat de hosts rechtstreeks via ARP communiceren. Met /24 of /25 liggen ze in verschillende subnetten en is er zonder gateway geen verkeer. Dat ze aan dezelfde switch hangen, doet er niet toe. (Juist beantwoord in de echte test.)" },
+      { q: "A router receives a packet whose destination network is not in its routing table. The router has no default route. What does the router do with the packet?",
+        o: ["It floods the packet out of all its interfaces",
+            "It sends the packet back to the source host",
+            "It sends an ARP broadcast for the destination IP address",
+            "It discards the packet"],
+        a: 3, e: "Zonder route en zonder default route gooit de router het pakket weg (meestal met een ICMP destination unreachable naar de bron, maar het pakket zelf is weg). Een router flood niet, stuurt het niet terug en doet geen ARP voor een bestemming in een ander netwerk, want ARP werkt enkel op het eigen netwerk. (Fout beantwoord in de echte test: optie C gekozen.)" },
+      { q: "Host A (192.168.1.10/24, default gateway 192.168.1.1) pings Host B (192.168.2.20). Host A already knows the MAC address of its default gateway. Which destination MAC address and destination IP address does Host A put in the frame that carries the ping?",
+        o: ["Destination MAC: the broadcast address. Destination IP: 192.168.1.1",
+            "Destination MAC: Host B's MAC address. Destination IP: 192.168.1.1",
+            "Destination MAC: the broadcast address. Destination IP: 192.168.2.20",
+            "Destination MAC: the gateway's MAC address. Destination IP: 192.168.1.1",
+            "Destination MAC: the gateway's MAC address. Destination IP: 192.168.2.20",
+            "Destination MAC: Host B's MAC address. Destination IP: 192.168.2.20"],
+        a: 4, e: "Het bestemmings-IP is altijd dat van de eindbestemming (192.168.2.20), want het IP-pakket moet daar uiteindelijk aankomen. Het bestemmings-MAC is dat van de default gateway, want enkel de volgende hop is bereikbaar op Layer 2. Het gateway-IP komt nooit als bestemmings-IP van de ping te staan. (Fout beantwoord in de echte test: optie D gekozen, met het gateway-IP als bestemmings-IP.)" }
     ]
   },
   { n: 3, title: "Spanning Tree Protocol (STP)", kb: null, qs: [] },
@@ -304,7 +373,7 @@ function viewMenu() {
   stopTimer(); test = null;
   document.title = "Voorbereiding IEB";
   var html = '<h1>Voorbereiding Infrastructuur en Beveiliging</h1>' +
-    '<p class="muted ui">Kies een labo. Je krijgt eerst een uitleg (kennisbasis) en daarna een test van 15 vragen in 15 minuten, zoals de voorbereidingstest op Blackboard.</p>' +
+    '<p class="muted ui">Kies een labo. Je krijgt eerst een uitleg (kennisbasis) en daarna een meerkeuzetest met een timer van 15 minuten, zoals de voorbereidingstest op Blackboard.</p>' +
     '<ul class="menu">';
   LABS.forEach(function (lab) {
     if (ready(lab)) {
