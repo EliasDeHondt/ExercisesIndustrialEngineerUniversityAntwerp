@@ -302,7 +302,102 @@ var LABS = [
         a: 4, e: "Het bestemmings-IP is altijd dat van de eindbestemming (192.168.2.20), want het IP-pakket moet daar uiteindelijk aankomen. Het bestemmings-MAC is dat van de default gateway, want enkel de volgende hop is bereikbaar op Layer 2. Het gateway-IP komt nooit als bestemmings-IP van de ping te staan. (Fout beantwoord in de echte test: optie D gekozen, met het gateway-IP als bestemmings-IP.)" }
     ]
   },
-  { n: 3, title: "Spanning Tree Protocol (STP)", kb: null, qs: [] },
+  {
+    n: 3,
+    title: "Spanning Tree Protocol (STP)",
+    note: "",
+    kb: `
+<h3>Waar gaat dit labo over</h3>
+<p>In dit labo bouw je Layer 2 netwerken met redundante links en gebruik je het Spanning Tree Protocol (STP) om loops te voorkomen, connectiviteit te behouden en te herstellen na storingen. Je bouwt eerst een access netwerk met zes switches, daarna laat je links en switches uitvallen, en tot slot breid je uit naar een core netwerk met vier core switches in een volledige mesh. Je identificeert de root bridge en de rollen van de poorten, je beïnvloedt de uitkomst met bridge priority en path cost, en je analyseert hoe lang het netwerk nodig heeft om te herstellen. Als je een oefening afrondt, verwittig je de lector voor je verdergaat.</p>
+
+<h3>Vorm van de test</h3>
+<p>Net als bij Lab 2 is er aan het begin van het labo een korte meerkeuzetest. De opgave zegt dat het om begrip gaat en niet om memoriseren: je moet geen commando's, syntax of getallen zoals timerwaarden kennen, maar kunnen uitleggen wat er gebeurt in een geschakeld netwerk met redundante links en waarom.</p>
+
+<h3>Bron voor de voorbereiding</h3>
+<p>In Lab3.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: vijf lessen van NetworkAcademy.io (Why do we need Spanning-Tree, The Spanning-Tree Algorithm, Spanning-Tree Port Roles, STP Port States and Timers en STP Topology Changes), het artikel Types of Spanning Tree Protocol van GeeksforGeeks en de video Spanning Tree Protocol van PowerCert (de eerste 8,5 minuten). Wat hieronder staat komt uit mijn eigen kennis van die onderwerpen. Ik heb de lessen zelf niet kunnen lezen, dus lees ze ook zelf door.</p>
+
+<h3>A. Waarom is een loop een probleem</h3>
+<p>Een Ethernet-frame heeft geen TTL. Een broadcast, een multicast of een frame voor een onbekend bestemmings-MAC wordt door elke switch naar alle andere poorten gestuurd. In een netwerk met een lus blijft zo'n frame eindeloos rondgaan en elke switch maakt er bij elke passage kopieën van. Dat heet een broadcast storm: de links raken vol, de CPU van de switches loopt vast en het netwerk valt uit. Een tweede gevolg is dat de MAC-tabel flapt: hetzelfde bron-MAC wordt snel na elkaar op verschillende poorten gezien, waardoor switches niet meer weten waar een toestel hangt. Een derde gevolg zijn dubbele frames bij de ontvanger. Toch wil je redundante links, want ze zorgen ervoor dat het netwerk blijft werken als een link of switch uitvalt. STP lost dit op door de redundante links logisch uit te schakelen zolang ze niet nodig zijn.</p>
+
+<h3>B. Het algoritme</h3>
+<p>STP bouwt een boom zonder lussen (de spanning tree) in drie stappen. Eerst wordt één switch gekozen als root bridge. Daarna kiest elke andere switch zijn root port, en tot slot kiest elk netwerksegment (elke link) zijn designated port. Alle poorten die geen van beide zijn, worden geblokkeerd. De switches wisselen hiervoor BPDU's (Bridge Protocol Data Units) uit, naar een multicast-adres, standaard elke 2 seconden (hello time).</p>
+<p>De bridge ID bestaat uit een priority (standaard 32768, of 32767 op OpenWrt) en het MAC-adres van de switch. De switch met de laagste bridge ID wordt de root. Bij gelijke priority beslist dus het laagste MAC-adres. Elke switch begint met te denken dat hij zelf de root is en past dat aan zodra hij een BPDU met een lagere root-ID ontvangt. Met een lagere priority kan een beheerder een bepaalde switch als root afdwingen, bijvoorbeeld een core switch.</p>
+<p>De kost van een link hangt af van de snelheid (klassiek: 10 Mbit/s kost 100, 100 Mbit/s kost 19, 1 Gbit/s kost 4, 10 Gbit/s kost 2: hoe sneller, hoe lager). De root path cost is de som van de kosten van alle links op het pad naar de root.</p>
+
+<h3>C. De poortrollen</h3>
+<p>De root port is op elke niet-root switch de ene poort met de laagste root path cost naar de root. De root zelf heeft geen root port. Bij gelijke kost beslist de laagste bridge ID van de buur en daarna de laagste poort-ID.</p>
+<p>De designated port is op elke link de poort aan de kant met de laagste root path cost. Bij gelijkspel wint de switch met de laagste bridge ID, en dan de laagste poort-ID. Alle poorten van de root zijn designated. Een designated port stuurt BPDU's en verstuurt data.</p>
+<p>De overige poorten zijn non-designated (in Cisco-termen alternate): ze zijn geblokkeerd, ontvangen wel BPDU's en kunnen overnemen als het pad uitvalt. Root ports en designated ports sturen verkeer door. In een netwerk met N switches blijven er N-1 links in de boom over, op alle andere links blokkeert één kant.</p>
+
+<h3>D. Poortstatussen en timers</h3>
+<p>Een poort in klassiek STP (802.1D) doorloopt: blocking, listening, learning, forwarding (en disabled als hij uit staat). In blocking ontvangt de poort enkel BPDU's. In listening neemt hij deel aan de verkiezing, maar leert nog geen MAC-adressen en stuurt geen data door. In learning vult hij al zijn MAC-tabel, maar stuurt nog geen data door. In forwarding werkt hij normaal. Die tussenfases bestaan om te vermijden dat er tijdelijk een lus ontstaat terwijl de boom nog niet stabiel is.</p>
+<p>De drie timers zijn hello time (tijd tussen BPDU's), forward delay (duur van listening en van learning) en max age (hoelang een switch een ontvangen BPDU bewaart zonder nieuwe te zien voor hij denkt dat het pad weg is). De klassieke waarden zijn 2 s, 15 s en 20 s. Na een wijziging duurt het dan 30 tot 50 s voor een poort data doorstuurt: eventueel eerst max age (20 s) wachten als het verlies niet direct zichtbaar was, daarna 15 s listening en 15 s learning. Op de OpenWrt-switches in het labo staat de forward delay standaard op 2 s, waardoor het veel sneller gaat.</p>
+<p>Als een link rechtstreeks uitvalt (link down), zie je dat meteen en begint de herberekening zonder max age. Als de link blijft bestaan maar de BPDU's wegblijven (bijvoorbeeld door een tussenliggend toestel dat uitvalt), moet eerst max age verlopen.</p>
+
+<h3>E. Topology changes</h3>
+<p>Als een poort naar of van forwarding gaat, is dat een topologiewijziging. De switch meldt dat met een TCN-BPDU (Topology Change Notification) richting de root. De root zet daarna in zijn BPDU's de Topology Change flag aan, gedurende max age plus forward delay, en alle switches verkorten hun MAC-ageing time tot de forward delay. Zo verdwijnen oude MAC-adresvermeldingen snel en worden frames weer correct verstuurd, anders sturen switches nog naar poorten die niet meer bij het toestel horen. Tijdens die periode wordt er meer geflood.</p>
+<p>Een link die uitvalt en niet in de boom lag (een geblokkeerde link) veroorzaakt geen topologiewijziging. Een nieuwe switch met een lagere bridge ID neemt de rol van root altijd over: STP kent geen voorkeur voor de zittende root.</p>
+
+<h3>F. Varianten van STP</h3>
+<p>STP (802.1D) is de klassieke versie met één boom en trage convergentie (30 tot 50 s). RSTP (802.1w) heeft dezelfde basis, maar convergeert in enkele seconden doordat switches via handshakes (proposal en agreement) onderling afspreken wanneer een poort mag forwarden, in plaats van op timers te wachten. De toestanden zijn dan discarding, learning en forwarding, en er is een extra rol alternate (reserve voor de root port) en backup (reserve voor een designated port). PVST+ is de Cisco-variant met een aparte spanning tree per VLAN, zodat verkeer van verschillende VLAN's over verschillende links gespreid kan worden. MSTP (802.1s) groepeert meerdere VLAN's in een beperkt aantal instanties met elk een eigen boom, wat minder overhead geeft dan een boom per VLAN. De Linux-bridge op de OpenWrt-switches in het labo gebruikt klassiek STP.</p>
+
+<h3>G. Wat je in het labo ziet</h3>
+<p>Met brctl showstp op een switch zie je de bridge ID, de designated root, de root port en per poort de state en de designated bridge. In Wireshark (filter stp) zie je de BPDU's met onder meer Root Identifier, Root Path Cost, Bridge Identifier, Port Identifier, Hello Time, Max Age, Forward Delay en de Topology Change flag. Een switch die geen root is, gebruikt de timers van de root, niet zijn eigen instelling. Met een lagere bridge priority maak je een switch root. Zet je STP uit en sluit je een lus, dan krijg je een broadcast storm: pings falen en de switches reageren niet meer. In een volledige mesh van vier core switches hebben alle non-root core switches een gelijkspel op de onderlinge links, dat wordt opgelost met de laagste bridge ID. Hangt een access switch maar aan één core switch, dan is hij niet redundant: valt die core switch uit, dan verliest hij zijn uplink, ook al is STP perfect geconfigureerd.</p>
+`,
+    qs: [
+      { q: "Waarom is een lus (loop) in een Ethernet-netwerk zonder STP gevaarlijk?",
+        o: ["Frames hebben geen TTL, dus broadcasts blijven eindeloos ronddraaien en vermenigvuldigen zich", "Switches kunnen geen unicastframes meer doorsturen", "IP-adressen botsen met elkaar", "De switch verlaagt automatisch de linksnelheid"],
+        a: 0, e: "Een Ethernet-frame heeft geen TTL. Broadcasts worden door elke switch naar alle poorten gestuurd, dus in een lus blijven ze eindeloos ronddraaien (broadcast storm) en raken de links en CPU's vol." },
+      { q: "Welke twee problemen ontstaan er naast de broadcast storm in een netwerk met een lus?",
+        o: ["MAC-adrestabellen die flappen en dubbele frames bij de ontvanger", "Het subnetmasker verandert vanzelf en de DHCP-server valt uit", "De routers stoppen met routeren en ARP werkt niet meer", "De switch weigert alle BPDU's"],
+        a: 0, e: "Hetzelfde bron-MAC verschijnt op meerdere poorten (MAC flapping) en een ontvanger krijgt meerdere kopieën van hetzelfde frame." },
+      { q: "Welke switch wordt de root bridge?",
+        o: ["De switch met het hoogste MAC-adres", "De switch met de laagste bridge ID (priority en daarna MAC-adres)", "De switch met de meeste poorten", "De switch die het eerst werd opgestart"],
+        a: 1, e: "De bridge ID bestaat uit priority en MAC-adres. De laagste wint. Bij gelijke priority beslist het laagste MAC-adres." },
+      { q: "Hoe kan een beheerder afdwingen dat een bepaalde switch de root wordt?",
+        o: ["Door die switch een lagere bridge priority te geven dan alle andere", "Door het MAC-adres van de switch te verhogen", "Door de hello time van die switch te verlagen", "Door alle andere poorten uit te schakelen"],
+        a: 0, e: "De priority staat vooraan in de bridge ID, dus een lagere priority wint van het MAC-adres. Zo kan je bijvoorbeeld een core switch root maken." },
+      { q: "Wat is een root port?",
+        o: ["De poort van een niet-root switch met de laagste root path cost naar de root bridge", "Elke poort van de root bridge", "Een geblokkeerde poort", "De poort waar de beheerder verbinding mee maakt"],
+        a: 0, e: "Elke niet-root switch heeft precies één root port: de poort met de laagste kost naar de root. De root zelf heeft er geen." },
+      { q: "Op een link tussen twee switches hebben beide kanten dezelfde root path cost. Hoe wordt bepaald welke poort designated wordt?",
+        o: ["De poort aan de kant van de switch met de laagste bridge ID", "De poort aan de kant van de switch met het hoogste MAC-adres", "Willekeurig, bij elke herberekening opnieuw", "Beide poorten blijven data doorsturen"],
+        a: 0, e: "Bij gelijke kost wint de switch met de laagste bridge ID (en daarna de laagste poort-ID). De andere kant wordt geblokkeerd." },
+      { q: "Wat doet een geblokkeerde poort (non-designated)?",
+        o: ["Ze ontvangt BPDU's maar stuurt geen data door", "Ze stuurt wel data door, maar geen BPDU's", "Ze staat uit en reageert nergens op", "Ze stuurt enkel broadcasts door"],
+        a: 0, e: "Een geblokkeerde poort luistert naar BPDU's, zodat ze kan overnemen als het pad uitvalt, maar stuurt geen data door." },
+      { q: "Wat is het verschil tussen de listening- en de learning-toestand?",
+        o: ["Listening neemt deel aan de verkiezing zonder MAC-adressen te leren, learning leert MAC-adressen maar stuurt nog geen data door", "Listening stuurt data door, learning niet", "Learning wordt overgeslagen bij een directe linkstoring", "Er is geen verschil, het zijn twee namen voor hetzelfde"],
+        a: 0, e: "Pas in forwarding wordt data doorgestuurd. Listening en learning (elk één forward delay) voorkomen tijdelijke lussen terwijl de boom nog niet stabiel is." },
+      { q: "Een link in de spanning tree valt rechtstreeks uit (kabel eruit). Waarom herstelt STP dan sneller dan wanneer de link blijft bestaan maar de BPDU's wegblijven?",
+        o: ["Bij link down start de herberekening meteen, anders moet eerst de max age verlopen", "Bij link down wordt STP volledig uitgeschakeld", "Omdat de hello time dan automatisch naar 0 gaat", "Er is geen verschil in hersteltijd"],
+        a: 0, e: "Bij link down zie je de storing direct. Als enkel de BPDU's wegblijven, wacht de switch tot de bewaarde BPDU zijn max age bereikt (klassiek 20 s) en begint dan pas." },
+      { q: "Wat gebeurt er met een geblokkeerde link als een actieve link in de boom uitvalt?",
+        o: ["De geblokkeerde poort gaat via listening en learning naar forwarding en neemt het verkeer over", "Hij blijft geblokkeerd tot een beheerder ingrijpt", "Hij gaat meteen naar forwarding zonder tussenfases", "Hij wordt permanent uitgeschakeld"],
+        a: 0, e: "STP herberekent de boom, de redundante link wordt gebruikt en de poort doorloopt de overgangsstatussen voor hij data doorstuurt." },
+      { q: "Wat gebeurt er met een host die aan precies één access switch hangt als die access switch uitvalt?",
+        o: ["De host verliest zijn connectiviteit, want er is geen alternatief pad", "STP schakelt de host automatisch over op een andere switch", "De host krijgt automatisch een nieuw IP-adres", "Niets, STP lost dit altijd op"],
+        a: 0, e: "STP herstelt enkel via redundante paden in het netwerk. Een host met één verbinding heeft er geen." },
+      { q: "Waarom is een topology change (TCN) belangrijk?",
+        o: ["De switches laten hun MAC-tabel sneller verlopen, zodat frames niet meer naar poorten gaan die niet meer correct zijn", "De root wordt automatisch vervangen", "De switch herstart", "Alle poorten worden geblokkeerd"],
+        a: 0, e: "Na een wijziging kunnen MAC-vermeldingen niet meer kloppen. De root zet de Topology Change flag aan en switches verkorten hun ageing time." },
+      { q: "De root bridge valt uit. Wat bepaalt wie de nieuwe root wordt?",
+        o: ["De laagste bridge ID van de overgebleven switches", "De switch die het dichtst bij de oude root hing", "De switch met de meeste poorten", "De oude root, die zichzelf herstart"],
+        a: 0, e: "Er wordt opnieuw een verkiezing gehouden en de laagste bridge ID wint. Daarom stel je een secundaire root in met de op een na laagste priority." },
+      { q: "De oude root komt terug online en zijn bridge ID is lager dan die van de huidige root. Wat gebeurt er?",
+        o: ["Hij wordt opnieuw root en de boom wordt herberekend", "Hij blijft permanent niet-root", "Hij moet wachten tot de huidige root uitvalt", "Het netwerk blijft ongewijzigd"],
+        a: 0, e: "STP kent geen voorkeur voor de zittende root: de beste bridge ID wint altijd, en dat geeft een nieuwe topologiewijziging." },
+      { q: "Wat is het belangrijkste voordeel van RSTP (802.1w) ten opzichte van klassiek STP (802.1D)?",
+        o: ["Veel snellere convergentie via handshakes tussen switches in plaats van wachten op timers", "Het ondersteunt geen redundante links meer", "Het gebruikt geen BPDU's", "Het werkt enkel op routers"],
+        a: 0, e: "RSTP herstelt in enkele seconden. Klassiek STP heeft 30 tot 50 s nodig door de timers (max age, listening, learning)." },
+      { q: "Wat doet PVST+ anders dan klassiek STP?",
+        o: ["Het draait een aparte spanning tree per VLAN", "Het draait enkel op Layer 3", "Het gebruikt één boom voor alle VLAN's", "Het vervangt STP door OSPF"],
+        a: 0, e: "PVST+ (Cisco) heeft een boom per VLAN, zodat verkeer van verschillende VLAN's over verschillende links gespreid kan worden." },
+      { q: "Waarom werkt een netwerk met veel extra loops niet goed met STP op eenvoudige switches?",
+        o: ["Meer BPDU's, herberekeningen en een zwakke CPU: als BPDU's te laat komen kan een poort ten onrechte data doorsturen en ontstaat een storm", "Omdat STP maximaal één loop toelaat", "Omdat IP-adressen opraken", "Omdat de poorten dan automatisch van snelheid wisselen"],
+        a: 0, e: "Elke extra loop betekent meer verwerking en meer topologiewijzigingen. Bij overbelasting gaan BPDU's verloren en kan een poort per ongeluk forwarden. Bovendien gebruikt STP maar één boom, dus extra links leveren geen extra capaciteit." }
+    ]
+  },
   { n: 4, title: "VLANs, VLAN trunking and VLAN routing", kb: null, qs: [] },
   { n: 5, title: "Firewalls", kb: null, qs: [] },
   { n: 6, title: "Client-to-Site VPN with WireGuard", kb: null, qs: [] },
