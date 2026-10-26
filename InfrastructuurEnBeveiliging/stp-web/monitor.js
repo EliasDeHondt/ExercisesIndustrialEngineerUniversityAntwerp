@@ -6,9 +6,8 @@
 
 'use strict';
 
-/* ---------- Constants and helpers ---------- */
+/* ---------- Constants ---------- */
 
-const SVGNS = 'http://www.w3.org/2000/svg';
 const CARD_W = 200;
 const CARD_H = 124;
 const X_GAP = 250;
@@ -16,59 +15,75 @@ const Y_GAP = 230;
 const HOST_DROP = 46;        // distance from the bottom of a card to the hosts
 const HOST_EXTRA = 80;       // extra height below the bottom row for the hosts
 
-// The three figures from the assignment. `layout` puts every switch where it is in the figure: [column, row] in card spacings.
+// The figures from the assignments. `layout` puts every switch where it is in the figure: [column, row] in card spacings.
 const CORE_IPS = ['10.1.2.5', '10.1.4.5', '10.1.1.5', '10.1.3.5', '10.1.1.1', '10.1.2.1', '10.1.3.1', '10.1.4.1'];
 const CORE_LAYOUT = {
     '10.1.2.5': [0.5, 0], '10.1.4.5': [2.5, 0],
     '10.1.1.5': [0.5, 1], '10.1.3.5': [2.5, 1],
     '10.1.1.1': [0, 2], '10.1.2.1': [1, 2], '10.1.3.1': [2, 2], '10.1.4.1': [3, 2]
 };
-// Figure 4 has no fixed picture. The page scans these addresses (10.1.1.1 to 10.1.6.6) for switches and draws whatever it finds,
+// Figure 4 of Lab 3 has no fixed picture. The page scans these addresses (10.1.1.1 to 10.1.6.6) for switches and draws whatever it finds,
 // including extra switches and extra cables. Hosts use .10 and .11, so those are not scanned.
 const SCAN_IPS = [];
 for (let g = 1; g <= 6; g++) for (let h = 1; h <= 6; h++) SCAN_IPS.push(`10.1.${g}.${h}`);
 
-const PRESETS = [
-    { label: 'Figure 1: access network', demo: 'fig1', ips: ['10.1.1.4', '10.1.1.1', '10.1.2.1'], layout: { '10.1.1.4': [1.05, 0], '10.1.1.1': [0, 1], '10.1.2.1': [2.1, 1] } },
-    { label: 'Figure 2: core network', demo: 'fig2', ips: CORE_IPS, layout: CORE_LAYOUT },
-    { label: 'Figure 3: extra loops', demo: 'fig3', ips: CORE_IPS, layout: CORE_LAYOUT },
-    { label: 'Figure 4: Extra', demo: 'fig4', auto: true, ips: [], layout: null }
-];
+// Lab 4 uses the same eight switches, but their management addresses change during the lab:
+// access N goes from 10.1.N.1 to 10.1.1.N and core N from 10.1.N.5 to 10.1.1.(N+4). Both addresses map to the same card.
+const L4 = (() => {
+    const names = {}, layout = {}, keys = {}, candidates = new Set();
+    const at = { c1: [0.5, 1], c2: [0.5, 0], c3: [2.5, 1], c4: [2.5, 0], a1: [0, 2], a2: [1, 2], a3: [2, 2], a4: [3, 2] };
+    for (let n = 1; n <= 4; n++) {
+        for (const ip of [`10.1.${n}.1`, `10.1.1.${n}`]) { names[ip] = `Access ${n}`; keys[ip] = 'a' + n; layout[ip] = at['a' + n]; candidates.add(ip); }
+        for (const ip of [`10.1.${n}.5`, `10.1.1.${n + 4}`]) { names[ip] = `Core ${n}`; keys[ip] = 'c' + n; layout[ip] = at['c' + n]; candidates.add(ip); }
+    }
+    return { names, layout, keys, candidates: [...candidates] };
+})();
 
-// The switches the current figure reads: fixed for Figures 1 to 3, the discovered ones for Figure 4.
+const LAB_MONITORS = {
+    3: {
+        vlan: false,
+        presets: [
+            { label: 'Figure 1: access network', demo: 'fig1', ips: ['10.1.1.4', '10.1.1.1', '10.1.2.1'], layout: { '10.1.1.4': [1.05, 0], '10.1.1.1': [0, 1], '10.1.2.1': [2.1, 1] } },
+            { label: 'Figure 2: core network', demo: 'fig2', ips: CORE_IPS, layout: CORE_LAYOUT },
+            { label: 'Figure 3: extra loops', demo: 'fig3', ips: CORE_IPS, layout: CORE_LAYOUT },
+            { label: 'Figure 4: Extra', demo: 'fig4', auto: true, ips: [], layout: null }
+        ]
+    },
+    4: {
+        vlan: true,
+        names: L4.names,
+        presets: [
+            { label: 'VLAN network', demo: 'lab4', auto: true, ips: [], layout: L4.layout, scan: L4.candidates, keyOf: ip => L4.keys[ip] || ip }
+        ]
+    }
+};
+
+let LAB = LAB_MONITORS[3];
+let PRESETS = LAB.presets;
+
+// The switches the current figure reads: fixed for fixed figures, the discovered ones for automatic ones.
 const currentIps = () => PRESETS[S.preset].auto ? S.discovered : PRESETS[S.preset].ips;
 
 const ROLE_TEXT = { root: 'root port', des: 'designated', alt: 'alternate', dis: 'off' };
 const TRANSITIONAL = ['listening', 'learning'];
+// The colours of the VLANs in the figures of Lab 4: VLAN 1 yellow, VLAN 2 red, VLAN 3 green, VLAN 4 blue.
+const VLAN_COLORS = { 1: '#f0b840', 2: '#d4524e', 3: '#6fb868', 4: '#5b8db8' };
 
-const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
-const svgEl = (tag, cls) => { const e = document.createElementNS(SVGNS, tag); if (cls) e.setAttribute('class', cls); return e; };
-const nameOf = ip => ip.startsWith('10.1.') ? 'SW ' + ip.slice(5) : ip;
-const timeOf = t => new Date(t).toLocaleTimeString('en-GB', { hour12: false });
-
-function load(key, fallback) {
-    try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch { return fallback; }
-}
-function save(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage not available */ }
-}
+const nameOf = ip => (LAB.names && LAB.names[ip]) || (ip.startsWith('10.1.') ? 'SW ' + ip.slice(5) : ip);
 
 /* ---------- State ---------- */
 
-const QUERY = new URLSearchParams(location.search);
-const DEMO_FROM_URL = PRESETS.findIndex(p => p.demo === QUERY.get('demo'));
-
 const S = {
-    preset: DEMO_FROM_URL >= 0 ? DEMO_FROM_URL : clamp(Number(load('stp.preset', 0)) || 0, 0, PRESETS.length - 1),
+    active: false,
+    preset: 0,
     bridge: load('stp.bridge', 'switch'),
     interval: load('stp.interval', 2000),
-    theme: QUERY.get('theme') || load('stp.theme', matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'),
-    demo: DEMO_FROM_URL >= 0 ? QUERY.get('demo') : null,
+    demo: null,
     demoLinks: [],
-    discovered: [],            // switches found by the scan (Figure 4)
+    discovered: [],            // switches found by the scan (automatic figures)
     scanned: false,
+    scanning: false,
+    lastScan: 0,
     scanTimer: null,
     localClient: true,         // false when the page is opened from another PC (no SSH terminal window then)
     title: '',
@@ -76,6 +91,8 @@ const S = {
     busy: false,
     timer: null,
     error: null,
+
+    vlan: new Map(),           // ip -> { lan1: { 1: { untagged, pvid } } } (Lab 4)
 
     model: null,
     layoutPos: new Map(),      // automatic positions
@@ -117,16 +134,33 @@ async function poll() {
         if (!res.ok) throw new Error('server responded ' + res.status);
         const data = await res.json();
         S.error = null;
-        if (S.demo) { S.demoLinks = data.links; S.title = data.title; if (PRESETS[S.preset].auto) S.discovered = data.ips; }
+        if (S.demo) {
+            S.demoLinks = data.links; S.title = data.title;
+            if (PRESETS[S.preset].auto) S.discovered = data.ips;
+            for (const sw of data.switches) if (sw.vlan) S.vlan.set(sw.ip, sw.vlan);
+        }
         update(data);
+        pollVlan();
     } catch (e) {
         S.error = e.message;
         renderStatus();
     } finally {
         S.busy = false;
         $('refreshBtn').classList.remove('stp-spinning');
-        if (!S.paused) S.timer = setTimeout(poll, S.interval);
+        if (!S.paused && S.active) S.timer = setTimeout(poll, S.interval);
     }
+}
+
+// Lab 4: which VLANs every port belongs to (tagged or untagged), read with "bridge vlan show".
+async function pollVlan() {
+    if (!LAB.vlan || S.demo || !S.model) return;
+    const ips = [...S.model.nodes.values()].filter(n => n.ok).map(n => n.ip);
+    if (!ips.length) return;
+    try {
+        const data = await api(`/api/facts?ips=${ips.join(',')}&sections=vlan`);
+        for (const d of data.devices) if (d.ok) S.vlan.set(d.ip, parseBridgeVlan(d.sections.vlan));
+        for (const [ip, el] of S.nodeEls) { const n = S.model && S.model.nodes.get(ip); if (n) updateNode(el, n); }
+    } catch { /* the next poll tries again */ }
 }
 
 /* ---------- Model: roles, links and loops ---------- */
@@ -469,11 +503,27 @@ function updateNode(el, n) {
         box.style.setProperty('--sq', size + 'px');
         box.innerHTML = ports.map(() => '<span class="stp-port"></span>').join('');
     }
+    const vlans = LAB.vlan ? S.vlan.get(n.ip) : null;
     [...box.children].forEach((sq, i) => {
         const p = ports[i];
         sq.className = `stp-port stp-port--${p.state}` + (p.role === 'root' ? ' stp-port--rootport' : '');
         sq.textContent = p.no;
         sq.title = n.ok ? `${p.name}: ${p.state}, ${ROLE_TEXT[p.role]}${p.state === 'disabled' ? '' : ', cost ' + p.cost}` : '';
+        sq.style.background = '';
+        if (vlans && n.ok) {
+            // Lab 4: the colour of a port is its VLAN (stripes for a trunk). A blocking port keeps a red outline.
+            const v = vlans[p.name] || {};
+            const ids = Object.keys(v).map(Number).sort();
+            sq.classList.add('stp-port--vlan');
+            if (p.state === 'blocking') sq.classList.add('stp-port--blk');
+            if (ids.length) {
+                const cols = ids.map(id => VLAN_COLORS[id] || '#888');
+                sq.style.background = cols.length === 1 ? cols[0] : `linear-gradient(135deg, ${cols.map((col, k) => `${col} ${Math.round(k * 100 / cols.length)}% ${Math.round((k + 1) * 100 / cols.length)}%`).join(', ')})`;
+                sq.title += '  |  ' + ids.map(id => `VLAN ${id} ${v[id].untagged ? 'untagged' + (v[id].pvid ? ' (PVID)' : '') : 'tagged'}`).join(', ');
+            } else if (p.state !== 'disabled') {
+                sq.title += '  |  no VLAN data';
+            }
+        }
     });
     // Where each port sits on the card, needed to make links start at the right port.
     el._anchors = {};
@@ -708,6 +758,7 @@ function renderSummary() {
                 <span class="stp-zoom-value" id="zoomValue">${Math.round(S.zoom * 100)}%</span>
                 <button class="stp-zoom-btn cursor-pointer" type="button" data-act="zoomIn" title="Zoom in">${ICON.plus}</button>
             </div>
+            ${PRESETS[S.preset].auto && !S.demo ? '<button class="stp-btn cursor-pointer" type="button" data-act="rescan">Rescan</button>' : ''}
             <button class="stp-btn cursor-pointer" type="button" data-act="fit">Fit</button>
             <button class="stp-btn cursor-pointer" type="button" data-act="reset">Reset layout</button>
             <button class="stp-zoom-btn cursor-pointer" type="button" data-act="full" title="Full screen">${ICON.full}</button>
@@ -827,18 +878,14 @@ function renderEvents() {
         : '<li><span class="stp-muted">Every change of a port or the root appears here, with the time until STP is stable again. Unplug a cable to try it.</span></li>';
 }
 
-function renderTitle() {
-    $('title').textContent = (S.demo ? 'Demo, ' : '') + PRESETS[S.preset].label;
-}
+/* ---------- Figure tabs ---------- */
 
-/* ---------- Sidebar ---------- */
-
-function renderSidebar() {
-    $('presets').innerHTML = PRESETS.map((p, i) => `
-        <button class="stp-nav-item cursor-pointer${i === S.preset ? ' stp-active' : ''}" type="button" data-preset="${i}">
-            <svg class="stp-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M6 11h.01M10 11h.01M14 11h.01M18 11h.01"/></svg>
-            <span>${esc(p.label)}</span><span class="stp-nav-badge">${p.auto ? (i === S.preset && (S.scanned || S.demo) ? S.discovered.length : 'auto') : p.ips.length}</span>
-        </button>`).join('');
+function renderFigureTabs() {
+    const box = $('figureTabs');
+    box.hidden = PRESETS.length < 2;
+    box.innerHTML = PRESETS.length < 2 ? '' : PRESETS.map((p, i) =>
+        `<button class="stp-seg-btn cursor-pointer${i === S.preset ? ' stp-active' : ''}" type="button" data-preset="${i}">${esc(p.label)}${p.auto && i === S.preset && (S.scanned || S.demo) ? ` (${S.discovered.length})` : ''}</button>`).join('');
+    $('vlanLegend').hidden = !LAB.vlan;
 }
 
 function resetView() {
@@ -849,7 +896,7 @@ function resetView() {
     for (const h of S.hostEls.values()) { h.div.remove(); h.path.remove(); }
     S.nodeEls.clear(); S.linkEls.clear(); S.hostEls.clear();
     LOGS.data.clear(); LOGS.errors.clear(); LOGS.tab = 'all';
-    S.discovered = []; S.scanned = false; S.scanning = false;
+    S.discovered = []; S.scanned = false; S.scanning = false; S.vlan.clear();
     renderAll();
     renderLogs();
 }
@@ -857,7 +904,7 @@ function resetView() {
 function setPreset(index) {
     S.preset = index;
     S.demo = null;
-    save('stp.preset', index);
+    save('stp.preset.' + LAB.id, index);
     resetView();
     start();
 }
@@ -873,32 +920,36 @@ async function discoverSwitches() {
     clearTimeout(S.scanTimer);
     const index = S.preset;
     S.scanning = true;
+    S.lastScan = Date.now();
     renderEmpty();
     try {
-        const res = await fetch(`/api/discover?ips=${SCAN_IPS.join(',')}&bridge=${encodeURIComponent(S.bridge)}`, { cache: 'no-store' });
-        if (!res.ok) throw new Error('server responded ' + res.status);
-        const { found } = await res.json();
-        if (index !== S.preset) return;                  // the user switched figure while scanning
+        const p = PRESETS[index];
+        const { found } = await api(`/api/discover?ips=${(p.scan || SCAN_IPS).join(',')}&bridge=${encodeURIComponent(S.bridge)}`);
+        if (index !== S.preset || !S.active) return;     // the user switched figure or left the page while scanning
         // Keep switches that were found before: one that stops answering for a moment stays on the picture as offline.
-        const merged = [...new Set([...S.discovered, ...found])].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        // A switch that now answers on another address (Lab 4 changes the management IPs) replaces its old card.
+        const keyOf = p.keyOf || (ip => ip);
+        const byKey = new Map(S.discovered.map(ip => [keyOf(ip), ip]));
+        for (const ip of found) byKey.set(keyOf(ip), ip);
+        const merged = [...byKey.values()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         const changed = merged.join() !== S.discovered.join();
         S.discovered = merged;
         S.scanned = true;
-        if (changed || !S.model) { renderSidebar(); poll(); pollLogs(); }
+        if (changed || !S.model) { renderFigureTabs(); poll(); pollLogs(); }
     } catch (e) {
         S.error = e.message;
         renderStatus();
     } finally {
         S.scanning = false;
         renderEmpty();
-        if (index === S.preset && !S.paused) S.scanTimer = setTimeout(discoverSwitches, 60000);
+        if (index === S.preset && !S.paused && S.active) S.scanTimer = setTimeout(discoverSwitches, 60000);
     }
 }
 
 /* ---------- Putting it together ---------- */
 
 function renderAll() {
-    renderTitle(); renderSidebar(); renderSummary(); renderStatus(); renderNotes(); renderLinks(); renderDetail(); renderEvents();
+    renderFigureTabs(); renderSummary(); renderStatus(); renderNotes(); renderLinks(); renderDetail(); renderEvents();
     if (S.model) renderStage(); else renderEmpty();
 }
 
@@ -925,6 +976,8 @@ function update(data) {
     const relayout = sig !== S.sig;
     if (relayout) { S.sig = sig; S.layoutPos = computeLayout(model); }
     renderAll();
+    const p = PRESETS[S.preset];
+    if (p.auto && !S.demo && S.active && !S.scanning && Date.now() - S.lastScan > 15000 && [...model.nodes.values()].some(n => !n.ok)) discoverSwitches();
     if (first && model.okCount + model.nodes.size > 0) { fit(); S.fitted = true; }
     else if (relayout && !S.adjusted && nodeCountChanged(model)) fit();
 }
@@ -1004,13 +1057,6 @@ function onPointerUp() {
 async function toggleCut(link) {
     await fetch(`/api/demo/cut?preset=${encodeURIComponent(S.demo)}&link=${encodeURIComponent(link)}`, { method: 'POST' });
     poll();
-}
-
-function setTheme(theme) {
-    S.theme = theme;
-    document.documentElement.setAttribute('data-theme', theme);
-    $('themeBtn').innerHTML = theme === 'dark' ? ICON.sun : ICON.moon;
-    save('stp.theme', theme);
 }
 
 function setPaused(paused) {
@@ -1100,7 +1146,7 @@ async function pollLogs() {
     } finally {
         LOGS.busy = false;
         renderLogs();
-        if (!S.paused) LOGS.timer = setTimeout(pollLogs, Math.max(S.interval, 4000));
+        if (!S.paused && S.active) LOGS.timer = setTimeout(pollLogs, Math.max(S.interval, 4000));
     }
 }
 
@@ -1156,21 +1202,18 @@ async function runTerm(ids) {
     if (my === TERM.seq) { $('termOut').textContent = text; $('termOut').scrollTop = 0; }
 }
 
-function init() {
-    setTheme(S.theme);
-    $('pauseBtn').innerHTML = ICON.pause;
+// Wires the controls of the monitor once. The shell (labs-ui.js) calls Monitor.enter() when the Monitor tab opens.
+function initMonitor() {
     $('interval').value = String(S.interval);
     if (!['1000', '2000', '5000', '10000'].includes($('interval').value)) { S.interval = 2000; $('interval').value = '2000'; }
+    $('pauseBtn').innerHTML = ICON.pause;
 
-    $('interval').addEventListener('change', e => { S.interval = Number(e.target.value); save('stp.interval', S.interval); if (!S.paused) poll(); });
+    $('interval').addEventListener('change', e => { S.interval = Number(e.target.value); save('stp.interval', S.interval); if (S.active && !S.paused) poll(); });
     $('pauseBtn').addEventListener('click', () => setPaused(!S.paused));
-    $('refreshBtn').addEventListener('click', poll);
-    $('themeBtn').addEventListener('click', () => setTheme(S.theme === 'dark' ? 'light' : 'dark'));
-    $('menuBtn').addEventListener('click', () => $('wrapper').classList.toggle('stp-mobile-menu-open'));
-    $('overlay').addEventListener('click', () => $('wrapper').classList.remove('stp-mobile-menu-open'));
-    document.querySelector('.stp-sidebar').addEventListener('click', e => {
+    $('refreshBtn').addEventListener('click', () => { if (S.active) poll(); });
+    $('figureTabs').addEventListener('click', e => {
         const preset = e.target.closest('[data-preset]');
-        if (preset) { setPreset(Number(preset.dataset.preset)); $('wrapper').classList.remove('stp-mobile-menu-open'); }
+        if (preset) setPreset(Number(preset.dataset.preset));
     });
 
     $('summary').addEventListener('click', e => {
@@ -1179,7 +1222,7 @@ function init() {
         ({
             zoomIn: () => zoomBy(1.2), zoomOut: () => zoomBy(1 / 1.2), fit,
             reset: () => { S.moved.clear(); S.pos.clear(); placeNodes(); syncLinks(); syncHosts(); fit(); S.adjusted = false; },
-            full: toggleFullscreen
+            full: toggleFullscreen, rescan: discoverSwitches
         })[act.dataset.act]();
     });
 
@@ -1249,11 +1292,52 @@ function init() {
     // Live counter while STP is still recalculating.
     setInterval(() => { if (S.track) { renderStatus(); renderSummary(); } }, 200);
 
-    renderAll();
-    applyTransform();
     // Opening a terminal window only works for someone sitting at the PC that runs the server.
     fetch('/api/info').then(r => r.json()).then(info => { S.localClient = !!info.local; }).catch(() => { /* keep the default */ });
-    start();
 }
 
-init();
+const Monitor = {
+    inited: false,
+
+    // Wires the controls once. Safe to call more than once.
+    init() {
+        if (this.inited) return;
+        initMonitor();
+        this.inited = true;
+    },
+
+    // Selects the lab configuration (names, figures) without starting to read; the checkers use it for the names of switches.
+    select(labId) {
+        if (!LAB_MONITORS[labId]) return;
+        LAB = LAB_MONITORS[labId];
+        LAB.id = labId;
+        PRESETS = LAB.presets;
+    },
+
+    // Show the monitor of one lab. `demoName` starts the demo of the server instead of reading real switches.
+    enter(labId, demoName) {
+        LAB = LAB_MONITORS[labId];
+        LAB.id = labId;
+        PRESETS = LAB.presets;
+        S.active = true;
+        S.demo = null;
+        let index = -1;
+        if (demoName) { index = PRESETS.findIndex(p => p.demo === demoName); if (index >= 0) S.demo = demoName; }
+        if (index < 0) index = clamp(Number(load('stp.preset.' + labId, 0)) || 0, 0, PRESETS.length - 1);
+        S.preset = index;
+        this.init();
+        resetView();
+        applyTransform();
+        start();
+    },
+
+    leave() {
+        S.active = false;
+        clearTimeout(S.timer);
+        clearTimeout(S.scanTimer);
+        clearTimeout(LOGS.timer);
+    },
+
+    // Called by the shell when the lab changes or the figure/tab size changes.
+    refit() { if (S.active && S.model) fit(); }
+};

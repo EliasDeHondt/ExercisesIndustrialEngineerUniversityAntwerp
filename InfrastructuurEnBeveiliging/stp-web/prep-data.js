@@ -1,80 +1,14 @@
-<!doctype html>
-<html lang="nl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Voorbereiding IEB</title>
-<style>
-  :root {
-    --bg: #ffffff; --fg: #1a1a1a; --muted: #5b6068; --line: #d5d8dd; --card: #f6f7f9;
-    --accent: #1f5fbf; --accent-fg: #ffffff;
-    --ok: #1a7f37; --ok-bg: rgba(26,127,55,0.13); --bad: #c62828; --bad-bg: rgba(198,40,40,0.12);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #16181c; --fg: #e6e6e6; --muted: #9aa0a8; --line: #3a3d44; --card: #1e2126;
-      --accent: #6aa5ff; --accent-fg: #0d1117;
-      --ok: #5fd07f; --ok-bg: rgba(95,208,127,0.15); --bad: #ff7b7b; --bad-bg: rgba(255,123,123,0.15);
-    }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.65; user-select: text; }
-  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
-  h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 0.4rem; }
-  h2 { font-size: 1.3rem; line-height: 1.3; margin: 0 0 0.75rem; }
-  h3 { font-size: 1.05rem; margin: 1.75rem 0 0.5rem; }
-  p { margin: 0 0 1rem; }
-  a { color: var(--accent); }
-  .muted { color: var(--muted); font-size: 0.95rem; }
-  .ui, button, .badge { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+/**
+    * @author EliasDH Team
+    * @see https://eliasdh.com
+    * @since 26/10/2026
+**/
 
-  .menu { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 10px; }
-  .menu a, .menu .off { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: inherit; text-decoration: none; }
-  .menu a:hover { border-color: var(--accent); }
-  .menu .off { opacity: 0.6; }
-  .menu .num { font-weight: 700; margin-right: 8px; font-family: system-ui, sans-serif; }
-  .badge { font-size: 0.8rem; padding: 2px 9px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; color: var(--muted); }
-  .badge.best { color: var(--ok); border-color: var(--ok); }
+'use strict';
 
-  .top { display: flex; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; font-family: system-ui, sans-serif; font-size: 0.95rem; }
-  .btn { font: inherit; font-family: system-ui, sans-serif; font-size: 1rem; padding: 10px 18px; border-radius: 8px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-fg); cursor: pointer; }
-  .btn.ghost { background: transparent; color: var(--fg); border-color: var(--line); }
-  .cta { margin: 2.5rem 0 0; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
-  .cta p { margin-bottom: 0.75rem; }
-
-  .bar { position: sticky; top: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; margin-bottom: 1rem; background: var(--bg); border-bottom: 1px solid var(--line); font-family: system-ui, sans-serif; }
-  .timer { font-size: 1.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .timer.low { color: var(--bad); }
-
-  .q { margin: 0 0 1.5rem; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; }
-  .q-text { font-weight: 600; margin: 0 0 0.6rem; }
-  .opt { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; margin: 0 0 6px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
-  .opt:hover { background: var(--card); }
-  .opt input { margin-top: 0.4rem; flex: none; }
-  .review .opt { cursor: default; }
-  .review .opt:hover { background: transparent; }
-  .opt.correct { border-color: var(--ok); background: var(--ok-bg); }
-  .opt.wrong { border-color: var(--bad); background: var(--bad-bg); }
-  .verdict { margin: 0.6rem 0 0; font-size: 0.95rem; }
-  .ok { color: var(--ok); font-weight: 600; }
-  .no { color: var(--bad); font-weight: 600; }
-
-  .score { margin: 0 0 1.5rem; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); font-family: system-ui, sans-serif; }
-  .score .big { font-size: 2rem; font-weight: 700; }
-  .row { display: flex; gap: 10px; flex-wrap: wrap; margin: 1rem 0 0; }
-</style>
-</head>
-<body>
-<main id="app"></main>
-
-<script>
-/* ===================================================================== */
-/* DATA                                                                  */
-/* ===================================================================== */
-
-var TEST_MINUTES = 15;
-
-var LABS = [
+// Preparation material per lab: a knowledge base to read and a multiple-choice test (like the Blackboard test at the start of a lab).
+// Labs 1 to 3 come from the old preparation.html, Lab 4 was added with the integration. The text is kept as written (Dutch notes, English questions of the real tests).
+const PREP_LABS = [
   {
     n: 1,
     title: "Introduction to OpenWrt and switching",
@@ -398,237 +332,108 @@ var LABS = [
         a: 0, e: "Elke extra loop betekent meer verwerking en meer topologiewijzigingen. Bij overbelasting gaan BPDU's verloren en kan een poort per ongeluk forwarden. Bovendien gebruikt STP maar één boom, dus extra links leveren geen extra capaciteit." }
     ]
   },
-  { n: 4, title: "VLANs, VLAN trunking and VLAN routing", kb: null, qs: [] },
-  { n: 5, title: "Firewalls", kb: null, qs: [] },
-  { n: 6, title: "Client-to-Site VPN with WireGuard", kb: null, qs: [] },
-  { n: 7, title: "Site-to-Site VPN with IPsec", kb: null, qs: [] },
-  { n: 8, title: "Network security validation", kb: null, qs: [] }
+  {
+    n: 4,
+    title: "VLANs, VLAN trunking and VLAN routing",
+    note: "",
+    kb: `
+<h3>Waar gaat dit labo over</h3>
+<p>In dit labo segmenteer je een Layer 2 netwerk met VLAN's, transporteer je het verkeer van meerdere VLAN's over één kabel met trunkpoorten en 802.1Q-tags, en laat je de VLAN's met elkaar praten via inter-VLAN routing met een router on a stick. Je werkt met dezelfde acht switches als in Lab 3 (vier access switches en vier core switches in een volledige mesh), maar nu met VLAN's in plaats van STP als hoofdthema. STP blijft wel aan staan, anders maken de trunklinks een lus. Je analyseert de tags met port mirroring en Wireshark. Als je een oefening afrondt, verwittig je de lector voor je verdergaat.</p>
+
+<h3>Vorm van de test</h3>
+<p>Net als bij Lab 2 en Lab 3 is er aan het begin een korte meerkeuzetest. Het gaat om begrip: je moet geen commando's of syntax kennen, wel kunnen uitleggen wat er in een netwerk met VLAN's gebeurt en waarom, bijvoorbeeld waarom er geen verbinding is tussen VLAN's en hoe de tag eruitziet.</p>
+
+<h3>Bron voor de voorbereiding</h3>
+<p>In Lab4.pdf, sectie 1 Preparation op pagina 3, staan drie bronnen: het artikel Virtual Local Area Networks (VLANs) van Practical Networking (let op de woordkeuze), het artikel Routing Between VLANs &amp; Layer 3 Switches (de Cisco-commando's hoef je niet te leren) en het artikel Inter-Switch Link and IEEE 802.1Q Frame Format van Cisco (enkel het deel over 802.1Q). Wat hieronder staat komt uit mijn eigen kennis van die onderwerpen. Ik heb de artikels zelf niet kunnen lezen, dus lees ze ook zelf door.</p>
+
+<h3>A. Wat is een VLAN en waarom</h3>
+<p>Een VLAN (Virtual LAN) verdeelt één fysieke switch of één fysiek netwerk in meerdere logische Layer 2 netwerken. Elk VLAN is een eigen broadcast domain: een broadcast (bijvoorbeeld een ARP-request) bereikt enkel de poorten van hetzelfde VLAN. Daardoor kunnen hosts in verschillende VLAN's elkaar niet bereiken, ook al hangen ze aan dezelfde switch. De switch houdt per VLAN een aparte MAC-tabel bij en stuurt een frame enkel naar poorten van het VLAN waartoe het frame behoort.</p>
+<p>De voordelen zijn minder broadcastverkeer, betere beveiliging (afdelingen worden gescheiden) en flexibiliteit, want de groepering hangt af van configuratie en niet van de kabels. Elk VLAN krijgt in de regel een eigen IP-subnet. Omdat de VLAN's gescheiden broadcast domains zijn, is er voor verkeer tussen twee VLAN's een router (Layer 3) nodig.</p>
+
+<h3>B. Access- en trunkpoorten, tagged en untagged</h3>
+<p>Een access-poort behoort tot één VLAN en is bedoeld voor eindapparaten zoals pc's, printers en servers. Die apparaten kennen geen VLAN-tags, dus de switch werkt in beide richtingen zonder tag: een binnenkomend untagged frame krijgt het VLAN van de poort (de PVID, Port VLAN ID), en bij het buitengaan haalt de switch de tag weg. Op OpenWrt noem je dat een untagged poort, in de GUI aangeduid met U (en U* als de poort ook de PVID is).</p>
+<p>Een trunkpoort verbindt switches en transporteert meerdere VLAN's over één kabel. Daarvoor wordt elk frame voorzien van een 802.1Q-tag met het VLAN-nummer. De poort is dan een tagged (T) lid van die VLAN's. Zo weet de switch aan de andere kant bij welk VLAN een frame hoort. Tag je een VLAN niet op de trunk, dan kan dat VLAN niet over de link: hosts van dat VLAN aan verschillende switches kunnen elkaar niet bereiken, of het verkeer lekt in een ander VLAN als de poort untagged lid is. Op een trunk geef je daarom geen untagged VLAN/PVID als alle frames een tag moeten dragen.</p>
+<p>Alle poorten in VLAN 1 (het default VLAN, untagged) betekent dat het netwerk zich gedraagt als één gewone, niet-gesegmenteerde switch. Het beheer-IP van de switch zit standaard enkel in VLAN 1: wil je een switch beheren, dan sluit je je pc aan op een VLAN 1 poort.</p>
+
+<h3>C. De IEEE 802.1Q-tag</h3>
+<p>De tag is 4 bytes (32 bits) en wordt in het Ethernet-frame ingevoegd tussen het bron-MAC-adres en het EtherType/lengteveld (Layer 2, MAC-sublaag). Hij bestaat uit: TPID (16 bits, waarde 0x8100, geeft aan dat het een 802.1Q-frame is), PCP (3 bits, Priority Code Point, voor Quality of Service), DEI (1 bit, Drop Eligible Indicator) en VID (12 bits, het VLAN-nummer). Doordat de tag 12 bits heeft voor het VLAN-nummer, zijn er 4096 waarden, waarvan 0 en 4095 gereserveerd zijn, dus 4094 bruikbare VLAN's (1 tot 4094). Dat is de reden van de grens op het aantal VLAN's. Door de extra 4 bytes kan het frame 1522 bytes worden in plaats van 1518.</p>
+
+<h3>D. Inter-VLAN routing</h3>
+<p>Een Layer 2 switch kan niet tussen VLAN's routeren. Er zijn twee gebruikelijke oplossingen. Bij router on a stick is de router met één trunklink verbonden en maakt hij per VLAN een logische sub-interface (op Linux lan2.1, lan2.2, ...), elk met een IP-adres in het subnet van dat VLAN. Dat adres is de default gateway van de hosts in dat VLAN. Een pakket van VLAN 2 naar VLAN 3 komt getagd met VLAN 2 aan op de router, wordt gerouteerd en gaat over dezelfde kabel terug, nu getagd met VLAN 3. Op de link naar de router zie je dus elk pakket twee keer. Alle sub-interfaces delen dezelfde fysieke poort en dus hetzelfde MAC-adres, maar het VLAN-ID scheidt de netwerken.</p>
+<p>Een Layer 3 switch combineert switching en routing in één toestel, met een virtuele interface (SVI) per VLAN, en routeert meestal in hardware, wat sneller is. Router on a stick is goedkoper maar de ene trunklink is een bottleneck, omdat al het verkeer tussen VLAN's er twee keer over gaat.</p>
+
+<h3>E. Wat je in het labo doet</h3>
+<p>Je bouwt eerst de opstelling zonder VLAN's: firewall uit, de pakketten ip-full, ip-bridge en tc-full installeren (daarna de nieuwe WAN-interface terug op LAN zetten), STP aan op alle switches vóór je kabels aansluit, alle poorten untagged in VLAN 1 en pas verder gaan als je volledige connectiviteit hebt. Daarna maak je vier VLAN's: op een access switch zitten poort 1 tot 5 in het VLAN van de eigen switch en de poorten 6 tot 8 elk in een van de andere VLAN's, op een core switch zitten twee poorten per VLAN. Je doet dat in LuCI onder Network, Interfaces, Devices en dan Bridge VLAN filtering. Met bridge vlan show op de command line zie je de tabel.</p>
+<p>Voor de trunks maak je de uplinks en de core-links tagged lid van alle vier de VLAN's. De hostpoorten blijven access, en op de core switches blijven de poorten die niet in een trunk zitten untagged in VLAN 1, zodat beheer makkelijk blijft. Met poortmirroring (tc met clsact en een mirred-actie) kopieer je het verkeer van een trunkpoort naar een vrije poort, waar je laptop met Wireshark hangt. Op een access-poort zie je geen tags, want die worden daar weggehaald; op een trunkpoort wel.</p>
+<p>Tot slot voer je routing in. De hosts krijgen een /24-masker en als gateway 10.1.n.254. De switches krijgen een beheer-IP in het VLAN 1-subnet (10.1.1.1 tot 10.1.1.8, met /24) en als gateway 10.1.1.254. De router haalt lan2 uit de bridge, maakt de devices lan2.1 tot lan2.4 (VLAN 802.1Q) en per VLAN een interface met 10.1.n.254/24, zonder gateway en zonder DHCP. De switchpoort naar de router is tagged lid van de VLAN's 1 tot 4 zonder untagged VLAN. Met cat /proc/net/vlan/config, ip addr en ip route controleer je de router.</p>
+
+<h3>F. Wat je in het labo ziet</h3>
+<p>Een host in het ene VLAN kan geen host in een ander VLAN bereiken zolang er geen router is, ook niet via de trunks. Hosts in hetzelfde VLAN aan verschillende switches kunnen elkaar wel bereiken zolang dat VLAN op elke trunk ertussen getagd is. Een /16-masker werkt zonder router nog (alle hosts liggen op papier in hetzelfde subnet) maar met een router moet elk VLAN een eigen subnet hebben, anders denkt de host dat een host in een ander VLAN lokaal bereikbaar is en stuurt hij nooit naar de gateway. Als VLAN 3 niet getagd is op de poort naar de router, krijgt VLAN 3 geen gateway en komt er geen enkel antwoord van het 10.1.3.254-interface. Als een router-interface een verkeerd IP of masker heeft, kunnen de hosts van dat VLAN hun gateway niet bereiken. Een traceroute binnen een VLAN toont één hop, naar een ander VLAN twee hops (de router en dan de bestemming).</p>
+`,
+    qs: [
+      { q: "Wat is een VLAN?",
+        o: ["Een logisch Layer 2 netwerk (broadcast domain) op een fysieke switch of netwerk", "Een versleutelde tunnel tussen twee sites", "Een draadloos netwerk", "Een routingprotocol"],
+        a: 0, e: "Een VLAN verdeelt een fysiek netwerk in meerdere logische Layer 2 netwerken. Elk VLAN is een apart broadcast domain." },
+      { q: "Twee hosts hangen aan dezelfde switch maar in verschillende VLAN's. Hoe is de communicatie tussen beide?",
+        o: ["Ze communiceren normaal, want ze hangen aan dezelfde switch", "Zonder router is er geen communicatie, want elk VLAN is een apart broadcast domain", "Enkel broadcasts komen door", "Enkel als het masker /16 is"],
+        a: 1, e: "De switch stuurt frames enkel naar poorten van hetzelfde VLAN. Voor verkeer tussen VLAN's is een Layer 3 apparaat (router) nodig, ook als de hosts aan dezelfde switch hangen." },
+      { q: "Waarom is er een router nodig voor verkeer tussen twee VLAN's?",
+        o: ["Een switch kan geen frames doorsturen", "Elk VLAN is een eigen broadcast domain en subnet, en een Layer 2 switch routeert niet", "Omdat VLAN's geen MAC-adressen hebben", "Omdat de tag het pakket versleutelt"],
+        a: 1, e: "Een Layer 2 switch werkt met MAC-adressen binnen één broadcast domain. Voor verkeer tussen verschillende subnetten moet een router (Layer 3) de pakketten doorsturen." },
+      { q: "Hoe groot is een IEEE 802.1Q-tag en waar zit ze in het frame?",
+        o: ["4 bytes, tussen het bron-MAC-adres en het EtherType", "2 bytes, na de payload", "8 bytes, voor het preamble", "4 bytes, na de CRC"],
+        a: 0, e: "De tag is 4 bytes (TPID 16 bits, PCP 3, DEI 1 en VID 12 bits) en wordt ingevoegd na het bron-MAC-adres." },
+      { q: "Waarom kunnen er maximaal 4094 bruikbare VLAN's zijn?",
+        o: ["Het VID-veld heeft 12 bits (4096 waarden) en 0 en 4095 zijn gereserveerd", "Een switch heeft maar 4094 poorten", "Het TPID-veld heeft 12 bits", "Omdat het frame maximaal 1500 bytes mag zijn"],
+        a: 0, e: "12 bits geven 4096 waarden. VID 0 (geen VLAN, enkel prioriteit) en 4095 zijn gereserveerd, dus 1 tot 4094 zijn bruikbaar." },
+      { q: "Wat stelt de TPID-waarde 0x8100 in een frame voor?",
+        o: ["Dat het frame een 802.1Q-tag bevat", "Dat het een ARP-pakket is", "Dat het frame een broadcast is", "Het MAC-adres van de switch"],
+        a: 0, e: "De TPID (Tag Protocol Identifier) is 0x8100 en geeft aan dat er een VLAN-tag volgt." },
+      { q: "Wat betekent tagged op een switchpoort?",
+        o: ["De poort stuurt frames van dat VLAN met een 802.1Q-tag uit, en verwacht tags bij binnenkomst", "De poort is uitgeschakeld", "De poort verwijdert elke tag en hoort bij VLAN 1", "De poort versleutelt het verkeer"],
+        a: 0, e: "Tagged: het VLAN-nummer wordt in een tag meegestuurd, zodat de overkant weet bij welk VLAN het frame hoort. Dat gebruik je op trunks." },
+      { q: "Wat betekent untagged op een switchpoort?",
+        o: ["Frames van dat VLAN verlaten de poort zonder tag, en binnenkomende frames zonder tag worden aan dat VLAN (de PVID) toegewezen", "De poort is lid van geen enkel VLAN", "De poort laat enkel broadcasts toe", "De poort gebruikt automatisch alle VLAN's"],
+        a: 0, e: "Untagged is het gedrag voor eindapparaten: ze kennen geen tags. De switch voegt bij binnenkomst het VLAN van de poort toe en haalt de tag bij het uitgaan weg." },
+      { q: "Waarom zijn de poorten naar hosts access-poorten (untagged)?",
+        o: ["Eindapparaten zoals pc's begrijpen geen VLAN-tags en verwachten untagged frames in één broadcast domain", "Omdat tagged poorten trager zijn", "Omdat een pc maar één MAC-adres heeft", "Omdat tags enkel op Wi-Fi werken"],
+        a: 0, e: "Pc's, printers en servers sturen en verwachten gewone Ethernet-frames zonder tag. De switch beheert de VLAN-tags." },
+      { q: "Waarom worden de uplinks tussen access en core switches trunks?",
+        o: ["Ze moeten verkeer van meerdere VLAN's over één kabel transporteren", "Omdat er dan geen STP nodig is", "Omdat ze sneller moeten zijn", "Omdat access switches geen untagged poorten kunnen hebben"],
+        a: 0, e: "Een trunk draagt meerdere VLAN's met tags over één verbinding. Hostpoorten dragen maar één VLAN en blijven untagged." },
+      { q: "Je tagt VLAN 3 niet op een trunk tussen twee switches. Wat is het gevolg?",
+        o: ["Hosts in VLAN 3 aan verschillende switches kunnen elkaar niet meer bereiken over die link", "Niets, VLAN 3 loopt automatisch mee", "Alle VLAN's vallen uit", "De trunk wordt een access-poort"],
+        a: 0, e: "Een VLAN dat niet op de trunk getagd is, wordt niet over die link verstuurd. Hosts van dat VLAN aan de andere kant zijn dan onbereikbaar." },
+      { q: "Welke poort moet je mirroren om een frame met een 802.1Q-tag te zien?",
+        o: ["Een trunkpoort", "Een access-poort van een host", "Eender welke poort, de tag is overal zichtbaar", "De poort van de laptop zelf"],
+        a: 0, e: "Op trunkpoorten dragen de frames een tag. Op access-poorten is de tag weggehaald, dus daar zie je geen tags." },
+      { q: "Waarom zie je geen VLAN-tags in Wireshark als je een access-poort mirrort?",
+        o: ["De switch verwijdert de tag bij het uitgaan van een untagged poort", "Wireshark kan geen tags tonen", "Er worden op access-poorten geen VLAN's gebruikt", "De tags worden versleuteld"],
+        a: 0, e: "Een access (untagged) poort stuurt frames zonder tag uit. Het VLAN is enkel intern in de switch bekend." },
+      { q: "Wat is een PVID?",
+        o: ["Het VLAN dat de switch toekent aan untagged frames die binnenkomen op de poort", "Het aantal VLAN's op een poort", "Een prioriteitsveld in de tag", "Het MAC-adres van het VLAN"],
+        a: 0, e: "De Port VLAN ID is het standaard VLAN van een poort: untagged frames die binnenkomen worden daarmee gemerkt." },
+      { q: "Wat is router on a stick?",
+        o: ["Een router met één trunklink naar de switch en per VLAN een logische sub-interface met een IP in dat VLAN-subnet", "Een router met één fysieke poort per VLAN", "Een switch die routeert in hardware", "Een router zonder IP-adressen"],
+        a: 0, e: "Eén fysieke trunk, meerdere 802.1Q-sub-interfaces. Elke sub-interface is de default gateway van zijn VLAN." },
+      { q: "Je pingt van een host in VLAN 2 naar een host in VLAN 3 via een router on a stick. Hoe vaak zie je het echo request op de link naar de router?",
+        o: ["Twee keer: eerst getagd met VLAN 2 naar de router, daarna getagd met VLAN 3 terug", "Eén keer, getagd met VLAN 2", "Nul keer, de router gebruikt een andere kabel", "Drie keer, met drie verschillende MAC-adressen"],
+        a: 0, e: "Het pakket gaat over dezelfde kabel heen en terug. Het VLAN-ID en de MAC-adressen veranderen, de IP-adressen blijven, de TTL daalt met 1." },
+      { q: "Waarom hebben alle sub-interfaces van de router hetzelfde MAC-adres, terwijl ze toch als aparte netwerken werken?",
+        o: ["Ze zitten op dezelfde fysieke poort; het VLAN-ID in de tag scheidt de netwerken", "Omdat een router maar één IP-adres mag hebben", "Omdat het MAC-adres bij elke ping verandert", "Het is een fout in de configuratie"],
+        a: 0, e: "Het MAC-adres hoort bij de fysieke poort. Door de 802.1Q-tag en een eigen IP-subnet per sub-interface zijn het logisch gescheiden netwerken." },
+      { q: "Waarom moet je bij inter-VLAN routing het masker van /16 naar /24 veranderen?",
+        o: ["Elk VLAN heeft een eigen subnet nodig; met /16 zou een host andere VLAN's als lokaal beschouwen en niet naar de gateway sturen", "Omdat /16 niet bestaat in OpenWrt", "Omdat de router enkel /24 kan", "Om meer IP-adressen te krijgen"],
+        a: 0, e: "Met een /16 liggen 10.1.1.x en 10.1.3.x in hetzelfde subnet. De host zou rechtstreeks ARP'en en nooit de gateway gebruiken, terwijl een broadcast het andere VLAN niet bereikt." },
+      { q: "Het beheer-IP van een switch is 10.1.3.5, je pc staat in VLAN 1 (10.1.1.x). Wat is er mis en wat is de oplossing?",
+        o: ["Het beheer-IP zit in het subnet van VLAN 3 terwijl het beheer via VLAN 1 loopt; verander het naar een adres in het VLAN 1-subnet en geef een gateway", "Niets, het werkt altijd", "De pc heeft te veel poorten", "Het masker moet naar /8"],
+        a: 0, e: "De switch wordt beheerd via VLAN 1, dus zijn IP moet in het VLAN 1-subnet (10.1.1.0/24) liggen, met gateway 10.1.1.254, anders kan hij hosts in andere VLAN's niet antwoorden." },
+      { q: "Wat is het verschil tussen router on a stick en een Layer 3 switch?",
+        o: ["Router on a stick routeert over één trunklink met sub-interfaces; een Layer 3 switch routeert zelf, meestal in hardware, met een virtuele interface per VLAN", "Er is geen verschil", "Een Layer 3 switch kent geen VLAN's", "Router on a stick werkt enkel met Wi-Fi"],
+        a: 0, e: "Beide routeren tussen VLAN's. De L3 switch doet het in één toestel en meestal sneller, router on a stick heeft één trunk als bottleneck." },
+      { q: "Wat gebeurt er als VLAN 3 niet getagd is op de switchpoort naar de router?",
+        o: ["De router ontvangt geen VLAN 3-verkeer en hosts in VLAN 3 bereiken hun gateway 10.1.3.254 niet", "Alle VLAN's vallen uit", "De router maakt het VLAN zelf aan", "Niets, de router tagt het zelf"],
+        a: 0, e: "Zonder VLAN 3 op die poort komen de frames van VLAN 3 nooit bij de sub-interface lan2.3 aan. Hosts in VLAN 3 krijgen geen antwoord van hun gateway." }
+    ]
+  }
 ];
-
-/* ===================================================================== */
-/* HELPERS                                                               */
-/* ===================================================================== */
-
-var app = document.getElementById("app");
-var timerId = null;
-var test = null;
-
-function el(tag, attrs, html) {
-  var n = document.createElement(tag);
-  if (attrs) { for (var k in attrs) { n.setAttribute(k, attrs[k]); } }
-  if (html !== undefined) { n.innerHTML = html; }
-  return n;
-}
-function esc(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-function shuffle(a) {
-  var r = a.slice();
-  for (var i = r.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = r[i]; r[i] = r[j]; r[j] = t;
-  }
-  return r;
-}
-function letter(i) { return String.fromCharCode(65 + i); }
-function fmt(sec) {
-  var m = Math.floor(sec / 60), s = sec % 60;
-  return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
-}
-function getLab(n) {
-  for (var i = 0; i < LABS.length; i++) { if (LABS[i].n === n) { return LABS[i]; } }
-  return null;
-}
-function ready(lab) { return lab && lab.kb && lab.qs.length > 0; }
-function saveBest(n, score, total) {
-  try {
-    var key = "ieb-best-lab" + n;
-    var old = parseInt(localStorage.getItem(key), 10);
-    if (isNaN(old) || score > old) { localStorage.setItem(key, String(score)); }
-    localStorage.setItem("ieb-total-lab" + n, String(total));
-  } catch (e) { /* opslag niet beschikbaar */ }
-}
-function loadBest(n) {
-  try {
-    var b = localStorage.getItem("ieb-best-lab" + n);
-    var t = localStorage.getItem("ieb-total-lab" + n);
-    if (b !== null && t !== null) { return b + " / " + t; }
-  } catch (e) { /* opslag niet beschikbaar */ }
-  return null;
-}
-function stopTimer() {
-  if (timerId) { clearInterval(timerId); timerId = null; }
-}
-
-/* ===================================================================== */
-/* VIEWS                                                                 */
-/* ===================================================================== */
-
-function viewMenu() {
-  stopTimer(); test = null;
-  document.title = "Voorbereiding IEB";
-  var html = '<h1>Voorbereiding Infrastructuur en Beveiliging</h1>' +
-    '<p class="muted ui">Kies een labo. Je krijgt eerst een uitleg (kennisbasis) en daarna een meerkeuzetest met een timer van 15 minuten, zoals de voorbereidingstest op Blackboard.</p>' +
-    '<ul class="menu">';
-  LABS.forEach(function (lab) {
-    if (ready(lab)) {
-      var best = loadBest(lab.n);
-      html += '<li><a href="#/lab/' + lab.n + '"><span><span class="num">Lab ' + lab.n + '</span>' + esc(lab.title) + '</span>' +
-        '<span class="badge' + (best ? ' best' : '') + '">' + (best ? 'Beste: ' + best : 'Nog niet gemaakt') + '</span></a></li>';
-    } else {
-      html += '<li><div class="off"><span><span class="num ui">Lab ' + lab.n + '</span>' + esc(lab.title) + '</span>' +
-        '<span class="badge">Nog geen data</span></div></li>';
-    }
-  });
-  html += '</ul>';
-  app.innerHTML = html;
-  window.scrollTo(0, 0);
-}
-
-function viewLab(n) {
-  stopTimer(); test = null;
-  var lab = getLab(n);
-  if (!ready(lab)) { location.hash = "#/"; return; }
-  document.title = "Lab " + lab.n + " - Voorbereiding IEB";
-  var html = '<div class="top"><a href="#/">&larr; Alle labo\'s</a><span class="muted">Kennisbasis</span></div>' +
-    '<h1>Lab ' + lab.n + ': ' + esc(lab.title) + '</h1>' + lab.kb +
-    '<div class="cta"><p class="ui"><strong>Klaar om te testen?</strong> ' + lab.qs.length + ' meerkeuzevragen, ' + TEST_MINUTES + ' minuten. De timer start zodra je op de knop klikt.</p>' +
-    (lab.note ? '<p class="muted ui">' + esc(lab.note) + '</p>' : '') +
-    '<a class="btn" href="#/lab/' + lab.n + '/test" style="display:inline-block;text-decoration:none">Start test</a></div>';
-  app.innerHTML = html;
-  window.scrollTo(0, 0);
-}
-
-function viewTest(n) {
-  stopTimer();
-  var lab = getLab(n);
-  if (!ready(lab)) { location.hash = "#/"; return; }
-  document.title = "Test Lab " + lab.n + " - Voorbereiding IEB";
-
-  test = {
-    lab: lab,
-    items: shuffle(lab.qs).map(function (q) {
-      var order = shuffle(q.o.map(function (_, i) { return i; }));
-      return { q: q, order: order, picked: null };
-    }),
-    end: Date.now() + TEST_MINUTES * 60 * 1000,
-    done: false
-  };
-
-  var html = '<div class="bar"><a href="#/lab/' + lab.n + '" id="leave">&larr; Stoppen</a>' +
-    '<span class="muted" id="progress"></span><span class="timer" id="timer">' + fmt(TEST_MINUTES * 60) + '</span></div>' +
-    '<h2>Test Lab ' + lab.n + ': ' + esc(lab.title) + '</h2><div id="questions"></div>' +
-    '<div class="row"><button type="button" class="btn" id="submit">Inleveren</button></div>';
-  app.innerHTML = html;
-
-  var box = document.getElementById("questions");
-  test.items.forEach(function (it, qi) {
-    var q = el("div", { "class": "q" });
-    q.appendChild(el("p", { "class": "q-text" }, (qi + 1) + ". " + esc(it.q.q)));
-    it.order.forEach(function (origIdx, pos) {
-      var lbl = el("label", { "class": "opt" });
-      var inp = el("input", { type: "radio", name: "q" + qi, value: String(origIdx) });
-      inp.addEventListener("change", function () { it.picked = origIdx; updateProgress(); });
-      lbl.appendChild(inp);
-      lbl.appendChild(el("span", null, letter(pos) + ". " + esc(it.q.o[origIdx])));
-      q.appendChild(lbl);
-    });
-    box.appendChild(q);
-  });
-
-  document.getElementById("submit").addEventListener("click", function () {
-    var open = test.items.filter(function (it) { return it.picked === null; }).length;
-    if (open > 0 && !window.confirm("Je hebt nog " + open + " onbeantwoorde vragen. Toch inleveren?")) { return; }
-    finish(false);
-  });
-
-  updateProgress();
-  tick();
-  timerId = setInterval(tick, 250);
-  window.scrollTo(0, 0);
-}
-
-function updateProgress() {
-  var done = test.items.filter(function (it) { return it.picked !== null; }).length;
-  var p = document.getElementById("progress");
-  if (p) { p.textContent = done + " / " + test.items.length + " beantwoord"; }
-}
-
-function tick() {
-  if (!test || test.done) { return; }
-  var left = Math.max(0, Math.ceil((test.end - Date.now()) / 1000));
-  var t = document.getElementById("timer");
-  if (t) {
-    t.textContent = fmt(left);
-    t.className = "timer" + (left <= 120 ? " low" : "");
-  }
-  if (left <= 0) { finish(true); }
-}
-
-function finish(timeUp) {
-  if (!test || test.done) { return; }
-  test.done = true;
-  stopTimer();
-  var lab = test.lab;
-  var total = test.items.length;
-  var score = 0;
-  test.items.forEach(function (it) { if (it.picked === it.q.a) { score++; } });
-  var used = Math.min(TEST_MINUTES * 60, Math.round((TEST_MINUTES * 60 * 1000 - Math.max(0, test.end - Date.now())) / 1000));
-  saveBest(lab.n, score, total);
-
-  var pct = Math.round(score / total * 100);
-  var html = '<div class="top"><a href="#/">&larr; Alle labo\'s</a><span class="muted">Resultaat</span></div>' +
-    '<h2>Resultaat Lab ' + lab.n + ': ' + esc(lab.title) + '</h2>' +
-    '<div class="score"><div class="big">' + score + ' / ' + total + '</div>' +
-    '<div>' + pct + '%' + (timeUp ? ' &middot; de tijd was om' : ' &middot; tijd gebruikt: ' + fmt(used)) + '</div>' +
-    '<div class="row"><button type="button" class="btn" id="again">Opnieuw proberen</button>' +
-    '<a class="btn ghost" href="#/lab/' + lab.n + '" style="text-decoration:none">Terug naar kennisbasis</a></div></div>' +
-    '<div class="review" id="review"></div>';
-  app.innerHTML = html;
-
-  document.getElementById("again").addEventListener("click", function () { viewTest(lab.n); });
-  var review = document.getElementById("review");
-  test.items.forEach(function (it, qi) {
-    var q = el("div", { "class": "q" });
-    q.appendChild(el("p", { "class": "q-text" }, (qi + 1) + ". " + esc(it.q.q)));
-    it.order.forEach(function (origIdx, pos) {
-      var cls = "opt";
-      if (origIdx === it.q.a) { cls += " correct"; }
-      else if (origIdx === it.picked) { cls += " wrong"; }
-      var d = el("div", { "class": cls }, '<span>' + letter(pos) + '. ' + esc(it.q.o[origIdx]) + '</span>');
-      q.appendChild(d);
-    });
-    var correctPos = it.order.indexOf(it.q.a);
-    var verdict;
-    if (it.picked === null) {
-      verdict = '<span class="no">Niet beantwoord.</span> Juiste antwoord: ' + letter(correctPos) + '. ';
-    } else if (it.picked === it.q.a) {
-      verdict = '<span class="ok">Juist.</span> ';
-    } else {
-      verdict = '<span class="no">Fout.</span> Juiste antwoord: ' + letter(correctPos) + '. ';
-    }
-    q.appendChild(el("p", { "class": "verdict" }, verdict + esc(it.q.e)));
-    review.appendChild(q);
-  });
-  window.scrollTo(0, 0);
-}
-
-/* ===================================================================== */
-/* ROUTER                                                                */
-/* ===================================================================== */
-
-function route() {
-  stopTimer();
-  var parts = location.hash.replace(/^#\/?/, "").split("/");
-  if (parts[0] === "lab" && parts[1]) {
-    var n = parseInt(parts[1], 10);
-    if (parts[2] === "test") { viewTest(n); } else { viewLab(n); }
-  } else {
-    viewMenu();
-  }
-}
-window.addEventListener("hashchange", route);
-route();
-</script>
-</body>
-</html>

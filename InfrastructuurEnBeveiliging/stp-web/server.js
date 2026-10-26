@@ -5,19 +5,21 @@
     * @since 26/10/2026
 **/
 
-// Small local web server for the STP monitor (no npm packages needed, only Node 18 or newer).
-// A browser cannot do SSH itself, so this server does it for the page: per request it reads
-// "brctl showstp <bridge>" from all requested switches (in parallel) and returns the result as JSON.
-// It also serves the switch logs and a fixed list of read-only "show" commands.
+// Local web server of the IEB Lab Companion (no npm packages needed, only Node 18 or newer).
+// The app has a guide, a preparation test, a live monitor, a checker and the notes for Labs 1 to 4.
+// A browser cannot do SSH itself, so this server does it for the page: it reads switches and routers with a fixed list of
+// read-only commands (brctl showstp, bridge vlan show, ip route, logread, ...) and pings from this PC, and returns JSON.
+// The page never gets a free shell and nothing is ever changed on a device.
 // By default it listens on all network interfaces, so everyone on the network can open the page
-// with http://<ip of this PC>:8080. The page only gets the fixed read-only commands below.
+// with http://<ip of this PC>:8080.
 //
 // Usage:
 //   node server.js                       # then open http://localhost:8080 (others: http://<ip of this PC>:8080)
 //   PORT=9000 node server.js             # other port (PowerShell: $env:PORT = 9000; node server.js)
 //   HOST=127.0.0.1 node server.js        # only this PC (PowerShell: $env:HOST = '127.0.0.1')
 //   STP_PASSWORD=secret node server.js   # ask for a password (any user name, this password)
-//   http://localhost:8080/?demo=fig2     # demo without switches (Figure 2 with 8 switches)
+//   http://localhost:8080/?demo=fig2     # demo of the Lab 3 monitor without switches (fig1, fig2, fig3, fig4)
+//   http://localhost:8080/?demo=lab4     # demo of the Lab 4 monitor with VLAN colours
 
 'use strict';
 
@@ -168,6 +170,23 @@ function discover(ips, bridge) {
     });
 }
 
+// Finds every device that accepts an SSH login (switches and routers, whatever their bridge is called).
+function discoverAny(ips) {
+    return cached(`discoverAny|${ips.join(',')}`, 8000, async () => {
+        const found = [];
+        let next = 0;
+        const worker = async () => {
+            while (next < ips.length) {
+                const ip = ips[next++];
+                const r = await sshRun(ip, 'echo ok', 5000);
+                if (r.ok && /ok/.test(r.output)) found.push(ip);
+            }
+        };
+        await Promise.all(Array.from({ length: Math.min(12, ips.length) }, worker));
+        return found.sort((x, y) => x.localeCompare(y, undefined, { numeric: true }));
+    });
+}
+
 // ---------- Demo: a small STP simulator ----------
 // Calculates root, root ports, designated ports and blocking ports of a topology like a real
 // 802.1D switch (lowest bridge ID wins, shortest path to the root, lowest bridge/port as tie-break).
@@ -215,6 +234,36 @@ DEMOS.fig4 = {
         ['10.1.5.5', 1, '10.1.1.5', 7], ['10.1.5.5', 2, '10.1.3.5', 7], ['10.1.5.1', 4, '10.1.5.5', 3], ['10.1.5.1', 3, '10.1.4.1', 6]
     ]
 };
+
+// Lab 4: the cabling of Figure 1 of the VLAN lab (no red links between the access switches), with the VLAN layout of Figure 3.
+DEMOS.lab4 = {
+    title: 'Lab 4 (VLAN trunking)',
+    priority: { '10.1.2.5': 4096 },
+    hosts: { '10.1.1.1': [1, 2], '10.1.2.1': [1, 2], '10.1.3.1': [1, 2], '10.1.4.1': [1, 2] },
+    vlanStage: 2,
+    links: [
+        ['10.1.2.5', 1, '10.1.1.5', 2], ['10.1.2.5', 2, '10.1.3.5', 1], ['10.1.2.5', 3, '10.1.4.5', 3], ['10.1.4.5', 7, '10.1.1.5', 7],
+        ['10.1.4.5', 8, '10.1.3.5', 8], ['10.1.1.5', 5, '10.1.3.5', 5],
+        ['10.1.1.5', 1, '10.1.1.1', 3], ['10.1.1.5', 3, '10.1.2.1', 3], ['10.1.3.5', 6, '10.1.3.1', 3], ['10.1.3.5', 7, '10.1.4.1', 3]
+    ]
+};
+
+// VLAN table of a demo switch (as "bridge vlan show" would report it): trunks are tagged in VLAN 1 to 4, the other ports untagged.
+const DEMO_TRUNKS = { a: [3], c1: [1, 2, 3, 5, 7], c2: [1, 2, 3], c3: [1, 5, 6, 7, 8], c4: [3, 7, 8] };
+function demoVlan(ip) {
+    const m = ip.match(/^10\.1\.(\d)\.(1|5)$/);
+    if (!m) return undefined;
+    const n = Number(m[1]), access = m[2] === '1';
+    const trunks = access ? DEMO_TRUNKS.a : DEMO_TRUNKS['c' + n];
+    const out = {};
+    for (let p = 1; p <= 8; p++) {
+        const vlan = access ? (p <= 5 ? n : [1, 2, 3, 4].filter(v => v !== n)[p - 6]) : 1;
+        out['lan' + p] = trunks.includes(p)
+            ? Object.fromEntries([1, 2, 3, 4].map(v => [v, { untagged: false, pvid: false }]))
+            : { [vlan]: { untagged: true, pvid: true } };
+    }
+    return out;
+}
 
 const demoState = {};   // per preset: { cuts:Set, from:Map, changedAt }
 
@@ -298,7 +347,8 @@ function demoResponse(name) {
         return {
             ip: s.ip, ok: true, bridgeId: s.bid, root: sim.root.bid,
             rootPort: sim.rootPort.get(s.ip) || 0, rootCost: sim.rpc.get(s.ip) === Infinity ? 0 : sim.rpc.get(s.ip),
-            maxAge: 20, helloTime: 2, forwardDelay: 2, topologyChange: age < 4 && !!st.changedAt, ports
+            maxAge: 20, helloTime: 2, forwardDelay: 2, topologyChange: age < 4 && !!st.changedAt, ports,
+            vlan: demo.vlanStage ? demoVlan(s.ip) : undefined
         };
     });
     return {
@@ -440,6 +490,113 @@ const readLogs = ip => cached(`log|${ip}`, 2500, async () => {
     return r.ok ? { ip, ok: true, lines: r.output.split('\n').filter(Boolean) } : { ip, ok: false, error: r.error };
 });
 
+// ---------- Facts for the lab checkers ----------
+
+// Read-only commands whose output the checkers evaluate. The page asks for sections by name, never for a command line.
+const FACT_SECTIONS = {
+    board: 'ubus call system board 2>/dev/null',
+    time: 'date +%s',
+    uptime: 'uptime',
+    addr: 'ip -o -4 addr show 2>/dev/null',
+    route: 'ip route 2>/dev/null',
+    fwd: 'cat /proc/sys/net/ipv4/ip_forward 2>/dev/null',
+    firewall: 'nft list tables 2>/dev/null | grep -c fw4',
+    uci: 'uci show network 2>/dev/null',
+    links: 'ip -o link show 2>/dev/null',
+    brctl: 'brctl show 2>/dev/null',
+    stp: 'for b in $(brctl show 2>/dev/null | awk \'NR>1 && $2 ~ /\\./ {print $1}\'); do echo "## $b"; brctl showstp $b; done',
+    vlan: 'bridge vlan show 2>&1',
+    vlanproc: 'cat /proc/net/vlan/config 2>/dev/null',
+    opkg: "opkg list-installed 2>/dev/null | grep -E '^(tcpdump|ip-full|ip-bridge|tc-full|fping|frr[a-z-]*) '",
+    frrdaemons: "grep -E '^(zebra|ripd|ospfd)=' /etc/frr/daemons 2>/dev/null",
+    frrrun: 'for p in zebra ripd ospfd; do pidof $p >/dev/null 2>&1 && echo $p; done',
+    vtyroute: "vtysh -c 'show ip route' 2>/dev/null",
+    ospfnbr: "vtysh -c 'show ip ospf neighbor' 2>/dev/null",
+    ripdb: "vtysh -c 'show ip rip' 2>/dev/null",
+    tc: 'tc qdisc show 2>/dev/null | grep clsact',
+    internet: 'if ping -c 1 -W 1 8.8.8.8 >/dev/null 2>&1; then echo up; else echo down; fi'
+};
+
+async function readFacts(ip, names) {
+    const chosen = names.filter(n => FACT_SECTIONS[n]);
+    if (!chosen.length) return { ip, ok: false, error: 'no valid sections' };
+    const script = chosen.map(n => `echo "@@@${n}"; ${FACT_SECTIONS[n]}`).join('; ');
+    const r = await sshRun(ip, script, 12000);
+    if (!r.ok) return { ip, ok: false, error: r.error };
+    const sections = {};
+    let cur = null;
+    for (const line of r.output.split('\n')) {
+        const m = line.match(/^@@@(\w+)$/);
+        if (m) { cur = m[1]; sections[cur] = []; } else if (cur) sections[cur].push(line);
+    }
+    for (const k of Object.keys(sections)) sections[k] = sections[k].join('\n').replace(/\n+$/, '');
+    return { ip, ok: true, sections };
+}
+
+// Pings from one switch or router to other addresses (shows what that device can reach).
+async function deviceRun(ip, targets) {
+    const script = targets.map(t => `if ping -c 1 -W 1 ${t} >/dev/null 2>&1; then echo "${t} up"; else echo "${t} down"; fi`).join('; ');
+    const r = await sshRun(ip, script, 6000 + targets.length * 1500);
+    if (!r.ok) return { ip, ok: false, error: r.error };
+    const results = {};
+    for (const line of r.output.split('\n')) {
+        const m = line.match(/^(\S+) (up|down)$/);
+        if (m) results[m[1]] = m[2] === 'up';
+    }
+    return { ip, ok: true, results };
+}
+
+// Pings from this PC (the PC that runs the server).
+function pingLocal(ip) {
+    return new Promise(resolve => {
+        const win = process.platform === 'win32';
+        const args = win ? ['-n', '1', '-w', '1000', ip] : ['-c', '1', '-W', '1', ip];
+        execFile('ping', args, { timeout: 4000, windowsHide: true }, (err, stdout) => {
+            const out = String(stdout || '');
+            const ok = win ? /TTL=/i.test(out) : !err;
+            const t = out.match(/time[=<]\s*([\d.]+)\s*ms/i);
+            resolve({ ok, ms: ok && t ? Number(t[1]) : null });
+        });
+    });
+}
+
+function probeHttp(ip) {
+    return new Promise(resolve => {
+        const req = http.get({ host: ip, port: 80, path: '/', timeout: 2500 }, res => { res.resume(); resolve({ ip, ok: true, status: res.statusCode }); });
+        req.on('timeout', () => { req.destroy(); resolve({ ip, ok: false }); });
+        req.on('error', () => resolve({ ip, ok: false }));
+    });
+}
+
+function localInfo() {
+    const interfaces = [];
+    for (const [name, list] of Object.entries(os.networkInterfaces())) {
+        for (const i of list) if (i.family === 'IPv4' && !i.internal) interfaces.push({ name, address: i.address, netmask: i.netmask, mac: i.mac });
+    }
+    return new Promise(resolve => {
+        const done = gateways => resolve({ hostname: os.hostname(), interfaces, gateways });
+        if (process.platform === 'win32') {
+            execFile('route', ['print', '-4', '0.0.0.0'], { timeout: 4000, windowsHide: true }, (err, stdout) => {
+                const gateways = [];
+                for (const line of String(stdout || '').split('\n')) {
+                    const m = line.trim().match(/^0\.0\.0\.0\s+0\.0\.0\.0\s+(\d+\.\d+\.\d+\.\d+)\s+(\d+\.\d+\.\d+\.\d+)/);
+                    if (m) gateways.push({ gateway: m[1], iface: m[2] });
+                }
+                done(gateways);
+            });
+        } else {
+            execFile('ip', ['route', 'show', 'default'], { timeout: 4000 }, (err, stdout) => {
+                const gateways = [];
+                for (const line of String(stdout || '').split('\n')) {
+                    const m = line.match(/default via (\S+) dev (\S+)/);
+                    if (m) gateways.push({ gateway: m[1], iface: m[2] });
+                }
+                done(gateways);
+            });
+        }
+    });
+}
+
 // Opens a real SSH session in a terminal window on this PC (the page itself never gets a free shell).
 function openTerminal(ip) {
     // Same options as the monitor, but interactive: no BatchMode, so a password prompt is possible.
@@ -521,6 +678,48 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { local: isLocalClient(req), protected: !!PASSWORD, urls: lanUrls() });
     }
 
+    if (url.pathname === '/api/facts') {
+        const ips = (url.searchParams.get('ips') || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 24);
+        const names = (url.searchParams.get('sections') || '').split(',').filter(n => /^\w+$/.test(n));
+        if (!ips.length || !ips.every(ip => IP_RE.test(ip)) || !names.length) return sendJson(res, 400, { error: 'invalid ips or sections' });
+        const key = `facts|${ips.join(',')}|${names.join(',')}`;
+        return sendJson(res, 200, { time: Date.now(), devices: await cached(key, 1500, () => Promise.all(ips.map(ip => readFacts(ip, names)))) });
+    }
+
+    if (url.pathname === '/api/devping') {
+        const ip = url.searchParams.get('ip') || '';
+        const targets = [...new Set((url.searchParams.get('targets') || '').split(',').map(s => s.trim()).filter(Boolean))].slice(0, 16);
+        if (!IP_RE.test(ip) || !targets.length || !targets.every(t => IP_RE.test(t))) return sendJson(res, 400, { error: 'invalid ip or targets' });
+        return sendJson(res, 200, await cached(`devping|${ip}|${targets.join(',')}`, 1500, () => deviceRun(ip, targets)));
+    }
+
+    if (url.pathname === '/api/ping') {
+        const ips = [...new Set((url.searchParams.get('ips') || '').split(',').map(s => s.trim()).filter(Boolean))].slice(0, 48);
+        if (!ips.length || !ips.every(ip => IP_RE.test(ip))) return sendJson(res, 400, { error: 'invalid ips' });
+        const out = await cached(`ping|${ips.join(',')}`, 1200, async () => {
+            const results = {};
+            await Promise.all(ips.map(async ip => { results[ip] = await pingLocal(ip); }));
+            return results;
+        });
+        return sendJson(res, 200, { time: Date.now(), results: out });
+    }
+
+    if (url.pathname === '/api/http') {
+        const ip = url.searchParams.get('ip') || '';
+        if (!IP_RE.test(ip)) return sendJson(res, 400, { error: 'invalid ip' });
+        return sendJson(res, 200, await cached(`http|${ip}`, 2000, () => probeHttp(ip)));
+    }
+
+    if (url.pathname === '/api/local') {
+        return sendJson(res, 200, await cached('local', 3000, localInfo));
+    }
+
+    if (url.pathname === '/api/discoverAny') {
+        const ips = [...new Set((url.searchParams.get('ips') || '').split(',').map(x => x.trim()).filter(Boolean))].slice(0, 48);
+        if (!ips.length || !ips.every(ip => IP_RE.test(ip))) return sendJson(res, 400, { error: 'invalid ips' });
+        return sendJson(res, 200, { time: Date.now(), found: await discoverAny(ips) });
+    }
+
     if (url.pathname === '/api/discover') {
         const ips = [...new Set((url.searchParams.get('ips') || '').split(',').map(s => s.trim()).filter(Boolean))].slice(0, 64);
         const bridge = url.searchParams.get('bridge') || 'switch';
@@ -586,6 +785,26 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, ok ? 200 : 404, { ok });
     }
 
+    // The lab notes (Lab1.md to Lab4.md) live one folder up.
+    const note = url.pathname.match(/^\/notes\/(Lab[1-4])\.md$/);
+    if (note) {
+        return fs.readFile(path.join(ROOT, '..', note[1] + '.md'), (err, data) => {
+            if (err) { res.writeHead(404); return res.end('Not found'); }
+            res.writeHead(200, { 'Content-Type': 'text/markdown; charset=utf-8', 'Cache-Control': 'no-cache' });
+            res.end(data);
+        });
+    }
+
+    // The lab guides (Lab1.pdf to Lab4.pdf), shown inline in the PDF tab.
+    const pdf = url.pathname.match(/^\/pdf\/(Lab[1-4])\.pdf$/);
+    if (pdf) {
+        return fs.readFile(path.join(ROOT, '..', pdf[1] + '.pdf'), (err, data) => {
+            if (err) { res.writeHead(404); return res.end('Not found'); }
+            res.writeHead(200, { 'Content-Type': 'application/pdf', 'Content-Disposition': `inline; filename="${pdf[1]}.pdf"`, 'Cache-Control': 'no-cache' });
+            res.end(data);
+        });
+    }
+
     // Static files, only from this folder.
     const rel = url.pathname === '/' ? 'index.html' : decodeURIComponent(url.pathname.slice(1));
     const file = path.normalize(path.join(ROOT, rel));
@@ -612,7 +831,7 @@ if (require.main === module) {
             console.log(PASSWORD ? '  Password protected (STP_PASSWORD).' : '  No password set: anyone on the network can use it (STP_PASSWORD=... to protect it).');
             console.log('  If others cannot connect, allow Node.js through the Windows firewall.');
         }
-        console.log(`  Demo:            http://localhost:${PORT}/?demo=fig4`);
+        console.log(`  Demo:            http://localhost:${PORT}/?demo=fig2   or   ?demo=lab4`);
     });
 }
 

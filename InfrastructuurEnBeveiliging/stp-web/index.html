@@ -2,7 +2,7 @@
 <!--Author EliasDH Team-->
 <html lang="en" class="global-html">
     <head>
-        <title>STP Monitor</title>
+        <title>IEB Lab Companion</title>
         <meta charset="utf-8">
         <meta name="robots" content="noindex, nofollow">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,14 +16,14 @@
 
             <aside class="stp-sidebar">
                 <div class="stp-sidebar-header">
-                    <a class="stp-sidebar-brand cursor-pointer" href="https://eliasdh.com" target="_blank" rel="noopener noreferrer" title="eliasdh.com">
+                    <a class="stp-sidebar-brand cursor-pointer" href="#/" title="All labs">
                         <img class="stp-sidebar-brand-logo cursor-pointer" src="assets/media/logo.png" alt="EliasDH">
-                        <span class="stp-sidebar-brand-name cursor-pointer">STP Monitor</span>
+                        <span class="stp-sidebar-brand-name cursor-pointer">Lab Companion</span>
                     </a>
                 </div>
                 <div class="stp-sidebar-scroll">
-                    <div class="stp-nav-section">Network</div>
-                    <div id="presets"></div>
+                    <div class="stp-nav-section">Labs</div>
+                    <nav id="labNav"></nav>
                 </div>
             </aside>
 
@@ -33,66 +33,104 @@
                         <button class="stp-mobile-menu-btn cursor-pointer" id="menuBtn" type="button" aria-label="Menu">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                         </button>
-                        <h1 class="stp-header-title" id="title">Spanning Tree</h1>
-                        <span class="stp-status stp-status--idle" id="status">Connecting</span>
+                        <h1 class="stp-header-title" id="title">Labs</h1>
+                        <span class="stp-status stp-status--idle" id="status" hidden>Connecting</span>
                     </div>
                     <div class="stp-header-right">
-                        <select class="stp-select cursor-pointer" id="interval" title="Refresh interval">
+                        <select class="stp-select cursor-pointer" id="interval" title="Refresh interval" hidden>
                             <option value="1000">1 s</option>
                             <option value="2000" selected>2 s</option>
                             <option value="5000">5 s</option>
                             <option value="10000">10 s</option>
                         </select>
-                        <button class="stp-icon-btn cursor-pointer" id="pauseBtn" type="button" title="Pause"></button>
-                        <button class="stp-icon-btn cursor-pointer" id="refreshBtn" type="button" title="Refresh now">
+                        <button class="stp-icon-btn cursor-pointer" id="pauseBtn" type="button" title="Pause" hidden></button>
+                        <button class="stp-icon-btn cursor-pointer" id="refreshBtn" type="button" title="Refresh now" hidden>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
                         </button>
                         <button class="stp-icon-btn cursor-pointer" id="themeBtn" type="button" title="Dark or light"></button>
                     </div>
                 </header>
 
-                <main class="stp-content">
-                    <section class="stp-summary" id="summary"></section>
-                    <div class="stp-notes" id="notes"></div>
+                <main class="stp-content" id="content">
+                    <section class="stp-view" id="view-home"></section>
 
-                    <section class="stp-stage-wrap" id="stageWrap">
-                        <div class="stp-stage-area" id="stageArea">
-                            <div class="stp-stage" id="stage">
-                                <svg class="stp-lines" id="lines"></svg>
+                    <section class="stp-view" id="view-lab" hidden>
+                        <div class="stp-lab-head" id="labHead"></div>
+                        <nav class="stp-tabs" id="labTabs"></nav>
+
+                        <div class="stp-tab" id="tab-guide" hidden></div>
+                        <div class="stp-tab" id="tab-pdf" hidden></div>
+                        <div class="stp-tab" id="tab-prepare" hidden></div>
+
+                        <div class="stp-tab stp-tab--monitor" id="tab-monitor" hidden>
+                            <div class="stp-figure-tabs" id="figureTabs" hidden></div>
+                            <div class="stp-monitor" id="netMonitor">
+                        <section class="stp-summary" id="summary"></section>
+                        <div class="stp-notes" id="notes"></div>
+
+                        <section class="stp-stage-wrap" id="stageWrap">
+                            <div class="stp-stage-area" id="stageArea">
+                                <div class="stp-stage" id="stage">
+                                    <svg class="stp-lines" id="lines"></svg>
+                                </div>
+                                <div class="stp-empty" id="empty"></div>
                             </div>
-                            <div class="stp-empty" id="empty"></div>
-                        </div>
-                        <div class="stp-legend">
-                            <span><i></i>forwarding</span>
-                            <span><i class="stp-legend-blk"></i>blocking (loop open)</span>
-                            <span><i class="stp-legend-trn"></i>listening / learning</span>
-                            <span><i class="stp-legend-sq"></i>port <i class="stp-legend-sq stp-legend-sq--blk"></i><i class="stp-legend-sq stp-legend-sq--trn"></i><i class="stp-legend-sq stp-legend-sq--off"></i></span>
-                        </div>
-                    </section>
+                            <div class="stp-legend">
+                                <span><i></i>forwarding</span>
+                                <span><i class="stp-legend-blk"></i>blocking (loop open)</span>
+                                <span><i class="stp-legend-trn"></i>listening / learning</span>
+                                <span><i class="stp-legend-sq"></i>port <i class="stp-legend-sq stp-legend-sq--blk"></i><i class="stp-legend-sq stp-legend-sq--trn"></i><i class="stp-legend-sq stp-legend-sq--off"></i></span>
+                            </div>
+                                <div class="stp-legend stp-legend--vlan" id="vlanLegend" hidden>
+                                    <span><i class="stp-legend-sq" style="background:#f0b840"></i>VLAN 1</span>
+                                    <span><i class="stp-legend-sq" style="background:#d4524e"></i>VLAN 2</span>
+                                    <span><i class="stp-legend-sq" style="background:#6fb868"></i>VLAN 3</span>
+                                    <span><i class="stp-legend-sq" style="background:#5b8db8"></i>VLAN 4</span>
+                                    <span><i class="stp-legend-sq" style="background:linear-gradient(135deg,#f0b840 0 25%,#d4524e 25% 50%,#6fb868 50% 75%,#5b8db8 75% 100%)"></i>trunk (tagged)</span>
+                                    <span><i class="stp-legend-sq stp-legend-sq--blk"></i>blocking (outline)</span>
+                                </div>
+                        </section>
 
-                    <div class="stp-grid">
-                        <section class="stp-card">
-                            <h2 class="stp-card-title">Links and cost <small id="linksInfo"></small></h2>
-                            <div class="stp-table-wrap"><table class="stp-table" id="linksTable"></table></div>
-                        </section>
-                        <section class="stp-card">
-                            <h2 class="stp-card-title">Switch <small id="detailInfo"></small></h2>
-                            <div id="detail"></div>
-                        </section>
-                        <section class="stp-card">
-                            <h2 class="stp-card-title">Events <small id="eventsInfo"></small></h2>
-                            <ul class="stp-events" id="events"></ul>
-                        </section>
-                    </div>
-
-                    <section class="stp-card">
-                        <h2 class="stp-card-title">Switch logs <small id="logsInfo"></small></h2>
-                        <div class="stp-log-bar">
-                            <div class="stp-seg" id="logTabs"></div>
-                            <label class="stp-check cursor-pointer"><input class="cursor-pointer" type="checkbox" id="logStpOnly" checked> STP and link messages only</label>
-                            <input class="stp-search" id="logSearch" type="search" placeholder="Filter the log" spellcheck="false">
+                        <div class="stp-grid">
+                            <section class="stp-card">
+                                <h2 class="stp-card-title">Links and cost <small id="linksInfo"></small></h2>
+                                <div class="stp-table-wrap"><table class="stp-table" id="linksTable"></table></div>
+                            </section>
+                            <section class="stp-card">
+                                <h2 class="stp-card-title">Switch <small id="detailInfo"></small></h2>
+                                <div id="detail"></div>
+                            </section>
+                            <section class="stp-card">
+                                <h2 class="stp-card-title">Events <small id="eventsInfo"></small></h2>
+                                <ul class="stp-events" id="events"></ul>
+                            </section>
                         </div>
-                        <div class="stp-log" id="logView"></div>
+
+                        <section class="stp-card">
+                            <h2 class="stp-card-title">Switch logs <small id="logsInfo"></small></h2>
+                            <div class="stp-log-bar">
+                                <div class="stp-seg" id="logTabs"></div>
+                                <label class="stp-check cursor-pointer"><input class="cursor-pointer" type="checkbox" id="logStpOnly" checked> STP and link messages only</label>
+                                <input class="stp-search" id="logSearch" type="search" placeholder="Filter the log" spellcheck="false">
+                            </div>
+                            <div class="stp-log" id="logView"></div>
+                        </section>
+                
+                            </div>
+                            <div class="stp-monitor" id="deviceMapBox" hidden>
+                                <section class="stp-summary">
+                                    <div class="stp-summary-stat"><span class="stp-summary-value" id="mapTitle"></span><span class="stp-summary-label" id="mapSummary"></span></div>
+                                </section>
+                                <div class="stp-note stp-note--bad" id="mapError"></div>
+                                <section class="stp-stage-wrap stp-map-wrap" id="mapWrap">
+                                    <div class="stp-dm-stage" id="mapStage"></div>
+                                </section>
+                                <p class="stp-muted">Cards turn green when this PC can ping the address. The line under the name shows the settings read from the device (mask, firewall, gateway). Click <code>&gt;_</code> on a switch or router for its terminal and show commands.</p>
+                            </div>
+                        </div>
+
+                        <div class="stp-tab" id="tab-check" hidden></div>
+                        <div class="stp-tab" id="tab-notes" hidden></div>
                     </section>
                 </main>
             </div>
@@ -122,6 +160,13 @@
                 </div>
             </div>
         </div>
-        <script src="app.js"></script>
+        <script src="util.js"></script>
+        <script src="labs-data.js"></script>
+        <script src="prep-data.js"></script>
+        <script src="monitor.js"></script>
+        <script src="facts.js"></script>
+        <script src="checks.js"></script>
+        <script src="devicemap.js"></script>
+        <script src="labs-ui.js"></script>
     </body>
 </html>
