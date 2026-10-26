@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--Author EliasDH Team-->
+<html lang="en" class="global-html">
+    <head>
+        <title>STP Monitor</title>
+        <meta charset="utf-8">
+        <meta name="robots" content="noindex, nofollow">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#4f94f0">
+        <link rel="icon" href="assets/media/favicon.ico">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body class="global-body">
+        <div class="stp-wrapper" id="wrapper">
+            <div class="stp-sidebar-overlay" id="overlay"></div>
+
+            <aside class="stp-sidebar">
+                <div class="stp-sidebar-header">
+                    <a class="stp-sidebar-brand cursor-pointer" href="https://eliasdh.com" target="_blank" rel="noopener noreferrer" title="eliasdh.com">
+                        <img class="stp-sidebar-brand-logo cursor-pointer" src="assets/media/logo.png" alt="EliasDH">
+                        <span class="stp-sidebar-brand-name cursor-pointer">STP Monitor</span>
+                    </a>
+                </div>
+                <div class="stp-sidebar-scroll">
+                    <div class="stp-nav-section">Network</div>
+                    <div id="presets"></div>
+                </div>
+            </aside>
+
+            <div class="stp-main">
+                <header class="stp-header">
+                    <div class="stp-header-left">
+                        <button class="stp-mobile-menu-btn cursor-pointer" id="menuBtn" type="button" aria-label="Menu">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                        </button>
+                        <h1 class="stp-header-title" id="title">Spanning Tree</h1>
+                        <span class="stp-status stp-status--idle" id="status">Connecting</span>
+                    </div>
+                    <div class="stp-header-right">
+                        <select class="stp-select cursor-pointer" id="interval" title="Refresh interval">
+                            <option value="1000">1 s</option>
+                            <option value="2000" selected>2 s</option>
+                            <option value="5000">5 s</option>
+                            <option value="10000">10 s</option>
+                        </select>
+                        <button class="stp-icon-btn cursor-pointer" id="pauseBtn" type="button" title="Pause"></button>
+                        <button class="stp-icon-btn cursor-pointer" id="refreshBtn" type="button" title="Refresh now">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        </button>
+                        <button class="stp-icon-btn cursor-pointer" id="themeBtn" type="button" title="Dark or light"></button>
+                    </div>
+                </header>
+
+                <main class="stp-content">
+                    <section class="stp-summary" id="summary"></section>
+                    <div class="stp-notes" id="notes"></div>
+
+                    <section class="stp-stage-wrap" id="stageWrap">
+                        <div class="stp-stage-area" id="stageArea">
+                            <div class="stp-stage" id="stage">
+                                <svg class="stp-lines" id="lines"></svg>
+                            </div>
+                            <div class="stp-empty" id="empty"></div>
+                        </div>
+                        <div class="stp-legend">
+                            <span><i></i>forwarding</span>
+                            <span><i class="stp-legend-blk"></i>blocking (loop open)</span>
+                            <span><i class="stp-legend-trn"></i>listening / learning</span>
+                            <span><i class="stp-legend-sq"></i>port <i class="stp-legend-sq stp-legend-sq--blk"></i><i class="stp-legend-sq stp-legend-sq--trn"></i><i class="stp-legend-sq stp-legend-sq--off"></i></span>
+                        </div>
+                    </section>
+
+                    <div class="stp-grid">
+                        <section class="stp-card">
+                            <h2 class="stp-card-title">Links and cost <small id="linksInfo"></small></h2>
+                            <div class="stp-table-wrap"><table class="stp-table" id="linksTable"></table></div>
+                        </section>
+                        <section class="stp-card">
+                            <h2 class="stp-card-title">Switch <small id="detailInfo"></small></h2>
+                            <div id="detail"></div>
+                        </section>
+                        <section class="stp-card">
+                            <h2 class="stp-card-title">Events <small id="eventsInfo"></small></h2>
+                            <ul class="stp-events" id="events"></ul>
+                        </section>
+                    </div>
+
+                    <section class="stp-card">
+                        <h2 class="stp-card-title">Switch logs <small id="logsInfo"></small></h2>
+                        <div class="stp-log-bar">
+                            <div class="stp-seg" id="logTabs"></div>
+                            <label class="stp-check cursor-pointer"><input class="cursor-pointer" type="checkbox" id="logStpOnly" checked> STP and link messages only</label>
+                            <input class="stp-search" id="logSearch" type="search" placeholder="Filter the log" spellcheck="false">
+                        </div>
+                        <div class="stp-log" id="logView"></div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <div class="stp-modal" id="termModal" hidden>
+            <div class="stp-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="termTitle">
+                <div class="stp-modal-header">
+                    <h3 class="stp-modal-title" id="termTitle"></h3>
+                    <div class="stp-modal-actions">
+                        <button class="stp-btn cursor-pointer" id="termSsh" type="button" title="Opens a real SSH session in a terminal window on this PC">Open SSH terminal</button>
+                        <button class="stp-icon-btn cursor-pointer" id="termClose" type="button" title="Close">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="stp-modal-body">
+                    <nav class="stp-term-list" id="termList"></nav>
+                    <div class="stp-term-main">
+                        <div class="stp-term-bar">
+                            <code id="termCmd"></code>
+                            <button class="stp-btn cursor-pointer" id="termRun" type="button">Run again</button>
+                            <button class="stp-btn cursor-pointer" id="termCopy" type="button">Copy</button>
+                        </div>
+                        <pre class="stp-term-out" id="termOut"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="app.js"></script>
+    </body>
+</html>
