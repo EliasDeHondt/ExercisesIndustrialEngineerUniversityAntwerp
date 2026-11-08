@@ -93,7 +93,7 @@ const PREP_LABS = [
 <p>Aan het begin van het labo is er een meerkeuzetest via Blackboard. Je hebt 15 minuten om hem te starten en hij is gesloten boek, dus zonder internet en zonder AI. De voorbereidingstests tellen voor 15% van het labo en als je niet slaagt voor een test, moet je een verslag schrijven over dat labo. Volgens de labtekst moet je geen commando's, syntax of getallen zoals timerwaarden kennen. Je moet kunnen uitleggen wat er in een netwerk gebeurt en waarom.</p>
 
 <h3>Bron voor de voorbereiding</h3>
-<p>In Lab2.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: de reeks Packet Traveling van Practical Networking (host-to-host, via een switch en via een router), het artikel Role of Subnet Mask, het artikel Understanding Routing in Computer Networks over statische en dynamische routing, korte video's over RIP en OSPF en een artikel dat RIP en OSPF vergelijkt. De links staan niet in de PDF. De offline referenties staan op Blackboard onder practicum en dan referenties. Wat hieronder staat komt uit mijn eigen kennis van die onderwerpen. Ik heb de artikels zelf niet kunnen lezen, dus lees ze ook zelf door.</p>
+<p>In Lab2.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: de reeks Packet Traveling van Practical Networking (host-to-host, via een switch en via een router), het artikel Role of Subnet Mask, het artikel Understanding Routing in Computer Networks over statische en dynamische routing, korte video's over RIP en OSPF en een artikel dat RIP en OSPF vergelijkt. De links staan niet in de PDF. De offline referenties staan op Blackboard onder practicum en dan referenties.</p>
 
 <h3>A. Hoe een pakket reist</h3>
 <p>Ethernet werkt met MAC-adressen (Layer 2) en IP met IP-adressen (Layer 3). Een host kent het IP-adres van de bestemming, maar moet het MAC-adres van de volgende hop nog opzoeken met ARP. Bij ARP stuurt de host een broadcast (bestemming ff:ff:ff:ff:ff:ff) met de vraag wie een bepaald IP heeft, en de eigenaar antwoordt met een unicast. Het resultaat komt in de ARP-cache. Daarom is het eerste frame dat je in Wireshark bij een nieuwe ping ziet meestal een ARP-broadcast, en is het ICMP-verkeer erna (echo request en reply) unicast.</p>
@@ -248,7 +248,7 @@ const PREP_LABS = [
 <p>Net als bij Lab 2 is er aan het begin van het labo een korte meerkeuzetest. De opgave zegt dat het om begrip gaat en niet om memoriseren: je moet geen commando's, syntax of getallen zoals timerwaarden kennen, maar kunnen uitleggen wat er gebeurt in een geschakeld netwerk met redundante links en waarom.</p>
 
 <h3>Bron voor de voorbereiding</h3>
-<p>In Lab3.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: vijf lessen van NetworkAcademy.io (Why do we need Spanning-Tree, The Spanning-Tree Algorithm, Spanning-Tree Port Roles, STP Port States and Timers en STP Topology Changes), het artikel Types of Spanning Tree Protocol van GeeksforGeeks en de video Spanning Tree Protocol van PowerCert (de eerste 8,5 minuten). Wat hieronder staat komt uit mijn eigen kennis van die onderwerpen. Ik heb de lessen zelf niet kunnen lezen, dus lees ze ook zelf door.</p>
+<p>In Lab3.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: vijf lessen van NetworkAcademy.io (Why do we need Spanning-Tree, The Spanning-Tree Algorithm, Spanning-Tree Port Roles, STP Port States and Timers en STP Topology Changes), het artikel Types of Spanning Tree Protocol van GeeksforGeeks en de video Spanning Tree Protocol van PowerCert (de eerste 8,5 minuten).</p>
 
 <h3>A. Waarom is een loop een probleem</h3>
 <p>Een Ethernet-frame heeft geen TTL. Een broadcast, een multicast of een frame voor een onbekend bestemmings-MAC wordt door elke switch naar alle andere poorten gestuurd. In een netwerk met een lus blijft zo'n frame eindeloos rondgaan en elke switch maakt er bij elke passage kopieën van. Dat heet een broadcast storm: de links raken vol, de CPU van de switches loopt vast en het netwerk valt uit. Een tweede gevolg is dat de MAC-tabel flapt: hetzelfde bron-MAC wordt snel na elkaar op verschillende poorten gezien, waardoor switches niet meer weten waar een toestel hangt. Een derde gevolg zijn dubbele frames bij de ontvanger. Toch wil je redundante links, want ze zorgen ervoor dat het netwerk blijft werken als een link of switch uitvalt. STP lost dit op door de redundante links logisch uit te schakelen zolang ze niet nodig zijn.</p>
@@ -344,7 +344,7 @@ const PREP_LABS = [
 <p>Net als bij Lab 2 en Lab 3 is er aan het begin een korte meerkeuzetest. Het gaat om begrip: je moet geen commando's of syntax kennen, wel kunnen uitleggen wat er in een netwerk met VLAN's gebeurt en waarom, bijvoorbeeld waarom er geen verbinding is tussen VLAN's en hoe de tag eruitziet.</p>
 
 <h3>Bron voor de voorbereiding</h3>
-<p>In Lab4.pdf, sectie 1 Preparation op pagina 3, staan drie bronnen: het artikel Virtual Local Area Networks (VLANs) van Practical Networking (let op de woordkeuze), het artikel Routing Between VLANs &amp; Layer 3 Switches (de Cisco-commando's hoef je niet te leren) en het artikel Inter-Switch Link and IEEE 802.1Q Frame Format van Cisco (enkel het deel over 802.1Q). Wat hieronder staat komt uit mijn eigen kennis van die onderwerpen. Ik heb de artikels zelf niet kunnen lezen, dus lees ze ook zelf door.</p>
+<p>In Lab4.pdf, sectie 1 Preparation op pagina 3, staan drie bronnen: het artikel Virtual Local Area Networks (VLANs) van Practical Networking (let op de woordkeuze), het artikel Routing Between VLANs &amp; Layer 3 Switches (de Cisco-commando's hoef je niet te leren) en het artikel Inter-Switch Link and IEEE 802.1Q Frame Format van Cisco (enkel het deel over 802.1Q).</p>
 
 <h3>A. Wat is een VLAN en waarom</h3>
 <p>Een VLAN (Virtual LAN) verdeelt één fysieke switch of één fysiek netwerk in meerdere logische Layer 2 netwerken. Elk VLAN is een eigen broadcast domain: een broadcast (bijvoorbeeld een ARP-request) bereikt enkel de poorten van hetzelfde VLAN. Daardoor kunnen hosts in verschillende VLAN's elkaar niet bereiken, ook al hangen ze aan dezelfde switch. De switch houdt per VLAN een aparte MAC-tabel bij en stuurt een frame enkel naar poorten van het VLAN waartoe het frame behoort.</p>
@@ -377,39 +377,24 @@ const PREP_LABS = [
       { q: "Twee hosts hangen aan dezelfde switch maar in verschillende VLAN's. Hoe is de communicatie tussen beide?",
         o: ["Ze communiceren normaal, want ze hangen aan dezelfde switch", "Zonder router is er geen communicatie, want elk VLAN is een apart broadcast domain", "Enkel broadcasts komen door", "Enkel als het masker /16 is"],
         a: 1, e: "De switch stuurt frames enkel naar poorten van hetzelfde VLAN. Voor verkeer tussen VLAN's is een Layer 3 apparaat (router) nodig, ook als de hosts aan dezelfde switch hangen." },
-      { q: "Waarom is er een router nodig voor verkeer tussen twee VLAN's?",
-        o: ["Een switch kan geen frames doorsturen", "Elk VLAN is een eigen broadcast domain en subnet, en een Layer 2 switch routeert niet", "Omdat VLAN's geen MAC-adressen hebben", "Omdat de tag het pakket versleutelt"],
-        a: 1, e: "Een Layer 2 switch werkt met MAC-adressen binnen één broadcast domain. Voor verkeer tussen verschillende subnetten moet een router (Layer 3) de pakketten doorsturen." },
       { q: "Hoe groot is een IEEE 802.1Q-tag en waar zit ze in het frame?",
         o: ["4 bytes, tussen het bron-MAC-adres en het EtherType", "2 bytes, na de payload", "8 bytes, voor het preamble", "4 bytes, na de CRC"],
         a: 0, e: "De tag is 4 bytes (TPID 16 bits, PCP 3, DEI 1 en VID 12 bits) en wordt ingevoegd na het bron-MAC-adres." },
       { q: "Waarom kunnen er maximaal 4094 bruikbare VLAN's zijn?",
         o: ["Het VID-veld heeft 12 bits (4096 waarden) en 0 en 4095 zijn gereserveerd", "Een switch heeft maar 4094 poorten", "Het TPID-veld heeft 12 bits", "Omdat het frame maximaal 1500 bytes mag zijn"],
         a: 0, e: "12 bits geven 4096 waarden. VID 0 (geen VLAN, enkel prioriteit) en 4095 zijn gereserveerd, dus 1 tot 4094 zijn bruikbaar." },
-      { q: "Wat stelt de TPID-waarde 0x8100 in een frame voor?",
-        o: ["Dat het frame een 802.1Q-tag bevat", "Dat het een ARP-pakket is", "Dat het frame een broadcast is", "Het MAC-adres van de switch"],
-        a: 0, e: "De TPID (Tag Protocol Identifier) is 0x8100 en geeft aan dat er een VLAN-tag volgt." },
       { q: "Wat betekent tagged op een switchpoort?",
         o: ["De poort stuurt frames van dat VLAN met een 802.1Q-tag uit, en verwacht tags bij binnenkomst", "De poort is uitgeschakeld", "De poort verwijdert elke tag en hoort bij VLAN 1", "De poort versleutelt het verkeer"],
         a: 0, e: "Tagged: het VLAN-nummer wordt in een tag meegestuurd, zodat de overkant weet bij welk VLAN het frame hoort. Dat gebruik je op trunks." },
       { q: "Wat betekent untagged op een switchpoort?",
         o: ["Frames van dat VLAN verlaten de poort zonder tag, en binnenkomende frames zonder tag worden aan dat VLAN (de PVID) toegewezen", "De poort is lid van geen enkel VLAN", "De poort laat enkel broadcasts toe", "De poort gebruikt automatisch alle VLAN's"],
         a: 0, e: "Untagged is het gedrag voor eindapparaten: ze kennen geen tags. De switch voegt bij binnenkomst het VLAN van de poort toe en haalt de tag bij het uitgaan weg." },
-      { q: "Waarom zijn de poorten naar hosts access-poorten (untagged)?",
-        o: ["Eindapparaten zoals pc's begrijpen geen VLAN-tags en verwachten untagged frames in één broadcast domain", "Omdat tagged poorten trager zijn", "Omdat een pc maar één MAC-adres heeft", "Omdat tags enkel op Wi-Fi werken"],
-        a: 0, e: "Pc's, printers en servers sturen en verwachten gewone Ethernet-frames zonder tag. De switch beheert de VLAN-tags." },
-      { q: "Waarom worden de uplinks tussen access en core switches trunks?",
-        o: ["Ze moeten verkeer van meerdere VLAN's over één kabel transporteren", "Omdat er dan geen STP nodig is", "Omdat ze sneller moeten zijn", "Omdat access switches geen untagged poorten kunnen hebben"],
-        a: 0, e: "Een trunk draagt meerdere VLAN's met tags over één verbinding. Hostpoorten dragen maar één VLAN en blijven untagged." },
       { q: "Je tagt VLAN 3 niet op een trunk tussen twee switches. Wat is het gevolg?",
         o: ["Hosts in VLAN 3 aan verschillende switches kunnen elkaar niet meer bereiken over die link", "Niets, VLAN 3 loopt automatisch mee", "Alle VLAN's vallen uit", "De trunk wordt een access-poort"],
         a: 0, e: "Een VLAN dat niet op de trunk getagd is, wordt niet over die link verstuurd. Hosts van dat VLAN aan de andere kant zijn dan onbereikbaar." },
       { q: "Welke poort moet je mirroren om een frame met een 802.1Q-tag te zien?",
         o: ["Een trunkpoort", "Een access-poort van een host", "Eender welke poort, de tag is overal zichtbaar", "De poort van de laptop zelf"],
         a: 0, e: "Op trunkpoorten dragen de frames een tag. Op access-poorten is de tag weggehaald, dus daar zie je geen tags." },
-      { q: "Waarom zie je geen VLAN-tags in Wireshark als je een access-poort mirrort?",
-        o: ["De switch verwijdert de tag bij het uitgaan van een untagged poort", "Wireshark kan geen tags tonen", "Er worden op access-poorten geen VLAN's gebruikt", "De tags worden versleuteld"],
-        a: 0, e: "Een access (untagged) poort stuurt frames zonder tag uit. Het VLAN is enkel intern in de switch bekend." },
       { q: "Wat is een PVID?",
         o: ["Het VLAN dat de switch toekent aan untagged frames die binnenkomen op de poort", "Het aantal VLAN's op een poort", "Een prioriteitsveld in de tag", "Het MAC-adres van het VLAN"],
         a: 0, e: "De Port VLAN ID is het standaard VLAN van een poort: untagged frames die binnenkomen worden daarmee gemerkt." },
@@ -428,9 +413,6 @@ const PREP_LABS = [
       { q: "Het beheer-IP van een switch is 10.1.3.5, je pc staat in VLAN 1 (10.1.1.x). Wat is er mis en wat is de oplossing?",
         o: ["Het beheer-IP zit in het subnet van VLAN 3 terwijl het beheer via VLAN 1 loopt; verander het naar een adres in het VLAN 1-subnet en geef een gateway", "Niets, het werkt altijd", "De pc heeft te veel poorten", "Het masker moet naar /8"],
         a: 0, e: "De switch wordt beheerd via VLAN 1, dus zijn IP moet in het VLAN 1-subnet (10.1.1.0/24) liggen, met gateway 10.1.1.254, anders kan hij hosts in andere VLAN's niet antwoorden." },
-      { q: "Wat is het verschil tussen router on a stick en een Layer 3 switch?",
-        o: ["Router on a stick routeert over één trunklink met sub-interfaces; een Layer 3 switch routeert zelf, meestal in hardware, met een virtuele interface per VLAN", "Er is geen verschil", "Een Layer 3 switch kent geen VLAN's", "Router on a stick werkt enkel met Wi-Fi"],
-        a: 0, e: "Beide routeren tussen VLAN's. De L3 switch doet het in één toestel en meestal sneller, router on a stick heeft één trunk als bottleneck." },
       { q: "Wat gebeurt er als VLAN 3 niet getagd is op de switchpoort naar de router?",
         o: ["De router ontvangt geen VLAN 3-verkeer en hosts in VLAN 3 bereiken hun gateway 10.1.3.254 niet", "Alle VLAN's vallen uit", "De router maakt het VLAN zelf aan", "Niets, de router tagt het zelf"],
         a: 0, e: "Zonder VLAN 3 op die poort komen de frames van VLAN 3 nooit bij de sub-interface lan2.3 aan. Hosts in VLAN 3 krijgen geen antwoord van hun gateway." }
