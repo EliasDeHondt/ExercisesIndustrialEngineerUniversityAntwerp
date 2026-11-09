@@ -630,7 +630,8 @@ function l4Packages(res, list) {
 // expect: { lanN: { untaggedVlan: v | null, tagged: [v...] } }
 function l4Vlans(res, x, expect, stage = null) {
     const vl = x.d.vlan;
-    if (!Object.keys(vl).length) { res.push(R.fail(`${x.label}: no VLAN table (bridge vlan show is empty)`, 'VLAN filtering is not configured, or the package ip-bridge is missing.', 'Network > Interfaces > Devices > switch > Configure > Bridge VLAN filtering: enable it and add the VLANs.')); return; }
+    if (!Object.keys(vl).length) { res.push(R.fail(`${x.label}: no VLAN table (bridge vlan show is empty)`, 'VLAN filtering is not configured, or the package ip-bridge is missing.', 'Network > Interfaces > Devices > switch > Configure > Bridge VLAN filtering: enable it and add the VLANs.',
+        stage ? { kind: 'vlan', stage, key: x.key, ip: x.address, label: x.label } : null)); return; }
     const bad = [];
     for (const p of seq(8)) {
         const e = expect[`lan${p}`];
