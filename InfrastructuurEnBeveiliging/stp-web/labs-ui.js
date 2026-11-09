@@ -392,8 +392,53 @@ function paintResults(lab, exId, r) {
                 <span class="stp-result-icon">${STATUS_ICON[x.status]}</span>
                 <div><div class="stp-result-title">${esc(x.title)}</div>
                 ${x.detail ? `<div class="stp-result-detail">${esc(x.detail)}</div>` : ''}
-                ${x.fix ? `<div class="stp-result-fix"><b>Fix:</b> ${inlineMd(x.fix)}</div>` : ''}</div>
+                ${x.fix ? `<div class="stp-result-fix"><b>Fix:</b> ${inlineMd(x.fix)}</div>` : ''}
+                ${x.action ? `<div class="stp-fix-row"><button class="stp-btn stp-btn--primary cursor-pointer" type="button" data-fix="${esc(JSON.stringify(x.action))}">Fix this on ${esc(x.action.label || x.action.ip)}</button><span class="stp-muted stp-fix-msg"></span></div>` : ''}</div>
             </li>`).join('')}</ul>`;
+    $('checkOut').onclick = e => {
+        const b = e.target.closest('[data-fix]');
+        if (b) applyFix(b, lab, exId);
+    };
+}
+
+// "Fix this": asks the server to repair one switch with a fixed plan (the server builds the commands, not the page).
+const FIX_TEXT = {
+    vlan: a => `Set the VLAN table of ${a.label} (${a.ip}) to the plan of this exercise.\n\nAll existing VLAN settings of that switch are replaced.`,
+    stp: a => `Turn STP on for ${a.label} (${a.ip}).`
+};
+
+async function applyFix(btn, lab, exId) {
+    const a = JSON.parse(btn.dataset.fix);
+    const msg = btn.parentElement.querySelector('.stp-fix-msg');
+    const label = btn.textContent;
+    if (a.kind !== 'keep') {
+        if (!(await api('/api/info').catch(() => ({}))).local) { msg.textContent = 'This button only works on the PC that runs the server.'; return; }
+        const ok = window.confirm(`${FIX_TEXT[a.kind](a)}\n\nThe switch restarts its network. The old configuration is saved on the switch (/root/network.before-fix) and is put back automatically after 90 seconds if this PC can no longer reach the switch.\n\nContinue?`);
+        if (!ok) return;
+    }
+    clearInterval(SHELL.auto);
+    SHELL.auto = null;
+    btn.disabled = true;
+    btn.textContent = a.kind === 'keep' ? 'Keeping...' : 'Fixing, wait up to a minute...';
+    msg.textContent = '';
+    try {
+        const r = await apiPost(`/api/fix?${new URLSearchParams(Object.fromEntries(Object.entries(a).filter(([k]) => k !== 'label')))}`);
+        if (r.pending) {
+            msg.textContent = r.message;
+            btn.dataset.fix = JSON.stringify({ kind: 'keep', ip: a.ip, label: a.label });
+            btn.textContent = 'Keep this change';
+            btn.disabled = false;
+            return;
+        }
+        msg.textContent = r.message || 'Done.';
+        btn.hidden = a.kind === 'keep' ? true : btn.hidden;
+        await sleep(1500);
+        if (SHELL.lab === lab.n && SHELL.tab === 'check' && a.kind !== 'keep') doCheck(lab, exId);
+    } catch (e) {
+        msg.textContent = `Failed: ${e.message}`;
+        btn.textContent = label;
+        btn.disabled = false;
+    }
 }
 
 /* ---------- Notes ---------- */

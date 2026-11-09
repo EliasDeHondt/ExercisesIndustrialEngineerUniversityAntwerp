@@ -1147,3 +1147,7 @@ button:disabled, button:disabled * { cursor: url('assets/svg/cursor-default.svg'
 .stp-node button, .stp-node button *, .cursor-move button, .cursor-move button * { cursor: url('assets/svg/cursor-pointer.svg'), pointer; }
 
 input[type="text"], input[type="search"], textarea, pre, .stp-log, .stp-term-out, .stp-md p, .stp-prose p { cursor: url('assets/svg/cursor-text.svg'), text; }
+
+/* One-click fix button in the checker results */
+.stp-fix-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.stp-fix-msg { font-size: 12.5px; line-height: 1.5; flex: 1 1 260px; }

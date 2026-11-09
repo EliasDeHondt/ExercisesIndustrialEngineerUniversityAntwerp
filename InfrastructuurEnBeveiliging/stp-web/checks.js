@@ -12,8 +12,9 @@
 
 const R = {
     pass: (title, detail = '') => ({ status: 'pass', title, detail }),
-    fail: (title, detail = '', fix = '') => ({ status: 'fail', title, detail, fix }),
-    warn: (title, detail = '', fix = '') => ({ status: 'warn', title, detail, fix }),
+    // action (optional): a one-click fix the page can offer, { kind, ip, ... }. The server decides what it really does.
+    fail: (title, detail = '', fix = '', action = null) => ({ status: 'fail', title, detail, fix, action }),
+    warn: (title, detail = '', fix = '', action = null) => ({ status: 'warn', title, detail, fix, action }),
     info: (title, detail = '') => ({ status: 'info', title, detail }),
     manual: (title, detail = '') => ({ status: 'manual', title, detail })
 };
@@ -627,7 +628,7 @@ function l4Packages(res, list) {
 
 // Compares the VLAN table of a switch with the expected untagged/tagged layout.
 // expect: { lanN: { untaggedVlan: v | null, tagged: [v...] } }
-function l4Vlans(res, x, expect) {
+function l4Vlans(res, x, expect, stage = null) {
     const vl = x.d.vlan;
     if (!Object.keys(vl).length) { res.push(R.fail(`${x.label}: no VLAN table (bridge vlan show is empty)`, 'VLAN filtering is not configured, or the package ip-bridge is missing.', 'Network > Interfaces > Devices > switch > Configure > Bridge VLAN filtering: enable it and add the VLANs.')); return; }
     const bad = [];
@@ -647,7 +648,8 @@ function l4Vlans(res, x, expect) {
         }
     }
     if (!bad.length) res.push(R.pass(`${x.label}: the VLAN configuration of all 8 ports is correct`));
-    else res.push(R.fail(`${x.label}: ${bad.length} port(s) have the wrong VLAN configuration`, bad.join('; '), 'Network > Interfaces > Devices > switch > Configure > Bridge VLAN filtering. Use "U*" (untagged + PVID) for host and access ports and "T" (tagged) on trunk ports.'));
+    else res.push(R.fail(`${x.label}: ${bad.length} port(s) have the wrong VLAN configuration`, bad.join('; '), 'Network > Interfaces > Devices > switch > Configure > Bridge VLAN filtering. Use "U*" (untagged + PVID) for host and access ports and "T" (tagged) on trunk ports.',
+        stage ? { kind: 'vlan', stage, key: x.key, ip: x.address, label: x.label } : null));
 }
 
 function l4ExpectEx1() {
@@ -671,7 +673,7 @@ function l4Common(res, ctx, list, prefix) {
         needFirewallOff(res, x.d, x.label);
         const br = x.d.bridges.find(b => b.name === 'switch') || x.d.bridges[0];
         if (br && br.stp) res.push(R.pass(`${x.label}: STP is enabled`));
-        else res.push(R.fail(`${x.label}: STP is not enabled`, 'Turn STP on before cabling; the trunk links form loops.', "uci set network.switch.stp='1'; uci commit network; /etc/init.d/network restart"));
+        else res.push(R.fail(`${x.label}: STP is not enabled`, 'Turn STP on before cabling; the trunk links form loops.', "uci set network.switch.stp='1'; uci commit network; /etc/init.d/network restart", { kind: 'stp', ip: x.address, label: x.label }));
     }
 }
 
@@ -683,7 +685,7 @@ CHECKS['4.ex1'] = {
         l4Missing(res, ctx, list);
         l4Packages(res, list);
         l4Common(res, ctx, list, 16);
-        for (const x of list.filter(y => y.d)) l4Vlans(res, x, l4ExpectEx1()(x));
+        for (const x of list.filter(y => y.d)) l4Vlans(res, x, l4ExpectEx1()(x), 'ex1');
         for (const x of list.filter(y => y.d)) expectPing(res, ctx, x.address, x.label, true, 'Full connectivity is required before you continue: every port must be an untagged member of VLAN 1.');
         pcCheck(res, ctx, 16, null);
         manualQuestions(res, 'Explain how you check it in the GUI and the CLI, and why all ports must be untagged.');
@@ -698,7 +700,7 @@ CHECKS['4.ex1b'] = {
         const list = l4Devices(ctx, false);
         l4Missing(res, ctx, list);
         l4Common(res, ctx, list, 16);
-        for (const x of list.filter(y => y.d)) l4Vlans(res, x, l4ExpectVlans(x));
+        for (const x of list.filter(y => y.d)) l4Vlans(res, x, l4ExpectVlans(x), 'ex1b');
         res.push(R.info('Connectivity in this step', 'The ports are untagged members of separate VLANs and the links are not trunks yet, so devices on different VLAN segments no longer see each other. Your PC must be on a VLAN1 port to manage the switches.'));
         manualQuestions(res, 'Move a host to another VLAN and see what happens to reachability; answer how the switch keeps the VLANs apart.');
         return res;
@@ -712,7 +714,7 @@ CHECKS['4.ex2'] = {
         const list = l4Devices(ctx, false);
         l4Missing(res, ctx, list);
         l4Common(res, ctx, list, 16);
-        for (const x of list.filter(y => y.d)) l4Vlans(res, x, l4ExpectTrunks(x));
+        for (const x of list.filter(y => y.d)) l4Vlans(res, x, l4ExpectTrunks(x), 'ex2');
         for (const x of list.filter(y => y.d)) expectPing(res, ctx, x.address, x.label, true, 'With trunks on all inter-switch links and the PC in VLAN 1, every management address must answer.');
         if (ctx.model) {
             const m = ctx.model;

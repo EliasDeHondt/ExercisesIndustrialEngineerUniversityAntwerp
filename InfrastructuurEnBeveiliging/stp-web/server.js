@@ -9,7 +9,8 @@
 // The app has a guide, a preparation test, a live monitor, a checker and the notes for Labs 1 to 4.
 // A browser cannot do SSH itself, so this server does it for the page: it reads switches and routers with a fixed list of
 // read-only commands (brctl showstp, bridge vlan show, ip route, logread, ...) and pings from this PC, and returns JSON.
-// The page never gets a free shell and nothing is ever changed on a device.
+// The page never gets a free shell. The only thing that changes a device is the "Fix this" button of the checker
+// (see "One-click fixes" below): a fixed plan, only for the PC that runs the server, undone automatically if it cuts you off.
 // By default it listens on all network interfaces, so everyone on the network can open the page
 // with http://<ip of this PC>:8080.
 //
@@ -493,6 +494,114 @@ const readLogs = ip => cached(`log|${ip}`, 2500, async () => {
     return r.ok ? { ip, ok: true, lines: r.output.split('\n').filter(Boolean) } : { ip, ok: false, error: r.error };
 });
 
+// ---------- One-click fixes ----------
+
+// The only part of the app that changes a device, and only when someone presses "Fix this" on the PC that runs the server.
+// The page sends a kind and a switch, never a command: the script is built here from a fixed plan. Before anything is
+// changed the old /etc/config/network is copied to /root/network.before-fix on the switch, and a watchdog on the switch puts
+// that copy back after 90 seconds unless this PC could still reach the switch afterwards (so a fix that cuts you off undoes itself).
+
+const FIX_STAGES = new Set(['ex1', 'ex1b', 'ex2']);
+const FIX_TRUNKS = { a1: [3], a2: [3], a3: [3], a4: [3], c1: [1, 2, 3, 5, 7], c2: [1, 2, 3], c3: [1, 5, 6, 7, 8], c4: [3, 7, 8] };
+const fixAddresses = key => { const n = Number(key[1]); return key[0] === 'a' ? [`10.1.${n}.1`, `10.1.1.${n}`] : [`10.1.${n}.5`, `10.1.1.${n + 4}`]; };
+
+// The port plan of Lab 4 (the same one the checker compares with): VLAN -> ports, "u*" untagged + PVID, "t" tagged.
+function fixPlan(key, stage) {
+    const n = Number(key[1]), access = key[0] === 'a';
+    const vlans = { 1: [], 2: [], 3: [], 4: [] };
+    for (let p = 1; p <= 8; p++) {
+        let untagged;
+        if (stage === 'ex1') untagged = 1;
+        else if (access) untagged = p <= 5 ? n : [1, 2, 3, 4].filter(v => v !== n)[p - 6];
+        else untagged = stage === 'ex1b' ? Math.ceil(p / 2) : 1;
+        if (stage === 'ex2' && FIX_TRUNKS[key].includes(p)) for (const v of [1, 2, 3, 4]) vlans[v].push(`lan${p}:t`);
+        else vlans[untagged].push(`lan${p}:u*`);
+    }
+    return vlans;
+}
+
+const SWITCH_DEVICE_CHECK = 'uci -q get network.switch >/dev/null || { echo NO_SWITCH_DEVICE; exit 3; }';
+
+function fixBody(kind, key, stage) {
+    if (kind === 'stp') return [SWITCH_DEVICE_CHECK, "uci set network.switch.stp='1'"];
+    const lines = [SWITCH_DEVICE_CHECK, 'while uci -q delete network.@bridge-vlan[0]; do :; done'];
+    for (const [v, ports] of Object.entries(fixPlan(key, stage))) {
+        if (!ports.length) continue;
+        lines.push('uci add network bridge-vlan >/dev/null', "uci set network.@bridge-vlan[-1].device='switch'", `uci set network.@bridge-vlan[-1].vlan='${v}'`);
+        for (const p of ports) lines.push(`uci add_list network.@bridge-vlan[-1].ports='${p}'`);
+    }
+    return lines;
+}
+
+function fixScript(body) {
+    return [
+        'cp /etc/config/network /root/network.before-fix || { echo BACKUP_FAILED; exit 2; }',
+        'rm -f /tmp/stp-fix.keep',
+        ...body,
+        'uci commit network',
+        '( sleep 90; [ -f /tmp/stp-fix.keep ] || { cp /root/network.before-fix /etc/config/network; /etc/init.d/network restart; } ) >/dev/null 2>&1 </dev/null &',
+        '( sleep 1; /etc/init.d/network restart ) >/dev/null 2>&1 </dev/null &',
+        'echo APPLIED'
+    ].join('\n');
+}
+
+// Runs a script on the switch through "sh -s": the script travels over stdin, so no quoting problems.
+function sshScript(ip, script, timeout = 15000) {
+    return new Promise(resolve => {
+        const kh = knownHostsFile();
+        const child = execFile('ssh', [...sshOptions(kh), `root@${ip}`, 'sh -s'],
+            { timeout, windowsHide: true, maxBuffer: 1024 * 1024 },
+            (err, stdout, stderr) => {
+                fs.unlink(kh, () => { /* may not exist */ });
+                const out = String(stdout || '').replace(/\r/g, '');
+                if (err && !out.trim()) return resolve({ ok: false, output: '', error: String(stderr || err.message || '').trim().split('\n').pop() || 'not reachable' });
+                resolve({ ok: true, output: out, error: String(stderr || '').trim() });
+            });
+        child.stdin.on('error', () => { /* ssh may close early */ });
+        child.stdin.end(script + '\n');
+    });
+}
+
+const fixing = new Set();
+
+async function runFix({ kind, ip, key, stage }) {
+    if (!['vlan', 'stp', 'keep'].includes(kind)) return { ok: false, error: 'unknown fix' };
+    if (kind === 'keep') {
+        const r = await sshRun(ip, 'touch /tmp/stp-fix.keep && echo kept', 8000);
+        return r.ok && /kept/.test(r.output) ? { ok: true, message: 'The change is kept: the automatic undo is cancelled.' } : { ok: false, error: r.error || 'the switch did not answer' };
+    }
+    if (!/^[ac][1-4]$/.test(key || '')) return { ok: false, error: 'unknown switch' };
+    if (!fixAddresses(key).includes(ip)) return { ok: false, error: 'that address does not belong to this switch' };
+    if (kind === 'vlan' && !FIX_STAGES.has(stage)) return { ok: false, error: 'unknown exercise' };
+    if (fixing.has(ip)) return { ok: false, error: 'a fix is already running on this switch' };
+    fixing.add(ip);
+    try {
+        const r = await sshScript(ip, fixScript(fixBody(kind, key, stage)));
+        if (!r.ok) return { ok: false, error: `Could not reach the switch: ${r.error}. Nothing was changed.` };
+        if (/NO_SWITCH_DEVICE/.test(r.output)) return { ok: false, error: 'This switch has no bridge called "switch" (uci network.switch), so nothing was changed. Change it in the GUI.' };
+        if (/BACKUP_FAILED/.test(r.output)) return { ok: false, error: 'The old configuration could not be saved on the switch, so nothing was changed.' };
+        if (!/APPLIED/.test(r.output)) return { ok: false, error: `The switch did not confirm the change. ${r.error}`.trim() };
+
+        // The network restarts on the switch. Wait, then check that this PC can still reach it; if so, cancel the automatic undo.
+        for (let i = 0; i < 7; i++) {
+            await new Promise(done => setTimeout(done, i === 0 ? 12000 : 5000));
+            const k = await sshRun(ip, 'touch /tmp/stp-fix.keep && echo kept', 6000);
+            if (k.ok && /kept/.test(k.output)) {
+                cache.clear();
+                return { ok: true, message: 'Fixed. The switch restarted its network and answers again.' };
+            }
+        }
+        return {
+            ok: true, pending: true,
+            message: 'The change was applied, but this PC can no longer reach the switch (probably your cable is in a port that is now in another VLAN). ' +
+                'Move your cable to a VLAN 1 port of that switch and press "Keep this change" within about a minute. ' +
+                'Otherwise the switch puts the old configuration back by itself (copy: /root/network.before-fix).'
+        };
+    } finally {
+        fixing.delete(ip);
+    }
+}
+
 // ---------- Facts for the lab checkers ----------
 
 // Read-only commands whose output the checkers evaluate. The page asks for sections by name, never for a command line.
@@ -767,6 +876,15 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { ok: true });
     }
 
+    if (url.pathname === '/api/fix' && req.method === 'POST') {
+        // Changes a switch, so like the terminal it is only for someone sitting at the PC that runs the server.
+        if (!isLocalClient(req)) return sendJson(res, 403, { error: 'only available on the PC that runs the server' });
+        const q = url.searchParams;
+        const ip = q.get('ip') || '';
+        if (!IP_RE.test(ip)) return sendJson(res, 400, { error: 'invalid ip' });
+        return sendJson(res, 200, await runFix({ kind: q.get('kind') || '', ip, key: q.get('key') || '', stage: q.get('stage') || '' }));
+    }
+
     if (url.pathname === '/api/stp') {
         const ips = (url.searchParams.get('ips') || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 24);
         const bridge = url.searchParams.get('bridge') || 'switch';
@@ -838,4 +956,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { parseStp, simulate, DEMOS, demoResponse };
+module.exports = { parseStp, simulate, DEMOS, demoResponse, fixPlan, fixBody, fixScript };

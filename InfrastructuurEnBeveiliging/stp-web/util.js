@@ -31,6 +31,14 @@ async function api(path) {
     return res.json();
 }
 
+// POST to the local server (only used for the "Fix this" button). Returns the JSON body, or throws with the server's message.
+async function apiPost(path) {
+    const res = await fetch(path, { method: 'POST', cache: 'no-store' });
+    const body = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(body.error || 'server responded ' + res.status);
+    return body;
+}
+
 // Netmask helpers (dotted decimal <-> prefix length).
 function maskToPrefix(mask) {
     return mask.split('.').reduce((n, o) => n + Number(o).toString(2).split('1').length - 1, 0);
