@@ -236,15 +236,18 @@ DEMOS.fig4 = {
 };
 
 // Lab 4: the cabling of Figure 1 of the VLAN lab (no red links between the access switches), with the VLAN layout of Figure 3.
+// Differences with the printed figure: host 2.11 is not connected (port 2 of access 2 stays free) and port 2 of access 4
+// is cabled to port 2 of core 4 instead of to a host.
 DEMOS.lab4 = {
     title: 'Lab 4 (VLAN trunking)',
     priority: { '10.1.2.5': 4096 },
-    hosts: { '10.1.1.1': [1, 2], '10.1.2.1': [1, 2], '10.1.3.1': [1, 2], '10.1.4.1': [1, 2] },
+    hosts: { '10.1.1.1': [1, 2], '10.1.2.1': [1], '10.1.3.1': [1, 2], '10.1.4.1': [1] },
     vlanStage: 2,
     links: [
         ['10.1.2.5', 1, '10.1.1.5', 2], ['10.1.2.5', 2, '10.1.3.5', 1], ['10.1.2.5', 3, '10.1.4.5', 3], ['10.1.4.5', 7, '10.1.1.5', 7],
         ['10.1.4.5', 8, '10.1.3.5', 8], ['10.1.1.5', 5, '10.1.3.5', 5],
-        ['10.1.1.5', 1, '10.1.1.1', 3], ['10.1.1.5', 3, '10.1.2.1', 3], ['10.1.3.5', 6, '10.1.3.1', 3], ['10.1.3.5', 7, '10.1.4.1', 3]
+        ['10.1.1.5', 1, '10.1.1.1', 3], ['10.1.1.5', 3, '10.1.2.1', 3], ['10.1.3.5', 6, '10.1.3.1', 3], ['10.1.3.5', 7, '10.1.4.1', 3],
+        ['10.1.4.5', 2, '10.1.4.1', 2]
     ]
 };
 
