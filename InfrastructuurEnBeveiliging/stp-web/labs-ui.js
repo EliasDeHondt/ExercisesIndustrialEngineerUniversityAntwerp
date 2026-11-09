@@ -393,7 +393,7 @@ function paintResults(lab, exId, r) {
                 <div><div class="stp-result-title">${esc(x.title)}</div>
                 ${x.detail ? `<div class="stp-result-detail">${esc(x.detail)}</div>` : ''}
                 ${x.fix ? `<div class="stp-result-fix"><b>Fix:</b> ${inlineMd(x.fix)}</div>` : ''}
-                ${x.action ? `<div class="stp-fix-row"><button class="stp-btn stp-btn--primary cursor-pointer" type="button" data-fix="${esc(JSON.stringify(x.action))}">Fix this on ${esc(x.action.label || x.action.ip)}</button><span class="stp-muted stp-fix-msg"></span></div>` : ''}</div>
+                ${x.action ? `<div class="stp-fix-row"><button class="stp-btn stp-btn--primary cursor-pointer" type="button" data-fix="${esc(JSON.stringify(x.action))}">${x.action.kind === 'pkg' ? 'Install packages on' : 'Fix this on'} ${esc(x.action.label || x.action.ip)}</button><span class="stp-muted stp-fix-msg"></span></div>` : ''}</div>
             </li>`).join('')}</ul>`;
     $('checkOut').onclick = e => {
         const b = e.target.closest('[data-fix]');
@@ -404,7 +404,8 @@ function paintResults(lab, exId, r) {
 // "Fix this": asks the server to repair one switch with a fixed plan (the server builds the commands, not the page).
 const FIX_TEXT = {
     vlan: a => `Set the VLAN table of ${a.label} (${a.ip}) to the plan of this exercise.\n\nAll existing VLAN settings of that switch are replaced.`,
-    stp: a => `Turn STP on for ${a.label} (${a.ip}).`
+    stp: a => `Turn STP on for ${a.label} (${a.ip}).`,
+    pkg: a => `Install ip-full, ip-bridge and tc-full on ${a.label} (${a.ip}).\n\nThis PC downloads the packages from downloads.openwrt.org and copies them to the switch over SSH, so the switch does not need internet. The network of the switch is not restarted.`
 };
 
 async function applyFix(btn, lab, exId) {
@@ -413,13 +414,14 @@ async function applyFix(btn, lab, exId) {
     const label = btn.textContent;
     if (a.kind !== 'keep') {
         if (!(await api('/api/info').catch(() => ({}))).local) { msg.textContent = 'This button only works on the PC that runs the server.'; return; }
-        const ok = window.confirm(`${FIX_TEXT[a.kind](a)}\n\nThe switch restarts its network. The old configuration is saved on the switch (/root/network.before-fix) and is put back automatically after 90 seconds if this PC can no longer reach the switch.\n\nContinue?`);
+        const guard = a.kind === 'pkg' ? '' : '\n\nThe switch restarts its network. The old configuration is saved on the switch (/root/network.before-fix) and is put back automatically after 90 seconds if this PC can no longer reach the switch.';
+        const ok = window.confirm(`${FIX_TEXT[a.kind](a)}${guard}\n\nContinue?`);
         if (!ok) return;
     }
     clearInterval(SHELL.auto);
     SHELL.auto = null;
     btn.disabled = true;
-    btn.textContent = a.kind === 'keep' ? 'Keeping...' : 'Fixing, wait up to a minute...';
+    btn.textContent = a.kind === 'keep' ? 'Keeping...' : a.kind === 'pkg' ? 'Installing, wait up to 2 minutes...' : 'Fixing, wait up to a minute...';
     msg.textContent = '';
     try {
         const r = await apiPost(`/api/fix?${new URLSearchParams(Object.fromEntries(Object.entries(a).filter(([k]) => k !== 'label')))}`);

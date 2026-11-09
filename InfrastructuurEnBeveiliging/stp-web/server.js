@@ -30,6 +30,7 @@ const path = require('path');
 const os = require('os');
 const net = require('net');
 const crypto = require('crypto');
+const zlib = require('zlib');
 const { execFile, spawn } = require('child_process');
 
 const PORT = Number(process.env.PORT || 8080);
@@ -564,8 +565,118 @@ function sshScript(ip, script, timeout = 15000) {
 
 const fixing = new Set();
 
+// ---- Installing packages on a switch that has no internet ----
+// This PC downloads the .ipk files from the feeds the switch is configured for, copies them to the switch over SSH and runs
+// "opkg install" on the local files. The list of feeds comes from the switch itself (/etc/opkg/distfeeds.conf), so release,
+// architecture and kernel version always match.
+
+const PKG_WANTED = ['ip-full', 'ip-bridge', 'tc-full'];
+const PKG_FEEDS = new Set(['openwrt_core', 'openwrt_base', 'openwrt_kmods', 'openwrt_packages']);   // luci, routing and telephony are not needed
+const feedCache = new Map();   // url -> { at, pkgs }
+
+async function fetchBuffer(url, ms = 40000) {
+    const res = await fetch(url, { signal: AbortSignal.timeout(ms) });
+    if (!res.ok) throw new Error(`${url} answered HTTP ${res.status}`);
+    return Buffer.from(await res.arrayBuffer());
+}
+
+// Packages file: blocks of "Field: value" lines separated by an empty line.
+function parsePackages(text) {
+    const pkgs = new Map();
+    for (const block of text.replace(/\r/g, '').split(/\n\n+/)) {
+        const f = {};
+        for (const line of block.split('\n')) { const m = line.match(/^([A-Za-z-]+): (.*)$/); if (m) f[m[1]] = m[2]; }
+        if (!f.Package || !f.Filename) continue;
+        // "a, b (>= 1), c | d" -> a, b, c  (versions are left to opkg, alternatives: take the first)
+        const depends = (f.Depends || '').split(',').map(d => d.trim().split(/[\s|(]/)[0]).filter(Boolean);
+        pkgs.set(f.Package, { name: f.Package, filename: f.Filename, depends });
+    }
+    return pkgs;
+}
+
+async function loadFeed(url) {
+    const hit = feedCache.get(url);
+    if (hit && Date.now() - hit.at < 10 * 60 * 1000) return hit.pkgs;
+    const pkgs = parsePackages(zlib.gunzipSync(await fetchBuffer(`${url}/Packages.gz`)).toString('utf8'));
+    feedCache.set(url, { at: Date.now(), pkgs });
+    return pkgs;
+}
+
+// index: Map name -> { name, filename, feedUrl, depends }. Returns the packages that still have to be installed.
+function resolvePackages(wanted, installed, index) {
+    const need = new Map();
+    const queue = [...wanted];
+    while (queue.length) {
+        const n = queue.shift();
+        if (need.has(n) || installed.has(n)) continue;
+        const p = index.get(n);
+        if (!p) { if (wanted.includes(n)) throw new Error(`package ${n} is not in the feeds of this switch`); continue; }   // virtual or built in
+        need.set(n, p);
+        queue.push(...p.depends);
+    }
+    return [...need.values()];
+}
+
+function sshWrite(ip, remote, input, timeout = 30000) {
+    return new Promise(resolve => {
+        const kh = knownHostsFile();
+        const child = execFile('ssh', [...sshOptions(kh), `root@${ip}`, remote], { timeout, windowsHide: true, maxBuffer: 1024 * 1024 }, (err, stdout, stderr) => {
+            fs.unlink(kh, () => { /* may not exist */ });
+            resolve(err ? { ok: false, error: String(stderr || err.message || '').trim().split('\n').pop() || 'failed' } : { ok: true });
+        });
+        child.stdin.on('error', () => { /* ssh may close early */ });
+        child.stdin.end(input);
+    });
+}
+
+async function runPkg(ip) {
+    const info = await sshRun(ip, 'cat /etc/opkg/distfeeds.conf; echo "@@@INSTALLED"; opkg list-installed | cut -d" " -f1', 15000);
+    if (!info.ok) return { ok: false, error: `Could not reach the switch: ${info.error}` };
+    const [feedText, installedText = ''] = info.output.split('@@@INSTALLED');
+    const installed = new Set(installedText.split('\n').map(s => s.trim()).filter(Boolean));
+    const missing = PKG_WANTED.filter(p => !installed.has(p));
+    if (!missing.length) return { ok: true, message: 'ip-full, ip-bridge and tc-full are already installed on this switch.' };
+
+    const feeds = [...feedText.matchAll(/^src\/gz\s+(\S+)\s+(\S+)/gm)].map(m => ({ name: m[1], url: m[2].replace(/\/+$/, '') })).filter(f => PKG_FEEDS.has(f.name));
+    if (!feeds.length) return { ok: false, error: 'No package feeds found in /etc/opkg/distfeeds.conf on the switch.' };
+
+    let list;
+    try {
+        const loaded = await Promise.all(feeds.map(async f => [f, await loadFeed(f.url)]));
+        const index = new Map();
+        for (const [f, pkgs] of loaded) for (const [name, p] of pkgs) if (!index.has(name)) index.set(name, { ...p, feedUrl: f.url });
+        list = resolvePackages(missing, installed, index);
+    } catch (e) {
+        return { ok: false, error: `This PC could not get the package lists from the internet (${e.message}). Is this PC online?` };
+    }
+    const names = list.map(p => p.filename);
+    if (!names.every(n => /^[A-Za-z0-9._+-]+$/.test(n))) return { ok: false, error: 'Unexpected file name in the package list.' };
+
+    const files = [];
+    try { for (const p of list) files.push([p.filename, await fetchBuffer(`${p.feedUrl}/${p.filename}`)]); }
+    catch (e) { return { ok: false, error: `Download failed: ${e.message}` }; }
+
+    const prep = await sshRun(ip, 'rm -rf /tmp/stp-pkg && mkdir -p /tmp/stp-pkg && echo ready', 8000);
+    if (!prep.ok || !/ready/.test(prep.output)) return { ok: false, error: `Could not prepare /tmp on the switch: ${prep.error || prep.output}` };
+    for (const [name, data] of files) {
+        const w = await sshWrite(ip, `cat > /tmp/stp-pkg/${name}`, data);
+        if (!w.ok) { await sshRun(ip, 'rm -rf /tmp/stp-pkg', 5000); return { ok: false, error: `Copying ${name} to the switch failed: ${w.error}` }; }
+    }
+    const inst = await sshRun(ip, 'opkg install /tmp/stp-pkg/*.ipk 2>&1; echo "RC=$?"; rm -rf /tmp/stp-pkg; opkg list-installed | grep -E "^(ip-full|ip-bridge|tc-full) "', 120000);
+    if (!inst.ok) return { ok: false, error: `opkg did not answer: ${inst.error}` };
+    const done = PKG_WANTED.filter(p => new RegExp(`^${p} `, 'm').test(inst.output));
+    if (done.length === PKG_WANTED.length) { cache.clear(); return { ok: true, message: `Installed ${list.length} package(s) from this PC: ${names.map(n => n.split('_')[0]).join(', ')}.` }; }
+    return { ok: false, error: `Installation did not finish. Last output: ${inst.output.trim().split('\n').slice(-6).join(' | ')}` };
+}
+
 async function runFix({ kind, ip, key, stage }) {
-    if (!['vlan', 'stp', 'keep'].includes(kind)) return { ok: false, error: 'unknown fix' };
+    if (!['vlan', 'stp', 'keep', 'pkg'].includes(kind)) return { ok: false, error: 'unknown fix' };
+    if (kind === 'pkg') {
+        if (!/^[ac][1-4]$/.test(key || '') || !fixAddresses(key).includes(ip)) return { ok: false, error: 'that address does not belong to a switch of the lab' };
+        if (fixing.has(ip)) return { ok: false, error: 'a fix is already running on this switch' };
+        fixing.add(ip);
+        try { return await runPkg(ip); } finally { fixing.delete(ip); }
+    }
     if (kind === 'keep') {
         const r = await sshRun(ip, 'touch /tmp/stp-fix.keep && echo kept', 8000);
         return r.ok && /kept/.test(r.output) ? { ok: true, message: 'The change is kept: the automatic undo is cancelled.' } : { ok: false, error: r.error || 'the switch did not answer' };
@@ -956,4 +1067,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { parseStp, simulate, DEMOS, demoResponse, fixPlan, fixBody, fixScript };
+module.exports = { parseStp, simulate, DEMOS, demoResponse, fixPlan, fixBody, fixScript, parsePackages, loadFeed, resolvePackages, runFix };

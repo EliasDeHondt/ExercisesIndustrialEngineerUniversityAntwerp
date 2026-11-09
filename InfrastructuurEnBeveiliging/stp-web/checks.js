@@ -622,7 +622,7 @@ function l4Packages(res, list) {
     for (const x of list.filter(y => y.d)) {
         const missing = ['ip-full', 'ip-bridge', 'tc-full'].filter(p => !x.d.packages.has(p));
         if (!missing.length) res.push(R.pass(`${x.label}: ip-full, ip-bridge and tc-full are installed`));
-        else res.push(R.fail(`${x.label}: missing packages ${missing.join(', ')}`, 'Needed for "bridge vlan show" and for the port mirroring with tc.', 'opkg update && opkg install ip-full ip-bridge tc-full  (Internet needed; revert the new WAN interface to LAN afterwards).'));
+        else res.push(R.fail(`${x.label}: missing packages ${missing.join(', ')}`, 'Needed for "bridge vlan show" and for the port mirroring with tc.', 'Press the button: this PC downloads the packages and copies them to the switch (the switch needs no internet). Or on the switch: opkg update && opkg install ip-full ip-bridge tc-full  (Internet needed; revert the new WAN interface to LAN afterwards).', { kind: 'pkg', key: x.key, ip: x.address, label: x.label }));
     }
 }
 
@@ -630,8 +630,8 @@ function l4Packages(res, list) {
 // expect: { lanN: { untaggedVlan: v | null, tagged: [v...] } }
 function l4Vlans(res, x, expect, stage = null) {
     const vl = x.d.vlan;
-    if (!Object.keys(vl).length) { res.push(R.fail(`${x.label}: no VLAN table (bridge vlan show is empty)`, 'VLAN filtering is not configured, or the package ip-bridge is missing.', 'Network > Interfaces > Devices > switch > Configure > Bridge VLAN filtering: enable it and add the VLANs.',
-        stage ? { kind: 'vlan', stage, key: x.key, ip: x.address, label: x.label } : null)); return; }
+    if (!Object.keys(vl).length) { res.push(R.fail(`${x.label}: no VLAN table (bridge vlan show is empty)`, 'VLAN filtering is not configured, or the package ip-bridge is missing.', x.d.packages.has('ip-bridge') ? 'Network > Interfaces > Devices > switch > Configure > Bridge VLAN filtering: enable it and add the VLANs.' : 'The package ip-bridge is not installed, so "bridge vlan show" does not exist. Install the packages first (press the button), then run the check again.',
+        !x.d.packages.has('ip-bridge') ? { kind: 'pkg', key: x.key, ip: x.address, label: x.label } : stage ? { kind: 'vlan', stage, key: x.key, ip: x.address, label: x.label } : null)); return; }
     const bad = [];
     for (const p of seq(8)) {
         const e = expect[`lan${p}`];
