@@ -165,6 +165,11 @@ async function pollVlan() {
 
 /* ---------- Model: roles, links and loops ---------- */
 
+// The number printed on the switch (lan6 -> 6). brctl numbers the bridge ports in the order they were added, so on a real
+// switch "lan6 (1)" is possible. The figures of the labs use the lan number, so show and sort by that one.
+// (The bridge port number p.no is still what "root port" refers to, see roleOf.)
+const lanNo = p => { const m = /(\d+)$/.exec(p.name || ''); return m ? Number(m[1]) : p.no; };
+
 function roleOf(sw, p) {
     if (p.state === 'disabled') return 'dis';
     if (p.no === sw.rootPort) return 'root';
@@ -184,7 +189,7 @@ function buildModel(data) {
                 rootPort: s.rootPort, rootCost: s.rootCost, maxAge: s.maxAge, helloTime: s.helloTime, forwardDelay: s.forwardDelay,
                 topologyChange: s.topologyChange
             });
-            n.ports = s.ports.map(p => ({ ...p, role: roleOf(s, p) })).sort((a, b) => a.no - b.no);
+            n.ports = s.ports.map(p => ({ ...p, role: roleOf(s, p) })).sort((a, b) => lanNo(a) - lanNo(b));
         }
         nodes.set(s.ip, n);
     }
@@ -507,7 +512,7 @@ function updateNode(el, n) {
     [...box.children].forEach((sq, i) => {
         const p = ports[i];
         sq.className = `stp-port stp-port--${p.state}` + (p.role === 'root' ? ' stp-port--rootport' : '');
-        sq.textContent = p.no;
+        sq.textContent = lanNo(p);
         sq.title = n.ok ? `${p.name}: ${p.state}, ${ROLE_TEXT[p.role]}${p.state === 'disabled' ? '' : ', cost ' + p.cost}` : '';
         sq.style.background = '';
         if (vlans && n.ok) {
@@ -664,7 +669,7 @@ function syncHosts() {
     const seen = new Set();
     for (const [ip, list] of per) {
         if (!S.nodeEls.has(ip)) continue;
-        list.sort((a, b) => a.port.no - b.port.no);
+        list.sort((a, b) => lanNo(a.port) - lanNo(b.port));
         const w = 62, gap = 8, total = list.length * w + (list.length - 1) * gap;
         const p = posOf(ip);
         list.forEach((it, i) => {
