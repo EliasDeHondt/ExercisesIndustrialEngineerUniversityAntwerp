@@ -1161,14 +1161,15 @@ const TERM = { ip: null, commands: null, ids: ['stp'], seq: 0 };
 
 async function openTerm(ip) {
     TERM.ip = ip;
+    const card = DeviceMap.active && DeviceMap.spec.nodes.find(n => n.ips.some(x => x[1] === ip));
     $('termModal').hidden = false;
-    $('termTitle').textContent = `${nameOf(ip)}  ·  ${ip}`;
-    $('termSsh').hidden = !!S.demo || !S.localClient;
+    $('termTitle').textContent = `${card ? card.label : nameOf(ip)}  ·  ${ip}`;
+    $('termSsh').hidden = !!S.demo || !!DeviceMap.demo || !S.localClient;
     $('termOut').textContent = '';
     if (!TERM.commands) {
         try { TERM.commands = await (await fetch('/api/commands')).json(); } catch { TERM.commands = []; }
     }
-    runTerm(['stp']);
+    runTerm([DeviceMap.active && DeviceMap.labId === 5 ? 'fwcfg' : 'stp']);
 }
 
 function closeTerm() { $('termModal').hidden = true; }
@@ -1195,6 +1196,11 @@ async function runTerm(ids) {
     $('termCmd').textContent = single ? '$ ' + single.cmd.replace(/\{bridge\}/g, S.bridge) : `$ ${ids.length} show commands`;
     $('termOut').textContent = 'Running...';
     let text;
+    if (DeviceMap.active && DeviceMap.demo) {
+        $('termOut').textContent = Demo5.term(TERM.ip, ids, TERM.commands);
+        $('termOut').scrollTop = 0;
+        return;
+    }
     try {
         const url = `/api/cmd?ip=${encodeURIComponent(TERM.ip)}&bridge=${encodeURIComponent(S.bridge)}&ids=${ids.join(',')}` + (S.demo ? '&demo=1' : '');
         const r = await (await fetch(url, { cache: 'no-store' })).json();

@@ -1106,6 +1106,14 @@ label.stp-opt:hover { background: rgba(128, 128, 128, .08); }
 .stp-dm-ip i { width: 8px; height: 8px; border-radius: 50%; background: var(--bad); flex-shrink: 0; }
 .stp-dm-ip.stp-up i { background: var(--ok); }
 .stp-dm-ip em { margin-left: auto; font-style: normal; color: var(--secondary); }
+.stp-dm-node.stp-dm-me { box-shadow: 0 0 0 2px var(--primary), 0 8px 18px rgba(0, 0, 0, .1); }
+.stp-dm-node.stp-dm-me .stp-dm-type::before { content: 'this PC'; color: var(--primary); }
+
+/* Demo controls (Lab 5 without devices, ?demo=lab5) */
+.stp-demo-bar { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; margin: 12px 0; padding: 10px 12px; border-radius: 10px; border: 1px dashed rgba(128, 128, 128, .35); }
+.stp-demo-field { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; min-width: 0; max-width: 100%; }
+.stp-demo-select { min-width: 0; max-width: 100%; padding: 7px 10px; border-radius: 8px; border: 1px solid rgba(128, 128, 128, .25); background: var(--background); color: var(--text); font-size: 12px; font-weight: 600; }
+.stp-demo-bar .stp-muted { flex-basis: 100%; font-size: 11.5px; }
 .stp-dm-meta { margin-top: 6px; font-size: 10px; color: var(--secondary); line-height: 1.35; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
 /* VLAN colours on the port squares (Lab 4) */

@@ -7,7 +7,7 @@
 'use strict';
 
 // Preparation material per lab: a knowledge base to read and a multiple-choice test (like the Blackboard test at the start of a lab).
-// Labs 1 to 3 come from the old preparation.html, Lab 4 was added with the integration. The text is kept as written (Dutch notes, English questions of the real tests).
+// Labs 1 to 3 come from the old preparation.html, Labs 4 and 5 were added with the integration. The text is kept as written (Dutch notes, English questions of the real tests).
 const PREP_LABS = [
   {
     n: 1,
@@ -416,6 +416,93 @@ const PREP_LABS = [
       { q: "Wat gebeurt er als VLAN 3 niet getagd is op de switchpoort naar de router?",
         o: ["De router ontvangt geen VLAN 3-verkeer en hosts in VLAN 3 bereiken hun gateway 10.1.3.254 niet", "Alle VLAN's vallen uit", "De router maakt het VLAN zelf aan", "Niets, de router tagt het zelf"],
         a: 0, e: "Zonder VLAN 3 op die poort komen de frames van VLAN 3 nooit bij de sub-interface lan2.3 aan. Hosts in VLAN 3 krijgen geen antwoord van hun gateway." }
+    ]
+  },
+  {
+    n: 5,
+    title: "Firewall",
+    note: "",
+    kb: `
+<h3>Waar gaat dit labo over</h3>
+<p>In dit labo zet je de firewall van de OpenWrt-routers weer aan (in Lab 2 tot 4 stond hij uit) en bepaal je met zones, policies en regels welk verkeer door mag. Je werkt op het netwerk van Lab 2: vier switches en vier routers in een ring, router n heeft LAN1 10.1.n.3 en LAN2 10.1.(n+1).2, de .10-host gebruikt 10.1.n.2 als gateway en de .11-host 10.1.n.3. Je blokkeert eerst één host, dan één dienst (SSH), je vergelijkt een denylist met een allowlist en tot slot leg je het beveiligingsbeleid van een bedrijf met vier afdelingen vast. Als je een oefening afrondt, verwittig je de lector.</p>
+
+<h3>Vorm van de test</h3>
+<p>Net als bij de vorige labo's is er aan het begin een korte meerkeuzetest. Het gaat om begrip: je moet geen OpenWrt-commando's kennen, wel weten wat een zone, een policy en een regel betekenen en wat er met een pakket gebeurt.</p>
+
+<h3>Bron voor de voorbereiding</h3>
+<p>In Lab5.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: What is a firewall? van Cisco en Firewall configuration (/etc/config/firewall) van OpenWrt. De sectie over 22.03 en later met fw4 mag je overslaan. In Exercise 3 komt ook een artikel van DZone over allowlist en denylist access control aan bod.</p>
+
+<h3>A. Wat een firewall is</h3>
+<p>Een firewall bekijkt elk pakket en beslist op basis van regels of het door mag. De firewall van OpenWrt is een stateful packet filter op Layer 3 en 4: hij kijkt naar IP-adressen, het protocol (TCP, UDP, ICMP), poortnummers en de toestand van de verbinding. Hij kijkt niet naar de inhoud: "SSH" herkent hij enkel als TCP met bestemmingspoort 22.</p>
+<p>Stateful betekent dat de firewall verbindingen bijhoudt (connection tracking). Een pakket van een verbinding die al toegelaten is (established) of daarbij hoort (related), zoals het antwoord op een ping of de rest van een TCP-sessie, wordt meteen toegelaten, nog voor de regels bekeken worden. Enkel het eerste pakket van een nieuwe verbinding gaat door de regels. Daarom blijft een open SSH-sessie werken als je daarna een blokkeerregel toevoegt, terwijl een nieuwe sessie geweigerd wordt. Een stateless filter zou elk pakket apart beoordelen en ook een regel nodig hebben voor de antwoorden.</p>
+
+<h3>B. Zones en policies</h3>
+<p>Een zone is een groep van één of meer netwerkinterfaces met hetzelfde vertrouwensniveau, bijvoorbeeld lan en wan. Elke interface hoort bij hoogstens één zone. Een interface die in geen enkele zone zit, valt terug op de globale standaardpolicies (in OpenWrt input en forward REJECT). Daarom moet je in dit labo de nieuwe interface lan2 aan de zone lan toevoegen, anders verlies je de connectiviteit via LAN2.</p>
+<p>Elke zone heeft drie policies. INPUT geldt voor verkeer vanuit de zone naar de router zelf (ping naar een adres van de router, LuCI, SSH). OUTPUT geldt voor verkeer dat de router zelf naar de zone stuurt. FORWARD (in LuCI "Intra zone forward") geldt voor verkeer dat door de router gaat tussen twee netwerken van dezelfde zone. Verkeer tussen twee verschillende zones regel je met forwardings ("Allow forward to destination zones"). Zonder forwarding geldt de globale forward-policy. In de standaardconfiguratie heeft lan INPUT, OUTPUT en FORWARD op ACCEPT en is wan veel strenger (input en forward REJECT, met masquerading).</p>
+
+<h3>C. INPUT of FORWARD</h3>
+<p>Het verschil hangt af van het bestemmings-IP van het pakket. Is dat een adres van de router zelf (bijvoorbeeld 10.1.1.10 pingt 10.1.1.2), dan is de router de eindbestemming en geldt INPUT. Is het een andere host (10.1.1.10 pingt 10.1.3.10), dan routeert de router het pakket en geldt FORWARD, ook al is de router de default gateway van de host. Het gateway-adres staat enkel als bestemmings-MAC in het frame, niet als bestemmings-IP. Een regel op INPUT naar 10.1.x.2 houdt dus geen verkeer tegen dat via die router naar een ander subnet gaat.</p>
+
+<h3>D. Regels</h3>
+<p>Een regel bestaat uit een match (protocol, bronzone, bronadres, bronpoort, bestemmingszone, bestemmingsadres, bestemmingspoort) en een actie. ACCEPT laat het pakket door. REJECT gooit het weg en stuurt een fout terug (TCP reset of ICMP port unreachable), waardoor de client meteen "connection refused" of "destination port unreachable" ziet. DROP gooit het stil weg: de client wacht tot een timeout. REJECT is handig binnen het eigen LAN (snelle, duidelijke foutmelding), DROP aan de WAN-kant (geen informatie voor een aanvaller, trage poortscans).</p>
+<p>De bestemmingszone bepaalt het soort verkeer: "Device (input)" is verkeer naar de router zelf, een zone of "Any zone (forward)" is verkeer door de router. Laat je het protocol op de standaard TCP+UDP staan, dan matcht de regel geen ping (ICMP); kies "Any" om alles te matchen. Laat je de bronpoort leeg, want een client gebruikt een willekeurige hoge poort.</p>
+<p>De regels worden van boven naar onder gecontroleerd en de eerste regel die matcht, beslist (first match wins). Een ACCEPT-regel die een uitzondering is op een REJECT-regel moet daarom boven die REJECT-regel staan. Als geen enkele regel matcht, beslist de policy van de zone. Je kan zien welke regel actief is en hoeveel pakketten ze matchte op de router zelf, want LuCI toont enkel de configuratie: fw4 print of nft list ruleset tonen de echte regels met een teller (counter packets) per regel.</p>
+
+<h3>E. Denylist en allowlist</h3>
+<p>Bij een denylist is alles toegelaten behalve wat je expliciet blokkeert: een zone-policy ACCEPT met een paar REJECT-regels. Dat is snel opgezet en breekt zelden iets, maar een nieuwe of vergeten dienst is meteen bereikbaar (fail open). Bij een allowlist is alles geblokkeerd behalve wat je expliciet toelaat: een zone-policy REJECT of DROP met ACCEPT-regels. Dat volgt het principe van least privilege en is veiliger, want een vergeten of nieuwe dienst blijft dicht, maar het is meer werk: je moet elke nodige stroom kennen en beschrijven, anders breekt er iets. Voor een gastennetwerk kies je een allowlist.</p>
+
+<h3>F. Waar de regel moet staan</h3>
+<p>Een firewall kan enkel verkeer filteren dat door hem passeert. In een netwerk met meerdere routers moet je dus nagaan langs welke router(s) een pakket gaat: welke gateway gebruikt de host, en welke route volgt de router daarna. In dit labo gebruiken de .10- en de .11-host van hetzelfde subnet een andere gateway en dus een andere router. Een regel op één router houdt dan maar de helft van het verkeer tegen. Omdat het antwoord bovendien een andere weg terug kan nemen dan de vraag (asymmetrische routing), kan een router die de vraag nooit zag het antwoord als een nieuw pakket beoordelen en het blokkeren. Alle firewall-instellingen staan in /etc/config/firewall (UCI), in LuCI onder Network en dan Firewall. In OpenWrt 22.03 en later zet fw4 die om naar nftables-regels in de tabel inet fw4.</p>
+`,
+    qs: [
+      { q: "Wat voor firewall is de firewall van OpenWrt?",
+        o: ["Een stateful packet filter op Layer 3 en 4 (IP-adressen, protocollen, poorten, verbindingstoestand)", "Een stateless filter op Layer 2 (MAC-adressen)", "Een proxy die de inhoud van elke webpagina controleert", "Een antivirusprogramma op de router"],
+        a: 0, e: "OpenWrt filtert op IP, protocol, poort en de toestand van de verbinding (connection tracking). Het kijkt niet naar de inhoud van de pakketten." },
+      { q: "Host 10.1.1.10 pingt 10.1.1.2, een adres van de router zelf. Welke policy van de zone geldt?",
+        o: ["FORWARD", "INPUT", "OUTPUT", "Geen, ping wordt nooit gefilterd"],
+        a: 1, e: "De router is de eindbestemming van het pakket, dus het is INPUT-verkeer: eerst de input-regels, dan de input-policy van de zone van de inkomende interface." },
+      { q: "Host 10.1.1.10 pingt 10.1.3.10 via zijn default gateway. Welk soort verkeer is dat op de router?",
+        o: ["INPUT, want de router is de gateway", "FORWARD, want het bestemmings-IP is een andere host en de router stuurt het pakket door", "OUTPUT, want de router stuurt het weg", "Het gaat niet door de router"],
+        a: 1, e: "Het bestemmings-IP is 10.1.3.10, niet de router. De gateway staat enkel als bestemmings-MAC in het frame. De router routeert het pakket: FORWARD." },
+      { q: "Wat regelt de policy FORWARD (Intra zone forward) van een zone?",
+        o: ["Verkeer van de zone naar de router zelf", "Verkeer tussen twee netwerken die allebei in die zone zitten", "Verkeer tussen twee verschillende zones", "Verkeer van de router naar het internet"],
+        a: 1, e: "Verkeer tussen verschillende zones regel je met forwardings (Allow forward to destination zones). De forward-policy geldt voor verkeer binnen dezelfde zone." },
+      { q: "Wat is het verschil tussen REJECT en DROP?",
+        o: ["REJECT stuurt een fout terug (TCP reset of ICMP unreachable), DROP gooit het pakket stil weg zodat de client een timeout krijgt", "DROP stuurt een fout terug, REJECT niet", "Er is geen verschil", "REJECT blokkeert enkel TCP, DROP enkel UDP"],
+        a: 0, e: "Met REJECT ziet de client meteen 'connection refused' of 'destination port unreachable'. Met DROP blijft hij wachten. DROP gebruik je meestal aan de WAN-kant, REJECT in het eigen LAN." },
+      { q: "Je maakt een regel die 10.1.1.10 naar 10.1.1.2 blokkeert, maar laat het protocol op de standaard TCP+UDP staan. Wat gebeurt er met een ping?",
+        o: ["De ping werkt nog, want ICMP is geen TCP of UDP", "De ping wordt geblokkeerd", "De ping wordt omgeleid", "De router herstart"],
+        a: 0, e: "Ping is ICMP. Om alles van die host te blokkeren kies je protocol Any." },
+      { q: "Hoe herkent de firewall SSH-verkeer?",
+        o: ["Aan het protocol TCP en bestemmingspoort 22", "Door de inhoud van de pakketten te ontcijferen", "Aan het MAC-adres van de client", "Aan de gebruikersnaam root"],
+        a: 0, e: "Een packet filter kijkt enkel naar Layer 3 en 4. Een SSH-server op een andere poort wordt door een regel op poort 22 niet tegengehouden." },
+      { q: "Twee regels matchen hetzelfde verkeer: Block_SSH_11 (REJECT) staat bovenaan, Allow_SSH_11 (ACCEPT) eronder. Wat gebeurt er?",
+        o: ["De SSH-verbinding wordt geweigerd: de eerste regel die matcht beslist", "De SSH-verbinding werkt: ACCEPT wint altijd", "Beide regels worden uitgevoerd", "De laatste regel beslist"],
+        a: 0, e: "De regels worden van boven naar onder gecontroleerd, first match wins. Een uitzondering (ACCEPT) moet boven de REJECT-regel staan." },
+      { q: "Er is een SSH-sessie open en je zet daarna een regel die die SSH blokkeert bovenaan. Wat gebeurt er?",
+        o: ["De open sessie blijft werken, een nieuwe sessie wordt geweigerd", "De open sessie wordt meteen verbroken", "Beide sessies blijven werken", "De router blokkeert alle verkeer"],
+        a: 0, e: "De firewall is stateful: pakketten van een bestaande (established) verbinding worden toegelaten voor de regels bekeken worden. Enkel nieuwe verbindingen gaan door de regels." },
+      { q: "Wat gebeurt er met een pakket dat met geen enkele regel matcht?",
+        o: ["De policy van de zone beslist (input-, output- of forward-policy)", "Het wordt altijd toegelaten", "Het wordt altijd gedropt", "Het wordt naar de WAN gestuurd"],
+        a: 0, e: "OpenWrt heeft geen zichtbare 'permit any' of 'deny all' onderaan: als geen regel matcht, valt het pakket terug op de policy van de zone (of de globale policy als de interface in geen zone zit)." },
+      { q: "Je maakt een nieuwe interface lan2 aan maar voegt ze aan geen enkele firewall-zone toe. Wat is het gevolg met de standaardconfiguratie?",
+        o: ["Verkeer van en naar lan2 valt terug op de globale policies (input en forward REJECT) en wordt geblokkeerd", "Alles werkt gewoon", "lan2 komt automatisch in de zone wan", "De firewall stopt"],
+        a: 0, e: "Daarom moet je in Exercise 1 lan2 aan de zone lan toevoegen om de volledige connectiviteit terug te krijgen." },
+      { q: "Een regel blokkeert SSH van 10.1.x.11 naar 10.1.x.3 met bestemmingszone Device (input). Je verandert die zone naar Any zone (forward) en laat het adres 10.1.x.3 staan. Wat gebeurt er?",
+        o: ["SSH naar 10.1.x.3 werkt weer: een pakket naar de router zelf is INPUT, en geen enkel doorgestuurd pakket heeft 10.1.x.3 als bestemming", "SSH wordt nu overal geblokkeerd", "Er verandert niets", "De router is niet meer bereikbaar"],
+        a: 0, e: "Een forward-regel geldt enkel voor verkeer dat door de router gaat. Om SSH naar de router rechts (10.1.(x+1).3) te blokkeren, pas je het bestemmingsadres aan: dat verkeer passeert jouw router." },
+      { q: "Wat beschrijft een allowlist-model in OpenWrt?",
+        o: ["Zone-policy REJECT of DROP met ACCEPT-regels voor het verkeer dat moet werken", "Zone-policy ACCEPT met REJECT-regels voor de uitzonderingen", "Geen firewall", "Enkel regels op de WAN-zone"],
+        a: 0, e: "Alles is dicht tenzij je het toelaat: least privilege. Een denylist is het omgekeerde: alles open, enkel wat je opsomt is dicht." },
+      { q: "Een nieuwe dienst wordt op een pc gestart en niemand past de firewall aan. In welk model is die dienst meteen bereikbaar?",
+        o: ["In het denylist-model", "In het allowlist-model", "In beide", "In geen van beide"],
+        a: 0, e: "Een denylist stopt enkel wat je vooraf bedacht hebt (fail open). Bij een allowlist blijft een vergeten dienst dicht (fail closed), daarom is die veiliger." },
+      { q: "In de allowlist laat een regel enkel A naar B op TCP-poort 8000 toe. Waarom komen de antwoorden van B terug bij A?",
+        o: ["Omdat de firewall stateful is: de antwoorden horen bij een toegelaten (established) verbinding", "Omdat antwoorden nooit gefilterd worden, ook niet bij een stateless filter", "Omdat B een andere gateway gebruikt", "Omdat poort 8000 altijd open is"],
+        a: 0, e: "Connection tracking herkent het antwoord als deel van de verbinding die A opende. Een tweede regel voor de terugweg is niet nodig, zolang het antwoord langs dezelfde router passeert." },
+      { q: "De .10-host en de .11-host van hetzelfde subnet gebruiken een verschillende default gateway. Een blokkeerregel staat enkel op de router van de .11-host. Wat verwacht je?",
+        o: ["Het verkeer van de .11-host wordt geblokkeerd, dat van de .10-host misschien niet, omdat het langs een andere router gaat", "Beide hosts worden altijd geblokkeerd", "Geen enkele host wordt geblokkeerd", "De regel wordt automatisch naar alle routers gekopieerd"],
+        a: 0, e: "Een firewall filtert enkel verkeer dat door hem passeert. Kijk naar de gateway van elke host en de routes om te weten welke routers de regel nodig hebben." }
     ]
   }
 ];

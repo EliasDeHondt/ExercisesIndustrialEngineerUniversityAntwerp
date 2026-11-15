@@ -6,7 +6,7 @@
 **/
 
 // Local web server of the IEB Lab Companion (no npm packages needed, only Node 18 or newer).
-// The app has a guide, a preparation test, a live monitor, a checker and the notes for Labs 1 to 4.
+// The app has a guide, a preparation test, a live monitor, a checker and the notes for Labs 1 to 5.
 // A browser cannot do SSH itself, so this server does it for the page: it reads switches and routers with a fixed list of
 // read-only commands (brctl showstp, bridge vlan show, ip route, logread, ...) and pings from this PC, and returns JSON.
 // The page never gets a free shell. The only thing that changes a device is the "Fix this" button of the checker
@@ -21,6 +21,7 @@
 //   STP_PASSWORD=secret node server.js   # ask for a password (any user name, this password)
 //   http://localhost:8080/?demo=fig2     # demo of the Lab 3 monitor without switches (fig1, fig2, fig3, fig4)
 //   http://localhost:8080/?demo=lab4     # demo of the Lab 4 monitor with VLAN colours
+//   http://localhost:8080/?demo=lab5     # demo of Lab 5: simulated routers with firewall scenarios (monitor and checker)
 
 'use strict';
 
@@ -446,6 +447,10 @@ const COMMANDS = [
     { id: 'route', group: 'Interfaces', title: 'Routes', cmd: 'ip route' },
     { id: 'neigh', group: 'Interfaces', title: 'ARP / neighbours', cmd: 'ip neigh' },
     { id: 'netcfg', group: 'Configuration', title: 'Network configuration (uci)', cmd: 'uci show network' },
+    { id: 'fwcfg', group: 'Firewall', title: 'Firewall configuration: zones, forwardings and rules (uci)', cmd: 'uci show firewall' },
+    { id: 'fwrules', group: 'Firewall', title: 'Active ruleset that fw4 generated (nftables)', cmd: 'fw4 print 2>/dev/null || nft list ruleset' },
+    { id: 'fwcount', group: 'Firewall', title: 'Rules with their packet counters', cmd: "nft list ruleset | grep -F 'counter packets'" },
+    { id: 'conntrack', group: 'Firewall', title: 'Connection tracking table (last 60)', cmd: 'cat /proc/net/nf_conntrack 2>/dev/null | tail -n 60' },
     { id: 'board', group: 'System', title: 'Board and firmware', cmd: 'ubus call system board' },
     { id: 'uptime', group: 'System', title: 'Uptime and load', cmd: 'uptime' },
     { id: 'mem', group: 'System', title: 'Memory', cmd: 'free' },
@@ -725,6 +730,8 @@ const FACT_SECTIONS = {
     fwd: 'cat /proc/sys/net/ipv4/ip_forward 2>/dev/null',
     firewall: 'nft list tables 2>/dev/null | grep -c fw4',
     uci: 'uci show network 2>/dev/null',
+    fwuci: 'uci show firewall 2>/dev/null',
+    fwcount: "nft list ruleset 2>/dev/null | grep -F 'counter packets' | grep -F '!fw4: '",
     links: 'ip -o link show 2>/dev/null',
     brctl: 'brctl show 2>/dev/null',
     stp: 'for b in $(brctl show 2>/dev/null | awk \'NR>1 && $2 ~ /\\./ {print $1}\'); do echo "## $b"; brctl showstp $b; done',
@@ -783,9 +790,9 @@ function pingLocal(ip) {
     });
 }
 
-function probeHttp(ip) {
+function probeHttp(ip, port = 80) {
     return new Promise(resolve => {
-        const req = http.get({ host: ip, port: 80, path: '/', timeout: 2500 }, res => { res.resume(); resolve({ ip, ok: true, status: res.statusCode }); });
+        const req = http.get({ host: ip, port, path: '/', timeout: 2500 }, res => { res.resume(); resolve({ ip, ok: true, status: res.statusCode }); });
         req.on('timeout', () => { req.destroy(); resolve({ ip, ok: false }); });
         req.on('error', () => resolve({ ip, ok: false }));
     });
@@ -929,8 +936,9 @@ const server = http.createServer(async (req, res) => {
 
     if (url.pathname === '/api/http') {
         const ip = url.searchParams.get('ip') || '';
-        if (!IP_RE.test(ip)) return sendJson(res, 400, { error: 'invalid ip' });
-        return sendJson(res, 200, await cached(`http|${ip}`, 2000, () => probeHttp(ip)));
+        const port = Number(url.searchParams.get('port') || 80);
+        if (!IP_RE.test(ip) || ![80, 8000].includes(port)) return sendJson(res, 400, { error: 'invalid ip or port' });
+        return sendJson(res, 200, await cached(`http|${ip}|${port}`, 2000, () => probeHttp(ip, port)));
     }
 
     if (url.pathname === '/api/local') {
@@ -1017,8 +1025,8 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, ok ? 200 : 404, { ok });
     }
 
-    // The lab notes (Lab1.md to Lab4.md) live one folder up.
-    const note = url.pathname.match(/^\/notes\/(Lab[1-4])\.md$/);
+    // The lab notes (Lab1.md to Lab5.md) live one folder up.
+    const note = url.pathname.match(/^\/notes\/(Lab[1-5])\.md$/);
     if (note) {
         return fs.readFile(path.join(ROOT, '..', note[1] + '.md'), (err, data) => {
             if (err) { res.writeHead(404); return res.end('Not found'); }
@@ -1027,8 +1035,8 @@ const server = http.createServer(async (req, res) => {
         });
     }
 
-    // The lab guides (Lab1.pdf to Lab4.pdf), shown inline in the PDF tab.
-    const pdf = url.pathname.match(/^\/pdf\/(Lab[1-4])\.pdf$/);
+    // The lab guides (Lab1.pdf to Lab5.pdf), shown inline in the PDF tab.
+    const pdf = url.pathname.match(/^\/pdf\/(Lab[1-5])\.pdf$/);
     if (pdf) {
         return fs.readFile(path.join(ROOT, '..', pdf[1] + '.pdf'), (err, data) => {
             if (err) { res.writeHead(404); return res.end('Not found'); }
@@ -1063,7 +1071,7 @@ if (require.main === module) {
             console.log(PASSWORD ? '  Password protected (STP_PASSWORD).' : '  No password set: anyone on the network can use it (STP_PASSWORD=... to protect it).');
             console.log('  If others cannot connect, allow Node.js through the Windows firewall.');
         }
-        console.log(`  Demo:            http://localhost:${PORT}/?demo=fig2   or   ?demo=lab4`);
+        console.log(`  Demo:            http://localhost:${PORT}/?demo=fig2   or   ?demo=lab4   or   ?demo=lab5`);
     });
 }
 

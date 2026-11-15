@@ -6,7 +6,7 @@
 
 'use strict';
 
-// The guide of every lab, taken from Lab1.pdf to Lab4.pdf: goals, preparation, devices and the exercises with their questions.
+// The guide of every lab, taken from Lab1.pdf to Lab5.pdf: goals, preparation, devices and the exercises with their questions.
 // Text between `backticks` is shown as code. `monitor` says which live view the lab has.
 
 const LABS = [
@@ -378,6 +378,106 @@ const LABS = [
                     'Who can you reach and why (gateways, same VLAN on another switch, other VLAN, switch management IP from VLAN 1 and from other VLANs)? Can you reach the switches from every VLAN after setting their gateway?',
                     'What happens if VLAN 3 is not tagged on the router port, or if a VLAN interface has a wrong IP or mask? How many hops does traceroute show?',
                     'In which VLAN is the ARP request for the gateway sent, and would a host in VLAN 4 receive it? How many times do you see each echo request on the link to the router? Complete the table (VLAN ID, MACs, IPs, TTL) of the frame entering and leaving the router.'
+                ]
+            }
+        ]
+    },
+    {
+        n: 5,
+        title: 'Firewall',
+        short: 'Firewall',
+        icon: 'shield',
+        summary: 'Turn on the firewall of the OpenWrt routers and control traffic with zones, policies and rules: block one host, block one service, compare a denylist with an allowlist, and enforce the security policy of a small company over four subnets.',
+        goals: [
+            'Explain how firewall zones and policies operate in OpenWrt.',
+            'Distinguish between input and forwarded traffic.',
+            'Configure and verify host-based and service-based firewall rules.',
+            'Analyze how firewall rule matching affects network connectivity.',
+            'Compare allowlist and denylist security models.',
+            'Implement and validate firewall policies for a multi-subnet network.'
+        ],
+        reading: [
+            'Cisco: What is a firewall? The OpenWrt firewall is a stateful packet filter on Layers 3 and 4 (IP addresses, protocols, ports, connection state).',
+            'OpenWrt: Firewall configuration (/etc/config/firewall). Zones and their interfaces, INPUT, OUTPUT and FORWARD, ACCEPT, REJECT and DROP, default zone policies, intra-zone versus inter-zone forwarding, rules on addresses, protocols and ports. You do not need to memorize commands; skip the section "22.03 and later with fw4".',
+            'DZone: allowlist versus denylist access control (used in Exercise 3).'
+        ],
+        devices: [
+            ['Network', 'The ring of Lab 2: switch n `10.1.n.1`, router n LAN1 `10.1.n.3` (br-lan) and LAN2 `10.1.(n+1).2` (lan2), all /24. Restore full connectivity first (static routes or OSPF of Lab 2).'],
+            ['Hosts', '`10.1.n.10` with gateway `10.1.n.2`, `10.1.n.11` with gateway `10.1.n.3`.'],
+            ['Firewall', 'ON for this lab: `/etc/init.d/firewall enable` and `/etc/init.d/firewall start`. Add the interface lan2 to the zone lan. Configure in LuCI under Network > Firewall (Zones and Traffic Rules), then Save & Apply.'],
+            ['Show', '`uci show firewall`, `fw4 print`, `nft list ruleset` (with a counter per rule). The terminal of a router card on the Monitor tab has these commands.']
+        ],
+        exercises: [
+            {
+                id: 'ex1', title: 'Exercise 1: Initial connectivity and basic filtering',
+                intro: 'Rebuild Figure 1 with the firewall on, put LAN2 into the lan zone, then write a first rule: the .10 host may no longer reach the router address it uses as default gateway (10.1.x.2), but the .11 host still may.',
+                steps: [
+                    'Build Figure 1 (the network of Lab 2) and restore full connectivity with the firewall enabled. Add lan2 to the covered networks of zone lan.',
+                    'Answer the background questions: which policy applies to a ping to the router itself (10.1.1.10 > 10.1.1.2), and which to a ping through the router (10.1.1.10 > 10.1.3.10)?',
+                    'Put the rule on the router that owns 10.1.x.2: subnet 1 on R4, subnet 2 on R1, subnet 3 on R2, subnet 4 on R3. Protocol Any, source zone lan, source address 10.1.x.10, destination zone Device (input), destination address 10.1.x.2, action reject.',
+                    'From the .10 host, ping 10.1.x.2 and open http://10.1.x.2. Change the action to drop and repeat.',
+                    'Keep the rule and test: .10 to another subnet, .10 to .11, .11 to 10.1.x.2.'
+                ],
+                questions: [
+                    'What steps did you take to regain full connectivity? Were there any issues?',
+                    'A ping to the router\'s own address (10.1.1.10 > 10.1.1.2): does it go through the router or to the router? Which rules apply? And a ping to another subnet (10.1.1.10 > 10.1.3.10)?',
+                    'Where are all the firewall settings contained?',
+                    'How should the rule be configured (protocol, source zone and address, destination zone and address, action)?',
+                    'What happens and what message do you get? How does REJECT differ from DROP, and which would you use in the LAN and which on the WAN?',
+                    'Can the .10 host reach other subnets and the .11 host? Can the .11 host still reach the router? Explain both packets from the firewall\'s point of view. Why is the rule easy to circumvent?'
+                ]
+            },
+            {
+                id: 'ex2', title: 'Exercise 2: Service-based blocking',
+                intro: 'Block one service instead of one host: the .11 host may no longer open SSH (TCP 22) to its own router on LAN1 (10.1.x.3). Ping, LuCI, routing and SSH from the .10 host keep working.',
+                steps: [
+                    'Rule Block_SSH_11: protocol TCP, source zone lan, source address 10.1.x.11, destination zone Device (input), destination address 10.1.x.3, destination port 22, action reject.',
+                    'Test SSH from .11 to LAN1 and LAN2 of the router, ping from .11, SSH and LuCI from .10, and SSH to the neighbor\'s router.',
+                    'Remove the destination port (do this from the .10 host and keep a LuCI session open there), see what .11 can still use, then set port 22 back.',
+                    '4.2: add Allow_SSH_11 (same match, action accept) at the bottom, test, drag it above Block_SSH_11, and test again. Keep an SSH session open and move Block_SSH_11 back to the top. Delete Allow_SSH_11 afterwards.',
+                    '4.3: look at the active ruleset and the counters on the router: `fw4 print`, `nft list ruleset | grep -i block_ssh`.',
+                    '4.4: change the destination zone of Block_SSH_11 to Any zone (forward), then block SSH from .11 to the router on your right (10.1.(x+1).3).'
+                ],
+                questions: [
+                    'How should the rule be configured? Why is it service-specific, and how does the firewall recognize "SSH"?',
+                    'What does the SSH client report? What happens with SSH to LAN2, ping from .11, access from .10, and SSH to the neighbor\'s router?',
+                    'Without a destination port: which services on LAN1 can .11 still use?',
+                    'What does the rule order tell you about how the firewall evaluates rules? Why does an open session keep working while a new one is refused? What happens to a packet that matches no rule, and where is that defined?',
+                    'Which commands show the active ruleset and whether a rule matches? How do you recognize Block_SSH_11, and what changes after a few attempts?',
+                    'What changes when the destination zone becomes Any zone (forward), and why? What else must change to block SSH to the router on your right, and why does that only work because the traffic passes through your router?'
+                ]
+            },
+            {
+                id: 'ex3', title: 'Exercise 3: Default zone policy versus specific rules',
+                intro: 'Pairs per router: student A is 10.1.x.11, student B is 10.1.(x+1).10, and both use router x as gateway. Disable the previous rules, create a zone labo with lan and lan2, and compare a denylist (policy accept, a few reject rules) with an allowlist (policy reject, a few accept rules).',
+                steps: [
+                    'Create zone labo: input, output and intra zone forward accept, covered networks lan and lan2.',
+                    'Student B: `mkdir firewall-test`, `cd firewall-test`, create index.html with "Hello from Student B", then `python -m http.server 8000`. Test http://localhost:8000 first, then student A opens http://STUDENT_B_IP:8000.',
+                    'Denylist: rule Reject_A_to_B_HTTP: TCP, source zone labo, source A, destination zone labo, destination B, port 8000, reject. Refresh the page.',
+                    'Allowlist: disable Reject_A_to_B_HTTP, set the intra zone forward of labo to reject (warn the other pairs first), test the page and a ping, then add Allow_A_to_B_HTTP (same match, accept).',
+                    'Cleanup: delete zone labo, put lan and lan2 back into zone lan, remove both rules, and stop the web server with Ctrl+C.'
+                ],
+                questions: [
+                    'Student A can open the page without any rule. What decides that it is allowed?',
+                    'Which rule did you set? What happens on refresh? Why does it block the page but not all other traffic? Name two ways in which A could still reach the content.',
+                    'Which traffic does the forward policy reject affect? Does the page open, does the ping work?',
+                    'Which allow rule did you add? Why are the replies of B not blocked? Which rule would allow the ping?',
+                    'Which model is safer when you forget a rule? Why is the allowlist more work? Which model would you use for a guest network, and when is a denylist reasonable?'
+                ]
+            },
+            {
+                id: 'ex4', title: 'Exercise 4: Company network security',
+                intro: 'NetCorp: 10.1.1.0/24 IT, 10.1.2.0/24 Finance, 10.1.3.0/24 HR, 10.1.4.0/24 Guest. First decide which routers carry which rule, agree on rule names with the other pairs, configure, then test every policy from both hosts of each department.',
+                steps: [
+                    'IT: full access to all departments, SSH to the routers. Finance: no access to IT, no SSH to routers, access to HR. HR: no SSH to any device, no access to IT, access to Finance and Guest. Guest: no access to IT, Finance or HR, no SSH, only its own subnet.',
+                    'Fill in the table: which routers must carry each rule, and why (which routers is each subnet attached to, which gateway does each host use)?',
+                    'Configure the rules. An ACCEPT rule goes above the REJECT rule it makes an exception to.',
+                    'Test with ping (access) and SSH (SSH policies) from the .10 and the .11 host of every department.'
+                ],
+                questions: [
+                    'For Finance > IT, HR > IT, Guest > IT/Finance/HR and "nobody except IT may SSH to a router": which routers must carry the rule, and why?',
+                    'List the rules you configured and explain your choice.',
+                    'Do all tests give the expected result? If a test succeeds from one host but fails from the other host of the same department, explain why.'
                 ]
             }
         ]

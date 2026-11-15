@@ -6,7 +6,7 @@
 
 'use strict';
 
-// The checkers of the four labs. Every exercise has a `plan` (what to read from the network) and a `run` function that
+// The checkers of the five labs. Every exercise has a `plan` (what to read from the network) and a `run` function that
 // turns the collected facts into a list of results. A result says what was found and, when it is wrong, how to fix it.
 // All commands behind this are read-only: the checker never changes a switch or a router.
 
@@ -798,6 +798,295 @@ CHECKS['4.ex3'] = {
     }
 };
 
+/* ---------- Lab 5 ---------- */
+
+// The network of Lab 2 again (Figure 1 of Lab5.pdf): router n has LAN1 10.1.n.3 (br-lan) and LAN2 10.1.(n+1).2 (lan2).
+// The .10 host uses 10.1.x.2 as gateway, the .11 host 10.1.x.3. Now the firewall is on, and fwsim.js predicts from the
+// configuration of the routers what happens to the test traffic (ping, SSH, LuCI, the web server on port 8000).
+const L5_SECTIONS = ['board', 'addr', 'route', 'uci', 'firewall', 'fwuci', 'fwcount', 'brctl', 'fwd'];
+const L5_ROUTER_IPS = seq(4).flatMap(n => [L2.r1(n), L2.r2(n)]);
+const L5_HOSTS = seq(4).flatMap(n => [`10.1.${n}.10`, `10.1.${n}.11`]);
+const L5_DEPT = { 1: 'IT', 2: 'Finance', 3: 'HR', 4: 'Guest' };
+const l5Gw = ip => { const o = ip.split('.'); return `10.1.${o[2]}.${o[3] === '10' ? 2 : 3}`; };
+const l5Prev = n => (n + 2) % 4 + 1;          // router n-1 (router 4 for n = 1): it owns 10.1.n.2
+const l5Net = ip => Number(ip.split('.')[2]);
+const l5Sev = (n, mine) => mine === null || n === mine ? 'fail' : 'warn';
+
+function l5Plan(extra = {}) {
+    return Object.assign({ candidates: L5_ROUTER_IPS, sections: L5_SECTIONS, pcPing: [...L5_ROUTER_IPS, ...L5_HOSTS], local: true }, extra);
+}
+
+// The routers that answered over SSH, on LAN1 or else on LAN2 (a rule of the lab can block SSH to one of them).
+function l5Routers(ctx) {
+    const routers = [];
+    for (const n of seq(4)) {
+        const ip = [L2.r1(n), L2.r2(n)].find(x => ctx.devices.has(x));
+        if (ip) routers.push({ n, label: `R${n}`, ip, d: ctx.devices.get(ip) });
+    }
+    return { routers, gw: l5Gw, byN: n => routers.find(r => r.n === n) || null };
+}
+
+const l5Rule = (d, re) => d.fw.rules.find(r => re.test(r.name));
+const l5Show = (f, max = 4) => f.slice(0, max).join('; ') + (f.length > max ? `; and ${f.length - max} more` : '');
+
+// Addresses, firewall on, zones and routes of every router. zone: the zone LAN1 and LAN2 must be in.
+function l5Base(res, ctx, net, mine, zone = 'lan') {
+    for (const n of seq(4)) {
+        const r = net.byN(n);
+        const sev = l5Sev(n, mine);
+        if (!r) {
+            res.push(R[sev](`Router ${n} cannot be read over SSH`, `Tried ${L2.r1(n)} and ${L2.r2(n)}. ${ctx.failed.get(L2.r1(n)) || ''}`.trim(), 'Check the router, the cables and that this PC can reach it. A firewall rule of this lab can also block SSH from this PC; then run the check from another host.'));
+            continue;
+        }
+        const d = r.d, t = `R${n}`;
+        const a1 = addrOf(d, L2.r1(n)), a2 = addrOf(d, L2.r2(n));
+        if (a1 && a2 && a1.prefix === 24 && a2.prefix === 24) res.push(R.pass(`${t}: LAN1 ${L2.r1(n)}/24 and LAN2 ${L2.r2(n)}/24`, `${a1.ifname} and ${a2.ifname}`));
+        else res.push(R[sev](`${t}: the addresses do not match Figure 1`, `LAN1 ${a1 ? a1.ip + '/' + a1.prefix : 'missing'}, LAN2 ${a2 ? a2.ip + '/' + a2.prefix : 'missing'}`, `Set up the router as in Lab 2: br-lan ${L2.r1(n)}/24 and an interface lan2 (device lan2) with ${L2.r2(n)}/24.`));
+        if (d.firewallRunning) res.push(R.pass(`${t}: the firewall is running`));
+        else res.push(R[sev](`${t}: the firewall is not running`, 'This lab needs the firewall on (in Labs 2 to 4 it was stopped).', '/etc/init.d/firewall enable; /etc/init.d/firewall start'));
+        if (!d.fw.present) { res.push(R[sev](`${t}: no firewall configuration found`, '"uci show firewall" is empty.', 'Check /etc/config/firewall (a reset brings back the default).')); continue; }
+        const z1 = a1 ? fwZoneOf(d, a1.ifname) : null, z2 = a2 ? fwZoneOf(d, a2.ifname) : null;
+        if (z1 && z2 && z1.name === zone && z2.name === zone) res.push(R.pass(`${t}: LAN1 and LAN2 are both in zone ${zone}`));
+        else if (a2 && !z2) res.push(R[sev](`${t}: LAN2 is in no firewall zone`, 'Traffic from and to LAN2 falls back to the global policies (input and forward REJECT), so there is no full connectivity.', zone === 'lan' ? "Network > Firewall > Zones > lan > Edit > Covered networks: add lan2.  CLI: uci add_list firewall.@zone[0].network='lan2'; uci commit firewall; /etc/init.d/firewall reload" : `Network > Firewall > Zones > ${zone} > Edit > Covered networks: lan and lan2.`));
+        else res.push(R[sev](`${t}: LAN1 is in zone ${z1 ? z1.name : 'none'} and LAN2 in zone ${z2 ? z2.name : 'none'}, expected ${zone}`, '', `Covered networks of zone ${zone}: lan and lan2.`));
+        const missing = seq(4).filter(y => y !== n && y !== L2.next(n) && !d.routes.some(rt => rt.dst === `10.1.${y}.0/24`));
+        if (!missing.length) res.push(R.pass(`${t}: routes to the two remote networks`));
+        else res.push(R[sev](`${t}: no route to ${missing.map(y => `10.1.${y}.0/24`).join(' and ')}`, 'Full connectivity comes first: use the static routes (or OSPF) of Lab 2.', 'Network > Routing > Static IPv4 Routes, as in Lab 2 Exercise 6.'));
+        if (!d.forwarding) res.push(R[sev](`${t}: IP forwarding is off`, '', 'echo 1 > /proc/sys/net/ipv4/ip_forward'));
+    }
+}
+
+// Flows that do not give the expected result, as short texts.
+function l5Expect(net, flows) {
+    const wrong = [], unknown = [];
+    for (const [src, dst, kind, want] of flows) {
+        const f = fwFlow(net, src, dst, kind);
+        if (f.unknown) unknown.push(`${src} > ${dst}`);
+        else if (f.ok !== want) wrong.push(`${kind} ${src} > ${dst} ${f.ok ? 'gets through' : 'is blocked: ' + fwBlocker(f)}`);
+    }
+    return { wrong, unknown };
+}
+
+CHECKS['5.ex1'] = {
+    plan: l5Plan(),
+    run(ctx) {
+        const res = [];
+        const pc = pcLab(ctx);
+        const mine = pc ? pc.net : null;
+        pcCheck(res, ctx, 24, pc ? l5Gw(pc.ip) : null);
+        const net = l5Routers(ctx);
+        l5Base(res, ctx, net, mine);
+        // 3.1 full connectivity between all hosts, apart from the rule of 3.3
+        if (net.routers.length === 4) {
+            const flows = [];
+            for (const s of L5_HOSTS) for (const d of L5_HOSTS) if (s !== d && l5Net(s) !== l5Net(d)) flows.push([s, d, 'ping', true]);
+            const { wrong } = l5Expect(net, flows);
+            if (!wrong.length) res.push(R.pass('Full connectivity: every host can ping every host in another subnet (predicted from the routers)'));
+            else res.push(R.fail(`${wrong.length} host-to-host ping(s) are blocked`, l5Show(wrong), 'Put lan2 in the lan zone on every router and check the routes; only the rule of 3.3 may block anything.'));
+        } else res.push(R.warn('Not all four routers could be read', 'Full connectivity between all subnets is only predicted when every router answers.'));
+        // 3.3 the .10 host may not reach its default gateway 10.1.x.2, the .11 host may
+        for (const s of seq(4)) {
+            const n = l5Prev(s), r = net.byN(n);
+            if (!r) continue;
+            const h10 = `10.1.${s}.10`, h11 = `10.1.${s}.11`, gw = `10.1.${s}.2`;
+            const sev = l5Sev(n, mine);
+            const ping10 = fwFlow(net, h10, gw, 'ping'), web10 = fwFlow(net, h10, gw, 'web');
+            // Blocked, but by a zone or global policy (lan2 in no zone): that is reported above, not as the rule of 3.3.
+            const stop = f => [...f.request.hops, ...(f.reply ? f.reply.hops : [])].find(x => x.verdict !== 'ACCEPT');
+            const notRule = f => !f.ok && stop(f) && stop(f).by !== 'rule';
+            if (notRule(ping10)) {
+                res.push(R[sev](`R${n}: ${h10} > ${gw} is blocked by the ${fwWhy(stop(ping10))}, not by a rule`, 'Restore full connectivity first (zones), then add the rule of 3.3.'));
+                continue;
+            }
+            if (!ping10.ok && !web10.ok) {
+                const h = stop(ping10);
+                res.push(R.pass(`R${n}: ${h10} can no longer reach ${gw} (ping and LuCI)`, `${fwWhy(h)}, action ${h.verdict}${h.verdict === 'REJECT' ? ' (the host gets an error back)' : ' (the packet disappears, the host waits for a timeout)'}`));
+            } else if (ping10.ok && !web10.ok) {
+                res.push(R[sev](`R${n}: ${h10} can still ping ${gw}`, 'LuCI is blocked, but ICMP is not: the protocol of the rule is probably TCP+UDP (the default).', 'Edit the rule: Protocol "Any".'));
+            } else {
+                res.push(R[sev](`R${n}: no rule blocks ${h10} > ${gw}`, `Rule 3.3 belongs on R${n}, the router that owns ${gw}.`, `Network > Firewall > Traffic Rules > Add: protocol Any, source zone lan, source address ${h10}, destination zone Device (input), destination address ${gw}, action reject.`));
+            }
+            const ping11 = fwFlow(net, h11, gw, 'ping');
+            if (!ping11.ok) res.push(R[sev](`R${n}: ${h11} cannot reach ${gw} either`, fwBlocker(ping11), 'The rule must match only the .10 host: source address ' + h10 + '.'));
+            const far = `10.1.${L2.next(L2.next(s))}.10`, away = fwFlow(net, h10, far, 'ping');
+            if (!away.unknown && !away.ok) res.push(R[sev](`R${n}: the rule also blocks ${h10} > ${far}`, fwBlocker(away), 'Only traffic to the router itself (destination zone Device, address ' + gw + ') may be blocked.'));
+        }
+        // the real test from this PC
+        if (pc && [10, 11].includes(pc.host)) {
+            const gw = `10.1.${pc.net}.2`;
+            expectPing(res, ctx, gw, `${gw} (the gateway of the .10 host)`, pc.host === 11, pc.host === 10 ? 'This PC is the .10 host: the rule of 3.3 blocks it.' : 'The .11 host is not matched by the rule.');
+            const far = `10.1.${L2.next(L2.next(pc.net))}.1${pc.host === 10 ? 0 : 1}`;
+            expectPing(res, ctx, far, 'a host two subnets away', true, 'Routing through the router is FORWARD traffic; the rule only matches INPUT to 10.1.x.2.');
+        }
+        manualQuestions(res, 'Describe how you restored full connectivity, explain INPUT versus FORWARD with the two example pings, and compare REJECT and DROP (error message versus timeout).');
+        return res;
+    }
+};
+
+CHECKS['5.ex2'] = {
+    plan: l5Plan(),
+    run(ctx) {
+        const res = [];
+        const pc = pcLab(ctx);
+        const mine = pc ? pc.net : null;
+        const net = l5Routers(ctx);
+        l5Base(res, ctx, net, mine);
+        for (const n of seq(4)) {
+            const r = net.byN(n);
+            if (!r) continue;
+            const t = `R${n}`, sev = l5Sev(n, mine);
+            const h10 = `10.1.${n}.10`, h11 = `10.1.${n}.11`, lan1 = L2.r1(n), lan2 = L2.r2(n);
+            const block = l5Rule(r.d, /block.?ssh/i), allow = l5Rule(r.d, /allow.?ssh/i);
+            const forward = block && block.dest;
+            if (forward) {
+                // 4.4: the rule became a forward rule
+                const own = fwFlow(net, h11, lan1, 'ssh');
+                const right = `10.1.${L2.next(n)}.3`, fr = fwFlow(net, h11, right, 'ssh');
+                res.push(R.info(`${t}: ${block.name} is a forward rule now (destination zone ${block.dest === '*' ? 'Any zone' : block.dest})`, `SSH ${h11} > ${lan1} ${own.ok ? 'works again' : 'is blocked'}: the router itself is INPUT, not FORWARD.`));
+                if (!fr.unknown) res.push(fr.ok ? R.info(`${t}: SSH ${h11} > ${right} (router on the right) is not blocked`, 'Set the destination address of the rule to ' + right + ' to block it.') : R.pass(`${t}: SSH ${h11} > ${right} is blocked while it passes through ${t}`, fwBlocker(fr)));
+            } else {
+                const s11 = fwFlow(net, h11, lan1, 'ssh');
+                if (!s11.ok) res.push(R.pass(`${t}: SSH ${h11} > ${lan1} is blocked`, fwBlocker(s11)));
+                else res.push(R[sev](`${t}: SSH ${h11} > ${lan1} is not blocked`, allow && block ? `${allow.name} is above ${block.name} or the block rule does not match (first match wins).` : 'No rule matches.', `Traffic rule Block_SSH_11: protocol TCP, source zone lan, source address ${h11}, destination zone Device (input), destination address ${lan1}, destination port 22, action reject.`));
+                const checks = [[h10, lan1, 'ssh', 'SSH from the .10 host'], [h11, lan1, 'ping', 'ping from the .11 host'], [h11, lan1, 'web', 'LuCI from the .11 host'], [h11, lan2, 'ssh', 'SSH from the .11 host to LAN2']];
+                const broken = checks.filter(([s, d, k]) => !fwFlow(net, s, d, k).ok).map(c => c[3]);
+                if (!broken.length) res.push(R.pass(`${t}: everything else keeps working (SSH from .10, ping and LuCI from .11, SSH to LAN2)`));
+                else res.push(R[broken.includes('LuCI from the .11 host') && broken.length === 1 ? 'warn' : sev](`${t}: the rule blocks too much: ${broken.join(', ')}`, broken.includes('LuCI from the .11 host') ? 'No destination port: every TCP service of LAN1 is blocked for .11 (step of 4.1).' : '', 'Set destination port 22 and the exact source and destination address.'));
+            }
+            if (allow) res.push(R.warn(`${t}: ${allow.name} still exists`, 'Delete Allow_SSH_11 after the test of 4.2.', 'Network > Firewall > Traffic Rules: delete it, Save & Apply.'));
+            if (block && r.d.fwCounters[block.name] != null) res.push(R.info(`${t}: ${block.name} matched ${r.d.fwCounters[block.name]} packet(s)`, 'Counter of nft list ruleset. Try SSH from .11 and run the check again: the counter goes up.'));
+        }
+        manualQuestions(res, 'Answer the questions of 4.1 to 4.4 (service filter, rule order, existing connections, nft counters, input versus forward).');
+        return res;
+    }
+};
+
+CHECKS['5.ex3'] = {
+    plan: l5Plan({ http: seq(4).map(n => `10.1.${L2.next(n)}.10:8000`) }),
+    run(ctx) {
+        const res = [];
+        const pc = pcLab(ctx);
+        const mine = pc ? pc.net : null;
+        const net = l5Routers(ctx);
+        for (const n of seq(4)) {
+            const r = net.byN(n);
+            const sev = l5Sev(n, mine);
+            if (!r) { res.push(R[sev](`Router ${n} cannot be read over SSH`, `Tried ${L2.r1(n)} and ${L2.r2(n)}.`)); continue; }
+            const t = `R${n}`, d = r.d;
+            const A = `10.1.${n}.11`, B = `10.1.${L2.next(n)}.10`;
+            if (!d.firewallRunning) { res.push(R[sev](`${t}: the firewall is not running`, '', '/etc/init.d/firewall start')); continue; }
+            const labo = d.fw.zones.find(z => z.name === 'labo');
+            if (!labo) {
+                res.push(R[sev](`${t}: there is no zone labo`, `Student A ${A} and student B ${B} use ${t}. If you already did the cleanup of 5.4, this is fine.`, 'Network > Firewall > Zones > Add: name labo, input/output/intra zone forward accept, covered networks lan and lan2.'));
+                continue;
+            }
+            if (['lan', 'lan2'].every(x => labo.networks.includes(x))) res.push(R.pass(`${t}: zone labo covers lan and lan2`));
+            else res.push(R[sev](`${t}: zone labo covers ${labo.networks.join(', ') || 'nothing'}`, '', 'Covered networks: lan and lan2.'));
+            if (labo.input !== 'ACCEPT' || labo.output !== 'ACCEPT') res.push(R.warn(`${t}: input ${labo.input}, output ${labo.output}`, 'Keep INPUT and OUTPUT on accept, otherwise you lose LuCI and SSH on the router.'));
+            const http = fwFlow(net, A, B, 'http8000'), ping = fwFlow(net, A, B, 'ping');
+            if (labo.forward === 'ACCEPT') {
+                res.push(R.info(`${t}: denylist (intra zone forward accept)`, 'Everything between the two networks is allowed unless a rule blocks it.'));
+                if (!http.ok) res.push(R.pass(`${t}: student A ${A} cannot open http://${B}:8000`, fwBlocker(http)));
+                else res.push(R[sev](`${t}: A ${A} can still open http://${B}:8000`, 'Rule Reject_A_to_B_HTTP is missing, disabled or does not match.', `Traffic rule: protocol TCP, source zone labo, source address ${A}, destination zone labo, destination address ${B}, destination port 8000, action reject.`));
+                if (ping.ok) res.push(R.pass(`${t}: ping A > B still works (the rule only matches TCP port 8000)`));
+                else res.push(R.warn(`${t}: ping A > B is blocked as well`, fwBlocker(ping), 'Exercise 5.1.2 blocks only the web server.'));
+            } else {
+                res.push(R.info(`${t}: allowlist (intra zone forward ${labo.forward.toLowerCase()})`, 'Everything forwarded between LAN1 and LAN2 is blocked unless a rule allows it, also the traffic of other pairs that passes through this router.'));
+                if (http.ok) res.push(R.pass(`${t}: A ${A} can open http://${B}:8000 through an allow rule`, http.request.hops.map(h => fwWhy(h)).join(' > ')));
+                else res.push(R[sev](`${t}: A ${A} cannot open http://${B}:8000`, fwBlocker(http), `Traffic rule Allow_A_to_B_HTTP: protocol TCP, source zone labo, source address ${A}, destination zone labo, destination address ${B}, destination port 8000, action accept.`));
+                if (ping.ok) res.push(R.pass(`${t}: ping A > B is allowed by a rule`, ping.request.hops.map(h => fwWhy(h)).join(' > ')));
+                else res.push(R.info(`${t}: ping A > B is blocked by the zone policy`, 'To allow it: protocol ICMP (type echo-request), source A, destination B, action accept. The echo reply is an established connection.'));
+                const back = fwFlow(net, B, A, 'http8000');
+                if (!back.ok) res.push(R.info(`${t}: B > A on port 8000 stays blocked`, 'The allow rule works in one direction; replies pass because the firewall is stateful.'));
+            }
+        }
+        if (pc && pc.host === 11) {
+            const target = `10.1.${L2.next(pc.net)}.10:8000`, h = ctx.http.get(target);
+            if (h) res.push(h.ok ? R.info(`This PC (student A) opens http://${target}`, `HTTP ${h.status}`) : R.info(`This PC (student A) cannot open http://${target}`, 'Blocked by the firewall, or the Python web server of student B is not running.'));
+        }
+        manualQuestions(res, 'Explain what allows the page without a rule, why the reject rule blocks only the web page, two ways around it, why replies pass in the allowlist and compare both models. Clean up at the end (5.4).');
+        return res;
+    }
+};
+
+// Exercise 4: the policy of NetCorp, line by line. Every line is tested from both hosts of the department.
+const L5_POLICIES = [
+    { no: 1, text: 'IT has full access to all departments', src: 1, kind: 'ping', to: [2, 3, 4], want: true },
+    { no: 2, text: 'IT can access the routers via SSH', src: 1, kind: 'ssh', to: 'routers', want: true },
+    { no: 3, text: 'Finance cannot access IT systems', src: 2, kind: 'ping', to: [1], want: false },
+    { no: 4, text: 'Finance cannot access the routers via SSH', src: 2, kind: 'ssh', to: 'routers', want: false },
+    { no: 5, text: 'Finance can access HR', src: 2, kind: 'ping', to: [3], want: true },
+    { no: 6, text: 'HR cannot use SSH to any device', src: 3, kind: 'ssh', to: 'all', want: false },
+    { no: 7, text: 'HR cannot access IT', src: 3, kind: 'ping', to: [1], want: false },
+    { no: 8, text: 'HR can access Finance', src: 3, kind: 'ping', to: [2], want: true },
+    { no: 9, text: 'HR can access the Guest network', src: 3, kind: 'ping', to: [4], want: true },
+    { no: 10, text: 'Guest cannot access IT, Finance or HR', src: 4, kind: 'ping', to: [1, 2, 3], want: false },
+    { no: 11, text: 'Guest cannot use SSH to any device', src: 4, kind: 'ssh', to: 'all', want: false },
+    { no: 12, text: 'Guest can only access its own subnet (router addresses in other subnets too)', src: 4, kind: 'ping', to: 'routersOutside', want: false, soft: true }
+];
+
+function l5Targets(p) {
+    const hostsOf = deps => L5_HOSTS.filter(h => deps.includes(l5Net(h)));
+    if (p.to === 'routers') return L5_ROUTER_IPS;
+    if (p.to === 'all') return [...L5_ROUTER_IPS, ...hostsOf(seq(4).filter(x => x !== p.src))];
+    if (p.to === 'routersOutside') return L5_ROUTER_IPS.filter(ip => l5Net(ip) !== p.src);
+    return hostsOf(p.to);
+}
+
+CHECKS['5.ex4'] = {
+    plan: l5Plan(),
+    run(ctx) {
+        const res = [];
+        const pc = pcLab(ctx);
+        const net = l5Routers(ctx);
+        if (!net.routers.length) {
+            res.push(pc && pc.net !== 1
+                ? R.info('No router accepts SSH from this PC', `This PC is in ${L5_DEPT[pc.net]} (${pc.ip}): SSH to the routers is refused, which is what policies 4, 6 and 11 ask. Run this check on an IT host (10.1.1.10 or 10.1.1.11) to read the rules of all routers.`)
+                : R.fail('No router could be read over SSH', 'IT must be able to reach every router with SSH (policy 2).', 'Check the Allow_SSH_IT rule (above the SSH block rule) on every router.'));
+        } else {
+            l5Base(res, ctx, net, null);
+            for (const r of net.routers) {
+                if (r.d.fw.zones.some(z => z.name === 'labo')) res.push(R.warn(`R${r.n}: zone labo still exists`, 'Cleanup of Exercise 3: delete it and put lan and lan2 back into zone lan.'));
+                const left = r.d.fw.rules.filter(x => x.enabled && /A_to_B/i.test(x.name)).map(x => x.name);
+                if (left.length) res.push(R.warn(`R${r.n}: ${left.join(', ')} still present`, 'Remove the temporary rules of Exercise 3.'));
+            }
+            if (net.routers.length < 4) res.push(R.warn(`Only ${net.routers.length} of the 4 routers could be read`, 'Tests whose packets cross a router that was not read are reported as unknown.'));
+            // every policy line, from both hosts of the department
+            const split = [];
+            for (const p of L5_POLICIES) {
+                const flows = [];
+                for (const s of [`10.1.${p.src}.10`, `10.1.${p.src}.11`]) for (const d of l5Targets(p)) flows.push([s, d, p.kind, p.want]);
+                const { wrong, unknown } = l5Expect(net, flows);
+                const head = `Policy ${p.no}: ${p.text}`;
+                if (!wrong.length && !unknown.length) res.push(R.pass(head, `${flows.length} ${p.kind} test(s) from 10.1.${p.src}.10 and 10.1.${p.src}.11, predicted from the rules and routes.`));
+                else if (!wrong.length) res.push(R.warn(`${head}: ${unknown.length} test(s) unknown`, 'They cross a router that could not be read: ' + l5Show(unknown)));
+                else res.push(R[p.soft ? 'warn' : 'fail'](`${head}: ${wrong.length} of ${flows.length} test(s) wrong`, l5Show(wrong),
+                    p.want ? 'Something blocks allowed traffic. Often it is the reply: a router that never saw the request evaluates the reply as a new packet. Place the rule on the router that sees both directions, or make it more specific.'
+                        : p.kind === 'ssh' ? 'SSH to a router is INPUT on that router: every router needs an accept rule for 10.1.1.0/24 above a reject rule for TCP port 22. SSH to hosts needs a forward rule on the routers the department uses as gateway.'
+                            : 'Put the reject rule on a router every packet of this department passes (look at the gateways of .10 and .11 and the routes).'));
+                for (const d of l5Targets(p)) {
+                    const a = fwFlow(net, `10.1.${p.src}.10`, d, p.kind), b = fwFlow(net, `10.1.${p.src}.11`, d, p.kind);
+                    if (!a.unknown && !b.unknown && a.ok !== b.ok) split.push(`${p.kind} > ${d}: ${a.ok ? '.10 works, .11 not' : '.11 works, .10 not'}`);
+                }
+            }
+            if (split.length) res.push(R.info('Some tests depend on the host of the department', `${l5Show(split, 6)}. The .10 host uses 10.1.x.2 (router x-1) and the .11 host 10.1.x.3 (router x) as gateway, and the reply can take another way back than the request.`));
+        }
+        // the real tests of this PC
+        if (pc && [10, 11].includes(pc.host)) {
+            const me = pc.net;
+            res.push(R.info(`This PC is in ${L5_DEPT[me]} (${pc.ip})`));
+            for (const p of L5_POLICIES.filter(x => x.src === me && x.kind === 'ping' && !x.soft)) {
+                for (const d of l5Targets(p).filter(x => x.endsWith('.10'))) expectPing(res, ctx, d, `${L5_DEPT[l5Net(d)]} host`, p.want, `Policy ${p.no}: ${p.text}.`);
+            }
+            const sshOk = L5_ROUTER_IPS.filter(ip => ctx.found.includes(ip));
+            if (me === 1) res.push(sshOk.length === 8 ? R.pass('SSH from this PC to all 8 router addresses works (policy 2)') : R.fail(`SSH from this PC works to ${sshOk.length} of 8 router addresses`, `No SSH: ${L5_ROUTER_IPS.filter(ip => !sshOk.includes(ip)).join(', ')}`, 'Allow_SSH_IT (TCP 22 from 10.1.1.0/24, destination Device) must be above the SSH block rule on every router.'));
+            else res.push(!sshOk.length ? R.pass('SSH from this PC to the routers is refused (policy 4, 6 or 11)') : R.fail(`SSH from this PC works to ${sshOk.join(', ')}`, 'Only IT may use SSH to a router.', 'Add the SSH reject rule (TCP 22, destination Device) on those routers, below Allow_SSH_IT.'));
+        }
+        manualQuestions(res, 'Fill in the table (which routers carry which rule and why), list your rules, test every policy from both hosts of each department and explain differences between the .10 and the .11 host.');
+        return res;
+    }
+};
+
 /* ---------- Running a check ---------- */
 
 // Runs the check of one exercise and returns { results, counts }.
@@ -805,7 +1094,8 @@ async function runCheck(labNumber, exerciseId, progress) {
     const check = CHECKS[`${labNumber}.${exerciseId}`];
     if (!check) return { results: [R.manual('No automatic check for this exercise', 'Answer the questions in the Guide tab.')], counts: { manual: 1 } };
     const plan = Object.assign({ candidates: [], sections: ['board'], pcPing: [], devPing: {}, http: [], stp: false, local: false }, check.plan);
-    const ctx = await collect(plan, progress);
+    // ?demo=lab5: the routers of the chosen scenario are simulated in the page (demo5.js).
+    const ctx = labNumber === 5 && Demo5.active ? Demo5.collect(plan) : await collect(plan, progress);
     const results = check.run(ctx);
     const counts = {};
     for (const r of results) counts[r.status] = (counts[r.status] || 0) + 1;

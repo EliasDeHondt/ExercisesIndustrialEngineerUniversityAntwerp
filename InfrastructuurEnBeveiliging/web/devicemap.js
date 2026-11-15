@@ -6,7 +6,7 @@
 
 'use strict';
 
-// The monitor of Lab 1 and Lab 2: the devices of the figure, drawn as cards that turn green or red depending on whether this PC
+// The monitor of Lab 1, Lab 2 and Lab 5: the devices of the figure, drawn as cards that turn green or red depending on whether this PC
 // can ping them, with the settings of the switches and routers (read-only) on each card.
 
 const DM = { unitX: 170, unitY: 200, cardW: 150, cardH: 126 };
@@ -26,7 +26,7 @@ function mapSpec(labId) {
             links: [['sw', 'rt'], ['h1', 'sw'], ['h2', 'rt']]
         };
     }
-    // Lab 2: four pairs. Switch n at the bottom, router n between switch n and switch n+1 (router 4 closes the ring to switch 1).
+    // Lab 2 and Lab 5: four pairs. Switch n at the bottom, router n between switch n and switch n+1 (router 4 closes the ring to switch 1).
     const nodes = [], links = [];
     for (let n = 1; n <= 4; n++) {
         const x = (n - 1) * 2 + 0.5, next = n % 4 + 1;
@@ -36,7 +36,9 @@ function mapSpec(labId) {
         nodes.push({ id: `h${n}b`, type: 'host', label: `Host ${n}.11`, ips: [['', `10.1.${n}.11`]], x: x + 0.5, y: 2 });
         links.push([`h${n}a`, `sw${n}`], [`h${n}b`, `sw${n}`], [`rt${n}`, `sw${n}`], [`rt${n}`, `sw${next}`]);
     }
-    return { title: 'Figure 2: switches, routers and hosts', nodes, links };
+    // Lab 5 adds the default gateways of the hosts (.10 uses 10.1.n.2, .11 uses 10.1.n.3) and the firewall.
+    if (labId === 5) for (const nd of nodes.filter(x => x.type === 'host')) nd.hint = `gateway ${nd.ips[0][1].replace(/\.(\d+)$/, (m, h) => h === '10' ? '.2' : '.3')}`;
+    return { title: labId === 5 ? 'Figure 1: full connectivity with the firewall on' : 'Figure 2: switches, routers and hosts', nodes, links };
 }
 
 const DeviceMap = {
@@ -55,7 +57,9 @@ const DeviceMap = {
         this.labId = labId;
         this.active = true;
         this.spec = mapSpec(labId);
+        this.demo = labId === 5 && Demo5.active;   // demo5.js: simulated routers instead of real devices
         this.polls = 0; this.pings = {}; this.facts = new Map();
+        if (this.demo) Demo5.controls($('mapDemo'), () => this.poll()); else $('mapDemo').hidden = true;
         this.build();
         this.poll();
     },
@@ -72,7 +76,9 @@ const DeviceMap = {
         let maxX = 0, maxY = 0;
         for (const n of this.spec.nodes) {
             const el = document.createElement('div');
-            el.className = `stp-dm-node stp-dm-${n.type}`;
+            el.className = `stp-dm-node stp-dm-${n.type}${this.demo && n.type === 'host' ? ' cursor-pointer' : ''}`;
+            el.dataset.ip = n.ips[0][1];
+            if (this.demo && n.type === 'host') el.title = 'Demo: click to make this host "this PC"';
             el.style.width = DM.cardW + 'px';
             el.style.left = n.x * DM.unitX + 'px';
             el.style.top = n.y * DM.unitY + 'px';
@@ -87,6 +93,10 @@ const DeviceMap = {
             maxX = Math.max(maxX, n.x * DM.unitX + DM.cardW);
             maxY = Math.max(maxY, n.y * DM.unitY + DM.cardH);
         }
+        box.onclick = e => {
+            const host = this.demo && !e.target.closest('[data-term]') && e.target.closest('.stp-dm-host');
+            if (host) { Demo5.setViewer(host.dataset.ip); Demo5.controls($('mapDemo'), () => this.poll()); this.poll(); }
+        };
         box.style.width = maxX + 'px';
         box.style.height = maxY + 'px';
         const svg = $('mapLines');
@@ -115,6 +125,14 @@ const DeviceMap = {
     async poll() {
         clearTimeout(this.timer);
         if (!this.active || this.busy) return;
+        if (this.demo) {
+            const ips = this.spec.nodes.flatMap(n => n.ips.map(x => x[1]));
+            this.pings = Demo5.pings(ips);
+            this.facts = Demo5.facts(this.spec.nodes.filter(n => n.type === 'router').map(n => n.ips[0][1]));
+            this.render();
+            $('mapError').textContent = '';
+            return;
+        }
         this.busy = true;
         $('refreshBtn').classList.add('stp-spinning');
         try {
@@ -138,13 +156,15 @@ const DeviceMap = {
         const targets = this.spec.nodes.filter(n => ['switch', 'router', 'device'].includes(n.type) && this.pings[n.ips[0][1]] && this.pings[n.ips[0][1]].ok).map(n => n.ips[0][1]);
         if (!targets.length) return;
         try {
-            const data = await api(`/api/facts?ips=${targets.join(',')}&sections=board,addr,route,firewall,fwd,frrdaemons`);
+            const data = await api(`/api/facts?ips=${targets.join(',')}&sections=board,addr,route,firewall,fwd,frrdaemons${this.labId === 5 ? ',uci,fwuci' : ''}`);
             for (const d of data.devices) { if (d.ok) this.facts.set(d.ip, parseDevice(d.ip, d.sections)); else this.facts.delete(d.ip); }
         } catch { /* the cards keep their last settings */ }
     },
 
     describe(n) {
         const d = this.facts.get(n.ips[0][1]);
+        if (this.demo && n.type === 'host' && n.ips[0][1] === Demo5.viewer) return `this PC · ${n.hint}`;
+        if (this.demo && n.type === 'switch') return 'switch (Layer 2, not simulated)';
         if (!d) return n.hint || (n.type === 'host' ? 'host (ping only)' : 'no SSH answer');
         const parts = [];
         const main = addrOf(d, n.ips[0][1]);
@@ -158,6 +178,10 @@ const DeviceMap = {
             parts.push(main ? `mask /${main.prefix}` : 'address ?');
         }
         parts.push(d.firewallRunning ? 'firewall ON' : 'firewall off');
+        if (this.labId === 5 && d.fw.present) {
+            const rules = d.fw.rules.filter(r => r.enabled && r.src !== 'wan').length;   // the default rules of OpenWrt are all for the wan zone
+            parts.push(`${rules} own rule${rules === 1 ? '' : 's'}`);
+        }
         parts.push(d.defaultGw ? `gw ${d.defaultGw}` : 'no gw');
         return parts.join(' · ');
     },
@@ -171,14 +195,16 @@ const DeviceMap = {
             total += n.ips.length; ok += up;
             el.querySelector('.stp-node-dot').className = 'stp-node-dot' + (up === n.ips.length ? ' stp-ok' : up ? ' stp-trn' : '');
             el.classList.toggle('stp-down', up === 0);
+            el.classList.toggle('stp-dm-me', !!this.demo && n.ips[0][1] === Demo5.viewer);
             n.ips.forEach(([, ip], i) => {
                 const row = el.querySelector(`.stp-dm-ip[data-ip="${ip}"]`);
                 const r = results[i];
                 row.className = 'stp-dm-ip' + (r && r.ok ? ' stp-up' : '');
                 row.querySelector('em').textContent = r && r.ok ? (r.ms != null ? `${r.ms} ms` : 'up') : 'down';
+                row.title = r && r.text ? r.text : '';
             });
             const meta = el.querySelector('.stp-dm-meta');
-            const text = up ? this.describe(n) : (n.hint || 'not answering');
+            const text = up || this.demo ? this.describe(n) : (n.hint || 'not answering');
             meta.textContent = text;
             meta.title = text;
         }
@@ -187,7 +213,7 @@ const DeviceMap = {
             const alive = [a, b].every(n => n.ips.some(([, ip]) => this.pings[ip] && this.pings[ip].ok));
             line.setAttribute('class', 'stp-link ' + (alive ? 'stp-link--fwd' : 'stp-link--cut'));
         }
-        $('mapSummary').textContent = `${ok} of ${total} addresses answer ping from this PC`;
+        $('mapSummary').textContent = this.demo ? `${ok} of ${total} addresses answer ping from ${Demo5.viewer} (demo)` : `${ok} of ${total} addresses answer ping from this PC`;
         const st = $('status');
         st.className = `stp-status stp-status--${ok === total ? 'ok' : ok ? 'warn' : 'bad'}`;
         st.textContent = `${ok}/${total} reachable`;

@@ -28,6 +28,7 @@ const ICONS = {
     terminal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>',
     route: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/></svg>',
     tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="16" width="6" height="5" rx="1"/><rect x="16" y="16" width="6" height="5" rx="1"/><path d="M12 7v4M5 16v-3h14v3"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>',
     layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-7h6v7"/></svg>'
 };
@@ -89,7 +90,7 @@ function route() {
     const parts = location.hash.replace(/^#\/?/, '').split('/').filter(Boolean);
     const q = new URLSearchParams(location.search);
     if (!parts.length && q.get('demo')) {
-        location.hash = q.get('demo') === 'lab4' ? '#/lab/4/monitor' : '#/lab/3/monitor';
+        location.hash = q.get('demo') === 'lab5' ? '#/lab/5/monitor' : q.get('demo') === 'lab4' ? '#/lab/4/monitor' : '#/lab/3/monitor';
         return;
     }
     if (parts[0] === 'lab' && labByNumber(parts[1])) {
@@ -129,7 +130,7 @@ function showHome() {
                 </article>`;
             }).join('')}
         </div>
-        <p class="stp-muted">Labs 5 to 8 (firewalls, VPNs, security validation) follow when their guides are available.</p>`;
+        <p class="stp-muted">Labs 6 to 8 (VPNs, security validation) follow when their guides are available.</p>`;
     window.scrollTo(0, 0);
 }
 
@@ -327,7 +328,9 @@ function renderCheck(lab) {
     const sel = SHELL.checkEx[lab.n];
     const ex = lab.exercises.find(e => e.id === sel);
     const hasCheck = !!CHECKS[`${lab.n}.${sel}`];
-    $('tab-check').innerHTML = `
+    const demo = lab.n === 5 && Demo5.active;
+    if (demo) Demo5.forExercise(sel);
+    $('tab-check').innerHTML = `${demo ? '<div class="stp-demo-bar" id="checkDemo"></div>' : ''}
         <div class="stp-seg" id="checkTabs">${lab.exercises.map(e => {
             const r = load(`ieb-check-${lab.n}-${e.id}`, null);
             return `<button class="stp-seg-btn cursor-pointer${e.id === sel ? ' stp-active' : ''}" type="button" data-ex="${e.id}">${esc(e.title.replace(/^Exercise (\d+)[a-z]*: /, 'Ex $1: ').replace(/^Extra: /, 'Extra: '))}${r ? `<span class="stp-seg-dot ${r.fail ? 'stp-bad' : r.warn ? 'stp-warn' : 'stp-ok'}"></span>` : ''}</button>`;
@@ -335,7 +338,7 @@ function renderCheck(lab) {
         <section class="stp-card">
             <div class="stp-check-head">
                 <div><h2 class="stp-card-title" style="margin-bottom:4px">${esc(ex.title)}</h2>
-                    <p class="stp-muted">${hasCheck ? 'Reads your switches and routers (read-only) and tells you what is right and what is not.' : 'This exercise has no automatic check.'}</p></div>
+                    <p class="stp-muted">${!hasCheck ? 'This exercise has no automatic check.' : demo ? 'Demo: checks the simulated routers of the chosen scenario, as seen from the chosen host.' : 'Reads your switches and routers (read-only) and tells you what is right and what is not.'}</p></div>
                 <div class="stp-check-actions">
                     <label class="stp-check cursor-pointer"><input class="cursor-pointer" type="checkbox" id="autoRun"> re-run every 5 s</label>
                     <button class="stp-btn stp-btn--primary cursor-pointer" id="runCheck" type="button">Run check</button>
@@ -348,6 +351,7 @@ function renderCheck(lab) {
         if (b) { SHELL.checkEx[lab.n] = b.dataset.ex; clearInterval(SHELL.auto); SHELL.auto = null; renderCheck(lab); }
     });
     $('runCheck').addEventListener('click', () => doCheck(lab, sel));
+    if (demo) Demo5.controls($('checkDemo'), () => { delete SHELL.results[`${lab.n}.${sel}`]; doCheck(lab, sel); });
     $('autoRun').addEventListener('change', e => {
         clearInterval(SHELL.auto);
         SHELL.auto = null;

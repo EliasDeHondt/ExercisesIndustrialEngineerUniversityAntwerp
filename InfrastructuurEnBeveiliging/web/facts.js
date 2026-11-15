@@ -186,7 +186,9 @@ function parseDevice(ip, sections) {
         ospfNeighbors: parseOspfNeighbors(s.ospfnbr),
         ripText: s.ripdb || '',
         clsact: (s.tc || '').trim().length > 0,
-        internet: (s.internet || '').trim() === 'up'
+        internet: (s.internet || '').trim() === 'up',
+        fw: parseFirewall(s.fwuci),                 // fwsim.js
+        fwCounters: parseFwCounters(s.fwcount)
     };
     d.defaultGw = (d.routes.find(r => r.dst === 'default') || {}).via || null;
     return d;
@@ -218,7 +220,11 @@ async function collect(plan, progress = () => { }) {
         if (!ctx.devices.has(src)) continue;
         jobs.push(api(`/api/devping?ip=${src}&targets=${targets.join(',')}`).then(r => { if (r.ok) ctx.dev.set(src, r.results); }).catch(() => { /* device unreachable */ }));
     }
-    for (const ip of plan.http || []) jobs.push(api(`/api/http?ip=${ip}`).then(r => { ctx.http.set(ip, r); }).catch(() => { /* ignored */ }));
+    // An entry is "ip" (port 80) or "ip:port".
+    for (const target of plan.http || []) {
+        const [ip, port] = target.split(':');
+        jobs.push(api(`/api/http?ip=${ip}${port ? '&port=' + port : ''}`).then(r => { ctx.http.set(target, r); }).catch(() => { /* ignored */ }));
+    }
     if (plan.local) jobs.push(api('/api/local').then(r => { ctx.local = r; }).catch(() => { ctx.local = null; }));
     if (plan.stp) {
         const ips = found.filter(ip => ctx.devices.has(ip) && ctx.devices.get(ip).role !== 'router');
