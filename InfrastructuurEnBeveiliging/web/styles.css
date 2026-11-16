@@ -1106,6 +1106,8 @@ label.stp-opt:hover { background: rgba(128, 128, 128, .08); }
 .stp-dm-ip i { width: 8px; height: 8px; border-radius: 50%; background: var(--bad); flex-shrink: 0; }
 .stp-dm-ip.stp-up i { background: var(--ok); }
 .stp-dm-ip em { margin-left: auto; font-style: normal; color: var(--secondary); }
+.stp-dm-ip.stp-via i { background: transparent; border: 2px solid var(--ok); box-sizing: border-box; }
+.stp-dm-ip.stp-via em { color: var(--primary); }
 .stp-dm-node.stp-dm-me { box-shadow: 0 0 0 2px var(--primary), 0 8px 18px rgba(0, 0, 0, .1); }
 .stp-dm-node.stp-dm-me .stp-dm-type::before { content: 'this PC'; color: var(--primary); }
 

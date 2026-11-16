@@ -764,16 +764,21 @@ async function readFacts(ip, names) {
 }
 
 // Pings from one switch or router to other addresses (shows what that device can reach).
+// All pings run at the same time on the device, so 20 unreachable addresses still take about one second.
+// results = { target: true/false }, ms = { target: round-trip time } for the targets that answered.
 async function deviceRun(ip, targets) {
-    const script = targets.map(t => `if ping -c 1 -W 1 ${t} >/dev/null 2>&1; then echo "${t} up"; else echo "${t} down"; fi`).join('; ');
-    const r = await sshRun(ip, script, 6000 + targets.length * 1500);
+    const one = t => `(if o=$(ping -c 1 -W 1 ${t} 2>/dev/null); then echo "${t} up $(echo "$o" | sed -n 's/.*time=\\([0-9.]*\\).*/\\1/p' | head -n 1)"; else echo "${t} down"; fi) &`;
+    const script = targets.map(one).join(' ') + ' wait';
+    const r = await sshRun(ip, script, 8000);
     if (!r.ok) return { ip, ok: false, error: r.error };
-    const results = {};
+    const results = {}, ms = {};
     for (const line of r.output.split('\n')) {
-        const m = line.match(/^(\S+) (up|down)$/);
-        if (m) results[m[1]] = m[2] === 'up';
+        const m = line.trim().match(/^(\S+) (up|down)(?: ([\d.]+))?$/);
+        if (!m) continue;
+        results[m[1]] = m[2] === 'up';
+        if (m[3]) ms[m[1]] = Number(m[3]);
     }
-    return { ip, ok: true, results };
+    return { ip, ok: true, results, ms };
 }
 
 // Pings from this PC (the PC that runs the server).
@@ -918,7 +923,7 @@ const server = http.createServer(async (req, res) => {
 
     if (url.pathname === '/api/devping') {
         const ip = url.searchParams.get('ip') || '';
-        const targets = [...new Set((url.searchParams.get('targets') || '').split(',').map(s => s.trim()).filter(Boolean))].slice(0, 16);
+        const targets = [...new Set((url.searchParams.get('targets') || '').split(',').map(s => s.trim()).filter(Boolean))].slice(0, 48);
         if (!IP_RE.test(ip) || !targets.length || !targets.every(t => IP_RE.test(t))) return sendJson(res, 400, { error: 'invalid ip or targets' });
         return sendJson(res, 200, await cached(`devping|${ip}|${targets.join(',')}`, 1500, () => deviceRun(ip, targets)));
     }

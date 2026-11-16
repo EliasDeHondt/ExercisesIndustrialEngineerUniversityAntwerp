@@ -138,6 +138,7 @@ const DeviceMap = {
         try {
             const ips = this.spec.nodes.flatMap(n => n.ips.map(x => x[1]));
             this.pings = (await api(`/api/ping?ips=${ips.join(',')}`)).results;
+            await this.pingViaRouters(ips);
             // Settings of the switches and routers that answer, a few times slower than the pings.
             if (this.polls % 3 === 0) await this.readFacts();
             this.polls++;
@@ -152,8 +153,33 @@ const DeviceMap = {
         }
     },
 
+    // Addresses this PC cannot ping are pinged again from every router this PC can log in to (SSH, the pings run on the router).
+    // An address that a router reaches counts as reachable and shows "via Router n". A router does not ping its own addresses.
+    async pingViaRouters(ips) {
+        const direct = ip => this.pings[ip] && this.pings[ip].ok && !this.pings[ip].via;
+        const down = ips.filter(ip => !direct(ip));
+        if (!down.length) return;
+        const routers = this.spec.nodes.filter(n => n.type === 'router')
+            .map(n => ({ label: n.label, own: n.ips.map(x => x[1]), ip: n.ips.map(x => x[1]).find(direct) }))
+            .filter(r => r.ip);
+        await Promise.all(routers.map(async r => {
+            const targets = down.filter(t => !r.own.includes(t));
+            if (!targets.length) return;
+            try {
+                const res = await api(`/api/devping?ip=${r.ip}&targets=${targets.join(',')}`);
+                if (!res.ok) return;
+                for (const t of targets) {
+                    if (!res.results[t] || (this.pings[t] && this.pings[t].ok)) continue;
+                    const ms = res.ms && res.ms[t] != null ? res.ms[t] : null;
+                    this.pings[t] = { ok: true, ms, via: r.label, text: `This PC cannot ping ${t} directly. ${r.label} (${r.ip}) can: pinged on the router over SSH.` };
+                }
+            } catch { /* router not reachable over SSH */ }
+        }));
+    },
+
     async readFacts() {
-        const targets = this.spec.nodes.filter(n => ['switch', 'router', 'device'].includes(n.type) && this.pings[n.ips[0][1]] && this.pings[n.ips[0][1]].ok).map(n => n.ips[0][1]);
+        // Only devices this PC reaches itself: SSH goes from this PC, not through a router.
+        const targets = this.spec.nodes.filter(n => ['switch', 'router', 'device'].includes(n.type) && this.pings[n.ips[0][1]] && this.pings[n.ips[0][1]].ok && !this.pings[n.ips[0][1]].via).map(n => n.ips[0][1]);
         if (!targets.length) return;
         try {
             const data = await api(`/api/facts?ips=${targets.join(',')}&sections=board,addr,route,firewall,fwd,frrdaemons${this.labId === 5 ? ',uci,fwuci' : ''}`);
@@ -199,8 +225,8 @@ const DeviceMap = {
             n.ips.forEach(([, ip], i) => {
                 const row = el.querySelector(`.stp-dm-ip[data-ip="${ip}"]`);
                 const r = results[i];
-                row.className = 'stp-dm-ip' + (r && r.ok ? ' stp-up' : '');
-                row.querySelector('em').textContent = r && r.ok ? (r.ms != null ? `${r.ms} ms` : 'up') : 'down';
+                row.className = 'stp-dm-ip' + (r && r.ok ? ' stp-up' : '') + (r && r.via ? ' stp-via' : '');
+                row.querySelector('em').textContent = r && r.ok ? (r.via ? `via ${r.via.replace('Router ', 'R')}` : r.ms != null ? `${r.ms} ms` : 'up') : 'down';
                 row.title = r && r.text ? r.text : '';
             });
             const meta = el.querySelector('.stp-dm-meta');
@@ -213,7 +239,9 @@ const DeviceMap = {
             const alive = [a, b].every(n => n.ips.some(([, ip]) => this.pings[ip] && this.pings[ip].ok));
             line.setAttribute('class', 'stp-link ' + (alive ? 'stp-link--fwd' : 'stp-link--cut'));
         }
-        $('mapSummary').textContent = this.demo ? `${ok} of ${total} addresses answer ping from ${Demo5.viewer} (demo)` : `${ok} of ${total} addresses answer ping from this PC`;
+        const via = Object.values(this.pings).filter(r => r && r.ok && r.via).length;
+        $('mapSummary').textContent = this.demo ? `${ok} of ${total} addresses answer ping from ${Demo5.viewer} (demo)`
+            : `${ok} of ${total} addresses answer ping` + (via ? ` (${ok - via} from this PC, ${via} via a router)` : ' from this PC');
         const st = $('status');
         st.className = `stp-status stp-status--${ok === total ? 'ok' : ok ? 'warn' : 'bad'}`;
         st.textContent = `${ok}/${total} reachable`;
