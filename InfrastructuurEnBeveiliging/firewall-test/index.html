@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Hello from Student B</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#4f94f0">
+        <link rel="icon" href="assets/favicon.ico">
+        <style>
+            :root {
+                --text: #0c0e11;
+                --background: #f6f7f9;
+                --primary: #4f94f0;
+                --secondary: #6c757d;
+                --accent: #829ec2;
+                --ok: #10b981;
+                color-scheme: light;
+            }
+
+            @font-face {
+                font-family: 'Roboto';
+                font-style: normal;
+                font-weight: 400;
+                src: url(assets/roboto-latin.woff2) format('woff2');
+            }
+
+            * { box-sizing: border-box; }
+
+            html, body { height: 100%; }
+
+            body {
+                margin: 0;
+                font-family: 'Roboto', Arial, sans-serif;
+                background: var(--background);
+                color: var(--text);
+                display: flex;
+                flex-direction: column;
+            }
+
+            .bar {
+                height: 68px;
+                padding: 0 24px;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+                color: #fff;
+            }
+
+            .bar img { height: 36px; width: auto; }
+            .bar b { font-size: 17px; letter-spacing: .02em; }
+            .bar span { margin-left: auto; font-size: 13px; opacity: .85; }
+
+            main {
+                flex: 1;
+                display: grid;
+                place-items: center;
+                padding: 24px 16px;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 520px;
+                padding: 32px;
+                border-radius: 14px;
+                border: 1px solid rgba(128, 128, 128, .14);
+                background: linear-gradient(165deg, var(--background), rgba(128, 128, 128, .06));
+                box-shadow: 0 10px 30px rgba(0, 0, 0, .08);
+            }
+
+            h1 {
+                margin: 0 0 8px;
+                font-size: 32px;
+                line-height: 1.2;
+                color: var(--primary);
+            }
+
+            p { margin: 0 0 22px; color: var(--secondary); line-height: 1.5; }
+
+            dl {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 8px 18px;
+                margin: 0;
+                padding-top: 18px;
+                border-top: 1px solid rgba(128, 128, 128, .16);
+                font-size: 14px;
+            }
+
+            dt { color: var(--secondary); }
+            dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; word-break: break-all; }
+        </style>
+    </head>
+    <body>
+        <header class="bar">
+            <img src="assets/logo.png" alt="EliasDH">
+            <b>Firewall test</b>
+            <span>Lab 5 · Exercise 3</span>
+        </header>
+
+        <main>
+            <section class="card">
+                <h1>Hello from Student B</h1>
+                <p>If you can read this page, the firewall let your HTTP request through. With the rule <b>Reject_A_to_B_HTTP</b> active, student A gets "connection refused" instead.</p>
+                <dl>
+                    <dt>Server</dt><dd id="server">-</dd>
+                    <dt>Port</dt><dd id="port">-</dd>
+                    <dt>Loaded at</dt><dd id="time">-</dd>
+                </dl>
+            </section>
+        </main>
+
+        <script>
+            document.getElementById('server').textContent = location.hostname;
+            document.getElementById('port').textContent = location.port || '80';
+            document.getElementById('time').textContent = new Date().toLocaleTimeString();
+        </script>
+    </body>
+</html>
