@@ -50,6 +50,7 @@ const DeviceMap = {
     polls: 0,
     pings: {},
     facts: new Map(),
+    fw: { rows: new Map(), log: [], reached: [], missing: [] },
     els: new Map(),
 
     enter(labId) {
@@ -59,6 +60,8 @@ const DeviceMap = {
         this.spec = mapSpec(labId);
         this.demo = labId === 5 && Demo5.active;   // demo5.js: simulated routers instead of real devices
         this.polls = 0; this.pings = {}; this.facts = new Map();
+        this.fw = { rows: new Map(), log: [], reached: [], missing: [] };
+        $('fwLive').hidden = labId !== 5;
         if (this.demo) Demo5.controls($('mapDemo'), () => this.poll()); else $('mapDemo').hidden = true;
         this.build();
         this.poll();
@@ -129,6 +132,7 @@ const DeviceMap = {
             const ips = this.spec.nodes.flatMap(n => n.ips.map(x => x[1]));
             this.pings = Demo5.pings(ips);
             this.facts = Demo5.facts(this.spec.nodes.filter(n => n.type === 'router').map(n => n.ips[0][1]));
+            if (this.labId === 5) this.firewallFromDemo();
             this.render();
             $('mapError').textContent = '';
             return;
@@ -141,6 +145,8 @@ const DeviceMap = {
             await this.pingViaRouters(ips);
             // Settings of the switches and routers that answer, a few times slower than the pings.
             if (this.polls % 3 === 0) await this.readFacts();
+            // Lab 5: the firewall counters every poll, so a blocked packet shows up within a few seconds.
+            if (this.labId === 5) await this.readFirewall();
             this.polls++;
             this.render();
             $('mapError').textContent = '';
@@ -175,6 +181,91 @@ const DeviceMap = {
                 }
             } catch { /* router not reachable over SSH */ }
         }));
+    },
+
+    // Lab 5: the counters ("nft list ruleset"), the rules ("uci show firewall") and the logged packets ("logread") of every router
+    // this PC can log in to. Only the routers this PC reaches itself: SSH goes from this PC.
+    async readFirewall() {
+        const routers = this.spec.nodes.filter(n => n.type === 'router')
+            .map(n => ({ label: n.label, ip: n.ips.map(x => x[1]).find(ip => this.pings[ip] && this.pings[ip].ok && !this.pings[ip].via) }));
+        const reach = routers.filter(r => r.ip);
+        this.fw.reached = reach.map(r => r.label);
+        this.fw.missing = routers.filter(r => !r.ip).map(r => r.label);
+        if (!reach.length) return;
+        try {
+            const data = await api(`/api/facts?ips=${reach.map(r => r.ip).join(',')}&sections=fwcount,fwuci,fwlog`);
+            for (const d of data.devices) {
+                const r = reach.find(x => x.ip === d.ip);
+                if (r && d.ok) this.firewallUpdate(r.label, parseFwCounters(d.sections.fwcount), parseFirewall(d.sections.fwuci || ''), d.sections.fwlog || '');
+            }
+        } catch { /* the table keeps its last values */ }
+    },
+
+    firewallFromDemo() {
+        this.fw.reached = []; this.fw.missing = [];
+        for (const n of this.spec.nodes.filter(x => x.type === 'router')) {
+            const d = this.facts.get(n.ips[0][1]);
+            if (!d) continue;
+            this.fw.reached.push(n.label);
+            this.firewallUpdate(n.label, d.fwCounters || {}, d.fw, '');
+        }
+    },
+
+    // Compares the new counters with the previous poll: a counter that went up means the rule matched packets just now.
+    firewallUpdate(label, counters, fw, logText) {
+        const now = Date.now();
+        const rules = fw && fw.present ? fw.rules.filter(r => r.enabled && r.src !== 'wan') : null;   // the default rules of OpenWrt are for wan
+        const names = rules ? rules.map(r => r.name) : Object.keys(counters);
+        for (const [key, row] of this.fw.rows) if (row.label === label && !names.includes(row.rule)) this.fw.rows.delete(key);
+        names.forEach((name, i) => {
+            const key = `${label}|${name}`;
+            const old = this.fw.rows.get(key);
+            const rule = rules ? rules[i] : null;
+            const row = {
+                label, rule: name, order: i, count: counters[name] || 0,
+                target: rule ? rule.target : '', what: rule ? fwRuleText(rule) : '',
+                lastHit: old ? old.lastHit : 0, lastDelta: old ? old.lastDelta : 0
+            };
+            // After a firewall reload the counters start again at 0: that is not a hit.
+            if (old && row.count > old.count) { row.lastHit = now; row.lastDelta = row.count - old.count; }
+            this.fw.rows.set(key, row);
+        });
+        this.fw.log = this.fw.log.filter(e => e.label !== label)
+            .concat(String(logText).split('\n').map(l => parseFwLogLine(l, label)).filter(Boolean));
+    },
+
+    fwRecent(row) {
+        return row.lastHit && Date.now() - row.lastHit < 8000;
+    },
+
+    renderFirewall() {
+        if (this.labId !== 5) return;
+        const rows = [...this.fw.rows.values()].sort((a, b) => a.label.localeCompare(b.label) || a.order - b.order);
+        const blocking = rows.filter(r => this.fwRecent(r) && r.target !== 'ACCEPT');
+        const info = [];
+        if (this.fw.reached.length) info.push(`read from ${this.fw.reached.map(l => l.replace('Router ', 'R')).join(', ')}`);
+        if (!this.demo && this.fw.missing.length) info.push(`${this.fw.missing.map(l => l.replace('Router ', 'R')).join(', ')} not reachable over SSH`);
+        if (blocking.length) info.unshift(`${blocking.length} rule${blocking.length === 1 ? '' : 's'} blocking now`);
+        $('fwLiveInfo').textContent = info.join(' · ');
+
+        const ago = t => { const s = Math.round((Date.now() - t) / 1000); return s < 60 ? `${s} s ago` : s < 3600 ? `${Math.round(s / 60)} min ago` : 'long ago'; };
+        $('fwRules').innerHTML = rows.length ? `
+            <thead><tr><th>Router</th><th>Rule</th><th>Matches</th><th>Action</th><th class="stp-num">Packets</th><th>Last hit</th></tr></thead>
+            <tbody>${rows.map(r => {
+                const hit = this.fwRecent(r);
+                const pill = r.target ? `<span class="stp-pill stp-pill--${r.target === 'ACCEPT' ? 'forwarding' : 'blocking'}">${esc(r.target)}</span>` : '';
+                return `<tr class="${hit ? 'stp-fw-hit' : ''}${r.target === 'ACCEPT' ? ' stp-fw-accept' : ''}">
+                    <td>${esc(r.label.replace('Router ', 'R'))}</td><td><b>${esc(r.rule)}</b></td><td>${esc(r.what)}</td><td>${pill}</td>
+                    <td class="stp-num">${r.count}${hit ? ` <span class="stp-fw-delta">+${r.lastDelta}</span>` : ''}</td>
+                    <td>${r.lastHit ? ago(r.lastHit) : '-'}</td></tr>`;
+            }).join('')}</tbody>`
+            : `<tbody><tr><td class="stp-muted">${this.fw.reached.length ? 'No own firewall rules on the routers yet (the default wan rules are left out).' : 'No router reachable over SSH from this PC yet.'}</td></tr></tbody>`;
+
+        const log = [...this.fw.log].sort((a, b) => b.time.localeCompare(a.time)).slice(0, 40);
+        $('fwLogInfo').textContent = log.length ? `newest ${log.length}` : '';
+        $('fwLog').innerHTML = log.length
+            ? log.map(e => `<li title="${esc(e.line)}"><span class="stp-event-time">${esc(e.time)}</span><span><b>${esc(e.label.replace('Router ', 'R'))}</b> ${e.prefix ? `<code>${esc(e.prefix)}</code> ` : ''}${esc(e.src)} → ${esc(e.dst)} · ${esc(e.what)}${e.inIf ? ` · in ${esc(e.inIf)}` : ''}</span></li>`).join('')
+            : `<li><span class="stp-muted">No logged packets. The counters above always work. For the details of every packet (who, to where, which port) turn logging on for a rule: in LuCI the rule, Advanced Settings, "Enable logging on this rule", or <code>uci set firewall.@rule[N].log='1'</code>, <code>uci commit firewall</code>, <code>/etc/init.d/firewall reload</code>. Packets refused by a zone policy (no rule matched): <code>uci set firewall.@zone[0].log='1'</code>.</span></li>`;
     },
 
     async readFacts() {
@@ -222,6 +313,7 @@ const DeviceMap = {
             el.querySelector('.stp-node-dot').className = 'stp-node-dot' + (up === n.ips.length ? ' stp-ok' : up ? ' stp-trn' : '');
             el.classList.toggle('stp-down', up === 0);
             el.classList.toggle('stp-dm-me', !!this.demo && n.ips[0][1] === Demo5.viewer);
+            el.classList.toggle('stp-dm-fwhit', this.labId === 5 && n.type === 'router' && [...this.fw.rows.values()].some(r => r.label === n.label && r.target !== 'ACCEPT' && this.fwRecent(r)));
             n.ips.forEach(([, ip], i) => {
                 const row = el.querySelector(`.stp-dm-ip[data-ip="${ip}"]`);
                 const r = results[i];
@@ -245,7 +337,32 @@ const DeviceMap = {
         const st = $('status');
         st.className = `stp-status stp-status--${ok === total ? 'ok' : ok ? 'warn' : 'bad'}`;
         st.textContent = `${ok}/${total} reachable`;
+        this.renderFirewall();
     }
 };
+
+// A firewall rule in one line: "10.1.2.11 → 10.1.2.3 · tcp 22 (input)".
+function fwRuleText(r) {
+    const src = r.srcIp.join(' ') || 'any';
+    const dst = r.destIp.join(' ') || (r.dest ? 'any' : 'the router');
+    const proto = r.proto.includes('all') ? 'any protocol' : r.proto.join('/');
+    const port = r.destPort.length ? ' ' + r.destPort.join(',') : r.icmp.length ? ' ' + r.icmp.join(',') : '';
+    return `${src} → ${dst} · ${proto}${port} (${r.dest ? 'forward' : 'input'})`;
+}
+
+// One line of logread written by the firewall, for example
+// "Mon Nov 16 09:12:01 2026 kern.warn kernel: [ 812.4] Block_SSH_11: IN=br-lan OUT= MAC=... SRC=10.1.2.11 DST=10.1.2.3 ... PROTO=TCP SPT=51234 DPT=22".
+function parseFwLogLine(line, label) {
+    if (!/ SRC=\S+ DST=/.test(line)) return null;
+    const f = k => (line.match(new RegExp(`\\b${k}=(\\S*)`)) || [])[1] || '';
+    const proto = f('PROTO');
+    const what = proto === 'ICMP' ? (f('TYPE') === '8' ? 'ping' : `ICMP type ${f('TYPE')}`) : `${proto} ${f('DPT')}`.trim();
+    return {
+        label, line,
+        time: (line.match(/\b(\d\d:\d\d:\d\d)\b/) || [])[1] || '',
+        prefix: ((line.match(/kernel:\s*(?:\[[^\]]*\]\s*)?(.*?)\s*IN=/) || [])[1] || '').replace(/:\s*$/, ''),
+        src: f('SRC'), dst: f('DST'), what, inIf: f('IN')
+    };
+}
 
 window.addEventListener('resize', () => { if (DeviceMap.active) DeviceMap.fit(); });

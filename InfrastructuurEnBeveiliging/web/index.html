@@ -127,6 +127,13 @@
                                     <div class="stp-dm-stage" id="mapStage"></div>
                                 </section>
                                 <p class="stp-muted">Cards turn green when this PC can ping the address. The line under the name shows the settings read from the device (mask, firewall, gateway). Click <code>&gt;_</code> on a switch or router for its terminal and show commands.</p>
+                                <section class="stp-card stp-fw-live" id="fwLive" hidden>
+                                    <h2 class="stp-card-title">Firewall live <small id="fwLiveInfo"></small></h2>
+                                    <p class="stp-muted">The counters of your own rules on every router this PC can log in to, read every few seconds. A rule that matches a packet lights up, so you see live which rule blocks what.</p>
+                                    <div class="stp-table-wrap"><table class="stp-table" id="fwRules"></table></div>
+                                    <h3 class="stp-fw-sub">Logged packets <small id="fwLogInfo"></small></h3>
+                                    <ul class="stp-events" id="fwLog"></ul>
+                                </section>
                             </div>
                         </div>
 

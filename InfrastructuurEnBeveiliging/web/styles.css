@@ -1106,6 +1106,18 @@ label.stp-opt:hover { background: rgba(128, 128, 128, .08); }
 .stp-dm-ip i { width: 8px; height: 8px; border-radius: 50%; background: var(--bad); flex-shrink: 0; }
 .stp-dm-ip.stp-up i { background: var(--ok); }
 .stp-dm-ip em { margin-left: auto; font-style: normal; color: var(--secondary); }
+/* Firewall live (Lab 5 monitor) */
+.stp-fw-live { margin-top: 16px; }
+.stp-fw-live > .stp-muted { margin-bottom: 12px; }
+.stp-fw-sub { margin: 18px 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--secondary); display: flex; gap: 8px; }
+.stp-fw-sub small { margin-left: auto; font-weight: 500; letter-spacing: .02em; text-transform: none; }
+.stp-table tr.stp-fw-hit td { background: rgba(239, 68, 68, .1); }
+.stp-table tr.stp-fw-hit.stp-fw-accept td { background: rgba(16, 185, 129, .1); }
+.stp-fw-delta { color: var(--bad); font-weight: 700; }
+.stp-fw-accept .stp-fw-delta { color: var(--ok); }
+.stp-fw-live .stp-events code { padding: 1px 5px; border-radius: 5px; background: rgba(128, 128, 128, .14); font-family: Consolas, monospace; font-size: 11px; }
+.stp-dm-node.stp-dm-fwhit { box-shadow: 0 0 0 2px var(--bad), 0 8px 18px rgba(239, 68, 68, .2); }
+@media (prefers-reduced-motion: no-preference) { .stp-table tr.stp-fw-hit td { transition: background .3s; } }
 .stp-dm-ip.stp-via i { background: transparent; border: 2px solid var(--ok); box-sizing: border-box; }
 .stp-dm-ip.stp-via em { color: var(--primary); }
 .stp-dm-node.stp-dm-me { box-shadow: 0 0 0 2px var(--primary), 0 8px 18px rgba(0, 0, 0, .1); }

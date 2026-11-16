@@ -732,6 +732,8 @@ const FACT_SECTIONS = {
     uci: 'uci show network 2>/dev/null',
     fwuci: 'uci show firewall 2>/dev/null',
     fwcount: "nft list ruleset 2>/dev/null | grep -F 'counter packets' | grep -F '!fw4: '",
+    // Packets the firewall logged (rules or zones with logging on): kernel lines with IN= ... SRC= ... DST=.
+    fwlog: "logread 2>/dev/null | grep -E ' SRC=[0-9.]+ DST=' | tail -n 60",
     links: 'ip -o link show 2>/dev/null',
     brctl: 'brctl show 2>/dev/null',
     stp: 'for b in $(brctl show 2>/dev/null | awk \'NR>1 && $2 ~ /\\./ {print $1}\'); do echo "## $b"; brctl showstp $b; done',
