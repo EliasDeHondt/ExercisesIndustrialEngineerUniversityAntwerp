@@ -13,6 +13,7 @@ const TABS = [['guide', 'Guide'], ['pdf', 'PDF'], ['prepare', 'Prepare'], ['moni
 // A lab with `live: false` (Lab 6) has no live view: no Monitor and no Check tab.
 const tabsOf = lab => lab.live === false ? TABS.filter(([k]) => k !== 'monitor' && k !== 'check') : TABS;
 const TEST_MINUTES = 15;
+const TEST_QUESTIONS = 10;      // a test draws at most this many random questions from the pool of the lab
 const PREP_STORE = 'ieb-best-lab';
 
 const SHELL = {
@@ -226,7 +227,7 @@ function renderPrepare(lab) {
     box.innerHTML = `
         <div class="stp-prose">${p.kb}</div>
         <div class="stp-cta">
-            <p><strong>Ready to test?</strong> ${p.qs.length} multiple-choice questions, ${TEST_MINUTES} minutes. The timer starts when you press the button.${best ? ` Best score so far: ${best.score} / ${best.total}.` : ''}</p>
+            <p><strong>Ready to test?</strong> ${Math.min(p.qs.length, TEST_QUESTIONS)} multiple-choice questions${p.qs.length > TEST_QUESTIONS ? ` (picked at random from ${p.qs.length})` : ''}, ${TEST_MINUTES} minutes. The timer starts when you press the button.${best ? ` Best score so far: ${best.score} / ${best.total}.` : ''}</p>
             ${p.note ? `<p class="stp-muted">${esc(p.note)}</p>` : ''}
             <button class="stp-btn stp-btn--primary cursor-pointer" id="startTest" type="button">Start test</button>
         </div>`;
@@ -235,7 +236,7 @@ function renderPrepare(lab) {
 
 function startTest(lab, p) {
     const test = {
-        items: shuffle(p.qs).map(q => ({ q, order: shuffle(q.o.map((_, i) => i)), picked: null })),
+        items: shuffle(p.qs).slice(0, TEST_QUESTIONS).map(q => ({ q, order: shuffle(q.o.map((_, i) => i)), picked: null })),
         end: Date.now() + TEST_MINUTES * 60 * 1000,
         done: false
     };
