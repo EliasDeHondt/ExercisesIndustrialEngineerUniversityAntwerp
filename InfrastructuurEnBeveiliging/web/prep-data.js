@@ -7,7 +7,7 @@
 'use strict';
 
 // Preparation material per lab: a knowledge base to read and a multiple-choice test (like the Blackboard test at the start of a lab).
-// Labs 1 to 3 come from the old preparation.html, Labs 4 and 5 were added with the integration. The text is kept as written (Dutch notes, English questions of the real tests).
+// Labs 1 to 3 come from the old preparation.html, Labs 4 to 6 were added with the integration. The text is kept as written (Dutch notes, English questions of the real tests).
 const PREP_LABS = [
   {
     n: 1,
@@ -503,6 +503,111 @@ const PREP_LABS = [
       { q: "De .10-host en de .11-host van hetzelfde subnet gebruiken een verschillende default gateway. Een blokkeerregel staat enkel op de router van de .11-host. Wat verwacht je?",
         o: ["Het verkeer van de .11-host wordt geblokkeerd, dat van de .10-host misschien niet, omdat het langs een andere router gaat", "Beide hosts worden altijd geblokkeerd", "Geen enkele host wordt geblokkeerd", "De regel wordt automatisch naar alle routers gekopieerd"],
         a: 0, e: "Een firewall filtert enkel verkeer dat door hem passeert. Kijk naar de gateway van elke host en de routes om te weten welke routers de regel nodig hebben." }
+    ]
+  },
+  {
+    n: 6,
+    title: "Client-to-Site VPN with WireGuard",
+    note: "",
+    kb: `
+<h3>Waar gaat dit labo over</h3>
+<p>Een firewall beslist welk verkeer door mag, maar beschermt dat verkeer niet terwijl het over een netwerk gaat dat je niet controleert. Daarvoor dient een VPN (Virtual Private Network). In dit labo werk je met vier studenten rond één OpenWrt-router tussen twee netwerken: Student A (client, 10.1.1.10) haalt een foto op bij Student C (HTTP-server, 10.1.2.11). Student B (10.1.1.11) luistert mee vóór de router, Student D (10.1.2.10) na de router, allebei via port mirroring op hun switch. Eerst bekijk je wat iedereen ziet zonder VPN, daarna bouw je een WireGuard-tunnel van A naar de router (tunnelnetwerk 10.99.0.0/24, router 10.99.0.1, A 10.99.0.2) en herhaal je dezelfde download. Als je een oefening afrondt, verwittig je de lector.</p>
+
+<h3>Vorm van de test</h3>
+<p>Net als bij de vorige labo's is er aan het begin een korte meerkeuzetest. De opgave zegt het uitdrukkelijk: het gaat om begrip. Je moet geen commando's, configuratiesyntax, sleutelformaten of namen van cryptografische algoritmen kennen. Je moet wel kunnen uitleggen wat een VPN beschermt, hoe een pakket ingekapseld wordt, en wat een waarnemer aan elke kant van het VPN-endpoint wel en niet ziet.</p>
+
+<h3>Bron voor de voorbereiding</h3>
+<p>In Lab6.pdf, sectie 1 Preparation op pagina 3, staan de bronnen: VPN essentials van Network Academy (inner en outer packet bij een remote access VPN), een video van ongeveer 7 minuten over hoe WireGuard werkt, de Conceptual Overview op wireguard.com tot en met "Built-in Roaming" (versturen en ontvangen, AllowedIPs in beide richtingen, hoe een peer het endpoint van de andere leert), de hoofdtekst van Protocol &amp; Cryptography (welke berichten, in welke volgorde, wanneer data mag) en de sectie "Packet Flow" van WireGuard Endpoints and IP Addresses van Pro Custodibus (de NAT-stappen mag je overslaan).</p>
+
+<h3>A. Wat een VPN doet</h3>
+<p>Een VPN maakt een beveiligde logische verbinding over een onvertrouwd netwerk, zoals het internet. Aan het ene endpoint wordt het verkeer versleuteld en ingekapseld, daarna gaat het over het onvertrouwde netwerk en aan het andere endpoint wordt het weer ontcijferd en uitgepakt. Er zijn twee vormen. Een site-to-site VPN verbindt volledige netwerken via hun gateways: de hosts merken er niets van. Een client-to-site VPN (remote access VPN) verbindt één toestel met een beschermd netwerk: het toestel draait VPN-clientsoftware en bouwt een tunnel naar een VPN-gateway aan de rand van het netwerk van de organisatie. Daarna bereikt het de interne servers alsof het in het interne netwerk zit. De interne servers hebben geen VPN-software nodig: zij krijgen gewoon pakketten die de gateway doorstuurt.</p>
+<p>Belangrijk: een VPN beschermt het verkeer enkel tussen de twee endpoints. Na de gateway gaat het pakket weer in klare tekst verder naar de server. Een VPN is dus geen end-to-end versleuteling zoals HTTPS. Wie op het interne netwerk achter de gateway meeluistert, ziet alles van een onversleuteld protocol zoals HTTP.</p>
+
+<h3>B. Inkapseling: inner en outer packet</h3>
+<p>Bij een VPN zijn er twee IP-headers. Het inner packet is het pakket dat de client eigenlijk wil sturen, met de echte bron en bestemming, bijvoorbeeld 10.99.0.2 (het tunneladres van de client) naar 10.1.2.11 (de server), met daarin TCP en HTTP. Dat volledige inner packet, inclusief zijn IP-header, wordt versleuteld en wordt de payload van een outer packet. Het outer packet gaat van het fysieke adres van de client (10.1.1.10) naar het fysieke adres van het VPN-endpoint (10.1.1.2), bij WireGuard in UDP. De outer header moet in klare tekst staan, want daarmee routeert het onvertrouwde netwerk het pakket naar het endpoint. Het endpoint ontcijfert het, gooit de outer headers weg en routeert het inner packet op basis van zijn bestemming verder naar de server.</p>
+<p>Daarom heeft de client twee IP-identiteiten: zijn gewone adres op het fysieke netwerk (voor het outer packet) en een adres in de tunnel (voor het inner packet). Een router achter de gateway ziet als bron het tunneladres en niet het fysieke adres van de client: dat stond enkel in de outer header.</p>
+
+<h3>C. Wat een waarnemer ziet</h3>
+<p>Een aanvaller op het onvertrouwde netwerk, tussen de client en het endpoint, ziet enkel het outer packet: de fysieke IP-adressen van client en endpoint, UDP en de poort van de VPN (bij WireGuard standaard 51820), het feit dat het WireGuard is, en de grootte, het aantal en het tijdstip van de pakketten. Hij ziet niet de echte bestemming, niet het protocol of de poort van de applicatie, niet het HTTP-request en niet de inhoud. Hij kan het bestand dus niet reconstrueren, en omdat elk pakket ook geauthenticeerd is, kan hij niets ongemerkt aanpassen of opnieuw afspelen. Een waarnemer na het endpoint ziet het ontcijferde inner packet: tunneladres van de client, adres en poort van de server, en bij HTTP het volledige request en de inhoud. Zonder VPN ziet een waarnemer op beide plaatsen alles van een HTTP-download.</p>
+<p>Bij het doorsturen door een router veranderen de MAC-adressen bij elke hop (nieuw Ethernet-frame) en daalt de TTL met 1, maar de IP-adressen blijven gelijk (geen NAT).</p>
+
+<h3>D. WireGuard</h3>
+<p>WireGuard is een modern, open-source VPN-protocol: een kleine codebase, een vaste set moderne cryptografische algoritmen (er valt niets te onderhandelen) en een minimale configuratie, ingebouwd in de Linux-kernel en beschikbaar op OpenWrt en alle grote besturingssystemen. Het werkt op Layer 3: het maakt een virtuele netwerkinterface (bijvoorbeeld wg0). Pakketten die naar die interface gerouteerd worden, worden versleuteld en in UDP naar de andere kant gestuurd. WireGuard gebruikt enkel UDP, nooit TCP.</p>
+<p>Elk toestel heet een peer en wordt geïdentificeerd door een sleutelpaar, niet door gebruikersnamen of certificaten. De private key blijft geheim op het toestel en wordt nooit verstuurd. De public key deel je met de andere peers: die herkennen je eraan. Uit de private key kan je de public key berekenen, maar niet omgekeerd. Elke peer heeft een eigen sleutelpaar, zodat je peers kan onderscheiden en apart kan intrekken.</p>
+
+<h3>E. AllowedIPs en cryptokey routing</h3>
+<p>Per peer configureer je de AllowedIPs: de IP-adressen die bij die peer horen. Ze worden in twee richtingen gebruikt. Bij versturen kijkt WireGuard naar het bestemmings-IP van het pakket en kiest de peer wiens AllowedIPs dat adres bevatten: met diens sleutels wordt het versleuteld en naar diens endpoint gestuurd. Bij ontvangen ontcijfert WireGuard het pakket en controleert dat het bron-IP van het inner packet in de AllowedIPs van de peer zit die het stuurde; anders wordt het weggegooid. Zo hoort een tunneladres altijd bij één sleutel en kan een peer geen ander adres vervalsen. Op de server krijgt een client typisch één adres (10.99.0.2/32).</p>
+<p>Op de client bepaalt AllowedIPs ook welk verkeer door de tunnel gaat. Met AllowedIPs = 10.99.0.1/32, 10.1.2.0/24 gaat enkel verkeer naar de router in de tunnel en naar het interne netwerk door de tunnel; al de rest (internet, het eigen lokale netwerk) gaat er gewoon naast. Dat heet split tunneling. Met AllowedIPs = 0.0.0.0/0 gaat al het IPv4-verkeer door de tunnel: een full tunnel.</p>
+
+<h3>F. Endpoint en roaming</h3>
+<p>Het Endpoint is het echte IP-adres en de UDP-poort waar de versleutelde pakketten naartoe gaan, bijvoorbeeld 10.1.1.2:51820. Het is de bestemming van het outer packet. De client moet het endpoint van de server kennen. De server hoeft dat van de client niet te kennen: als hij een correct geauthenticeerd pakket ontvangt, onthoudt hij het bronadres en de bronpoort van het outer packet als endpoint van die peer, en antwoordt daarheen. Verandert de client van adres (bijvoorbeeld van wifi naar 4G), dan werkt de server het endpoint gewoon bij: dat is built-in roaming. Een gevolg: zolang de client niets stuurde, kan de server geen verbinding met hem starten.</p>
+
+<h3>G. De handshake en de berichten</h3>
+<p>WireGuard is stil: er wordt niets verstuurd zolang er geen verkeer voor de tunnel is. Een interface aanzetten geeft dus nog geen pakketten en wg show toont nog geen "latest handshake". Pas als het eerste IP-pakket voor de tunnel klaarstaat, start de peer de handshake. Die bestaat uit één rondgang (1-RTT). Er zijn vier soorten berichten:</p>
+<p>1. Handshake Initiation: van de initiator (hier de client) naar de responder. Het bevat een tijdelijke (ephemeral) public key in klare tekst, de versleutelde statische public key van de initiator en een versleutelde timestamp tegen replay. 2. Handshake Response: van de responder terug, met zijn eigen ephemeral public key. Daarna leiden beide kanten dezelfde sessiesleutels af. 3. Cookie Reply: enkel als de responder onder zware belasting staat, als bescherming tegen denial of service; in het labo zie je die normaal niet. 4. Transport Data: de versleutelde inner packets. De initiator stuurt als eerste data; de responder mag pas data sturen nadat hij een eerste geldig datapakket van de initiator ontving, want dat bevestigt de handshake.</p>
+<p>In de handshake zit geen gebruikersdata: de echte bestemming van het pakket staat er niet in. Geen enkele private key wordt verstuurd, en ook de statische public keys zijn voor een meeluisteraar niet zichtbaar (die van de initiator is versleuteld, die van de responder wordt niet verstuurd). Een Transport Data-pakket toont enkel een receiver index, een teller en de versleutelde bytes. De sessiesleutels worden geregeld (om de paar minuten) vernieuwd met een nieuwe handshake. Optioneel stuurt PersistentKeepalive geregeld een leeg pakket, bijvoorbeeld om een NAT-mapping open te houden; in het labo laat je het uit zodat de eerste pakketten duidelijk te zien zijn.</p>
+
+<h3>H. Wat het labo toont</h3>
+<p>Zonder VPN kan Student B, die geen zender, ontvanger of router is, toch de IP-adressen, de TCP-poorten, het HTTP-request met de bestandsnaam, de headers en de volledige foto zien (in Wireshark via File, Export Objects, HTTP). Met de tunnel ziet B enkel WireGuard-pakketten tussen 10.1.1.10 en 10.1.1.2 op UDP 51820. Student D ziet na de router nog altijd alles, maar nu met bron 10.99.0.2. Wil je ook dat stuk beschermen, dan heb je end-to-end versleuteling nodig, zoals HTTPS (TLS) tussen client en server, of een tunnel die tot bij de server loopt.</p>
+`,
+    qs: [
+      { q: "Wat doet een firewall dat een VPN niet doet, en omgekeerd?",
+        o: ["Een firewall beslist welk verkeer door mag, een VPN beschermt (versleutelt en authenticeert) het verkeer terwijl het over een onvertrouwd netwerk gaat", "Een firewall versleutelt verkeer, een VPN filtert pakketten", "Ze doen hetzelfde", "Een VPN vervangt de routing, een firewall de switching"],
+        a: 0, e: "In Lab 5 bepaalde de firewall wat door mocht, maar het toegelaten verkeer was nog leesbaar voor wie meeluistert. Een VPN maakt een beveiligde logische verbinding over een netwerk dat je niet controleert." },
+      { q: "Wat is het verschil tussen een site-to-site VPN en een client-to-site (remote access) VPN?",
+        o: ["Site-to-site verbindt volledige netwerken via hun gateways, client-to-site verbindt één toestel met clientsoftware met een beschermd netwerk", "Site-to-site gebruikt UDP, client-to-site TCP", "Client-to-site versleutelt niet", "Site-to-site werkt enkel binnen één LAN"],
+        a: 0, e: "Bij client-to-site draait het toestel zelf VPN-software en bouwt het een tunnel naar de VPN-gateway aan de rand van het netwerk. In dit labo is A de client en de OpenWrt-router de gateway." },
+      { q: "Moet de interne webserver (Student C) VPN-software draaien om bereikbaar te zijn via een client-to-site VPN?",
+        o: ["Nee, de gateway ontcijfert het pakket en stuurt het als gewoon IP-pakket door naar de server", "Ja, anders kan hij het pakket niet ontcijferen", "Ja, maar enkel de public key", "Enkel als de server Windows draait"],
+        a: 0, e: "De tunnel stopt op de gateway. De server krijgt een gewoon pakket en antwoordt via zijn default gateway, die het antwoord weer door de tunnel stuurt." },
+      { q: "A (fysiek 10.1.1.10, tunnel 10.99.0.2) stuurt via de tunnel een pakket naar C (10.1.2.11). Het VPN-endpoint is 10.1.1.2. Welke adressen staan in de outer IP-header?",
+        o: ["Bron 10.1.1.10, bestemming 10.1.1.2", "Bron 10.99.0.2, bestemming 10.1.2.11", "Bron 10.1.1.10, bestemming 10.1.2.11", "Bron 10.99.0.2, bestemming 10.1.1.2"],
+        a: 0, e: "De outer header gaat van het fysieke adres van de client naar het endpoint: daarmee routeert het onvertrouwde netwerk het pakket. De inner header (10.99.0.2 naar 10.1.2.11) zit versleuteld in de payload." },
+      { q: "Welk deel van het oorspronkelijke pakket wordt door WireGuard versleuteld?",
+        o: ["Het volledige inner IP-pakket: IP-header, TCP-header en de data", "Enkel de HTTP-data, de headers blijven leesbaar", "Enkel de outer IP-header", "Enkel de TCP-poorten"],
+        a: 0, e: "WireGuard werkt op Layer 3: het hele IP-pakket dat naar de tunnel-interface gaat wordt versleuteld en wordt de payload van een outer UDP/IP-pakket." },
+      { q: "Student B luistert mee tussen A en het VPN-endpoint terwijl A via de tunnel http://10.1.2.11:8000/secret-photo.jpg ophaalt. Wat kan B zien?",
+        o: ["De outer IP-adressen (10.1.1.10 en 10.1.1.2), UDP 51820 en de grootte en het tijdstip van de pakketten", "Het HTTP-request GET /secret-photo.jpg", "De bestemming 10.1.2.11 en TCP-poort 8000", "De volledige foto via Export Objects"],
+        a: 0, e: "Alles van het inner packet is versleuteld. Wat zichtbaar blijft, is wat nodig is om het pakket bij het endpoint te krijgen, plus metadata zoals grootte en timing." },
+      { q: "Student D luistert mee achter de router (het VPN-endpoint), tussen de router en C. Wat ziet D bij dezelfde HTTP-download via de tunnel?",
+        o: ["Het ontcijferde verkeer: 10.99.0.2 naar 10.1.2.11, TCP 8000, het HTTP-request en de foto", "Enkel versleutelde WireGuard-pakketten", "Niets, het verkeer gaat niet langs D", "Enkel de handshake"],
+        a: 0, e: "De tunnel stopt op de router. Daarna gaat het inner packet in klare tekst verder. Een VPN beschermt enkel het stuk tussen de twee endpoints." },
+      { q: "Welk bron-IP ziet Student D in de pakketten van A die door de tunnel kwamen, en waarom?",
+        o: ["10.99.0.2, het tunneladres van A: het fysieke adres 10.1.1.10 stond enkel in de outer header die de router wegnam", "10.1.1.10, want IP-adressen veranderen nooit", "10.1.2.2, want de router doet NAT", "10.1.1.2, het adres van het endpoint"],
+        a: 0, e: "A stuurt het inner packet vanaf zijn tunnel-interface, dus met bron 10.99.0.2. Er is geen NAT in dit labo. C antwoordt dus ook aan 10.99.0.2, en dat antwoord gaat via de tunnel terug." },
+      { q: "Wat beschrijft de rol van de private en de public key van een WireGuard-peer correct?",
+        o: ["De private key blijft geheim op het toestel en wordt nooit verstuurd, de public key wordt gedeeld en identificeert de peer", "Beide sleutels worden in de handshake in klare tekst verstuurd", "De public key moet geheim blijven, de private key mag gedeeld worden", "Alle peers delen hetzelfde sleutelpaar"],
+        a: 0, e: "WireGuard gebruikt geen gebruikersnamen of certificaten: een peer is zijn public key. Uit de public key kan je de private key niet berekenen, daarom mag hij gedeeld worden." },
+      { q: "Op de router staat bij de peer van A: AllowedIPs = 10.99.0.2/32. Wat betekent dat?",
+        o: ["Pakketten naar 10.99.0.2 gaan versleuteld naar A, en uit de tunnel van A worden enkel pakketten met bron 10.99.0.2 aanvaard", "A mag enkel 10.99.0.2 pingen", "Enkel de host 10.99.0.2 mag de router beheren", "Het is het adres waarop de router luistert"],
+        a: 0, e: "AllowedIPs werkt in twee richtingen (cryptokey routing): bij versturen kiest de bestemming de peer, bij ontvangen moet de bron binnen de AllowedIPs van die peer vallen." },
+      { q: "De client heeft AllowedIPs = 10.99.0.1/32, 10.1.2.0/24. A surft naar een website op het internet. Wat gebeurt er met dat verkeer?",
+        o: ["Het gaat niet door de tunnel maar gewoon via de fysieke interface (split tunneling)", "Het gaat door de tunnel naar de router", "Het wordt geblokkeerd", "Het gaat eerst naar 10.99.0.1"],
+        a: 0, e: "Enkel verkeer naar adressen in AllowedIPs gaat door de tunnel. Met AllowedIPs = 0.0.0.0/0 (full tunnel) zou al het IPv4-verkeer door de tunnel gaan." },
+      { q: "Wat stelt Endpoint = 10.1.1.2:51820 in de configuratie van de client voor?",
+        o: ["Het echte IP-adres en de UDP-poort van de router waar de versleutelde (outer) pakketten naartoe gaan", "Het tunneladres van de router", "Het adres van de webserver", "De poort waarop de client luistert"],
+        a: 0, e: "Het endpoint is de bestemming van het outer packet. Het tunneladres van de router is 10.99.0.1." },
+      { q: "De peer van A op de router heeft geen Endpoint ingesteld. Hoe weet de router waar hij de antwoorden voor A naartoe moet sturen?",
+        o: ["Hij leert het uit het bron-IP en de bronpoort van het eerste geldig geauthenticeerde pakket van A (roaming)", "Via een DHCP-lease", "Dat kan niet, de router moet een endpoint hebben", "Via een broadcast naar alle hosts"],
+        a: 0, e: "Daardoor blijft de tunnel ook werken als de client van adres verandert. Zolang A niets stuurde, kent de router het endpoint niet en kan hij zelf geen handshake starten." },
+      { q: "De tunnel op A is net geactiveerd, zonder PersistentKeepalive en zonder verkeer. Wat toont wg show en wat zie je in Wireshark?",
+        o: ["Nog geen handshake en geen pakketten: WireGuard stuurt pas iets als er verkeer voor de tunnel is", "Meteen een handshake bij het activeren", "Elke seconde een keepalive", "Een Cookie Reply van de router"],
+        a: 0, e: "WireGuard is stil en zet de sessie op aanvraag op. Het eerste pakket voor de tunnel start de handshake." },
+      { q: "In welke volgorde verschijnen de WireGuard-berichten als A een eerste ping door de tunnel stuurt?",
+        o: ["Handshake Initiation (A naar router), Handshake Response (router naar A), daarna Transport Data", "Transport Data, daarna Handshake Initiation", "Cookie Reply, Handshake Initiation, Handshake Response", "Handshake Response (router naar A), daarna Handshake Initiation"],
+        a: 0, e: "De kant die verkeer heeft, start de handshake (1-RTT). Daarna stuurt de initiator als eerste data. Een Cookie Reply komt enkel voor bij zware belasting (DoS-bescherming)." },
+      { q: "Kan een meeluisteraar in de Handshake Initiation de echte bestemming van het pakket (10.1.2.11) of de private key van A zien?",
+        o: ["Geen van beide: de handshake bevat geen gebruikersdata en een private key wordt nooit verstuurd", "Beide, de handshake is niet versleuteld", "Enkel de bestemming", "Enkel de private key"],
+        a: 0, e: "In de Initiation staat enkel een tijdelijke (ephemeral) public key in klare tekst. De statische public key van A en de timestamp zijn versleuteld. Het eigenlijke ping-pakket gaat pas na de handshake, als Transport Data." },
+      { q: "Waarom is de foto bij een HTTP-download via de VPN niet beschermd op het hele pad van A naar C?",
+        o: ["De tunnel loopt enkel van A tot de router; tussen de router en C is het gewoon HTTP in klare tekst", "Omdat WireGuard enkel de headers versleutelt", "Omdat de router de sleutel van C niet kent", "Ze is wel beschermd op het hele pad"],
+        a: 0, e: "Voor bescherming van begin tot eind heb je end-to-end versleuteling nodig, bijvoorbeeld HTTPS (TLS) tussen A en C. Dan kan ook D de foto niet meer reconstrueren." },
+      { q: "Zonder VPN downloadt A de foto via HTTP door de router. Wat verandert er tussen het pakket dat B (vóór de router) en D (na de router) ziet?",
+        o: ["De MAC-adressen en de TTL (één lager); de IP-adressen blijven gelijk", "De IP-adressen en de TTL; de MAC-adressen blijven gelijk", "Niets", "Enkel de TCP-poorten"],
+        a: 0, e: "Een router maakt per hop een nieuw Ethernet-frame en verlaagt de TTL met 1. Zonder NAT blijven het bron- en bestemmings-IP hetzelfde." },
+      { q: "Waarom gebruikt WireGuard UDP en geen TCP voor de outer packets?",
+        o: ["Het inner verkeer (bijvoorbeeld TCP) regelt zelf betrouwbaarheid; TCP in TCP zou dubbele hertransmissies en vertraging geven", "Omdat UDP versleuteld is en TCP niet", "Omdat TCP niet door een router kan", "Omdat UDP de IP-adressen verbergt"],
+        a: 0, e: "Een VPN op Layer 3 transporteert gewoon IP-pakketten, verlies wordt hoger opgevangen. UDP is daarvoor de eenvoudigste en snelste drager." }
     ]
   }
 ];

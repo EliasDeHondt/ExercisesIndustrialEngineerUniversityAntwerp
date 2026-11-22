@@ -1032,8 +1032,8 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, ok ? 200 : 404, { ok });
     }
 
-    // The lab notes (Lab1.md to Lab5.md) live one folder up.
-    const note = url.pathname.match(/^\/notes\/(Lab[1-5])\.md$/);
+    // The lab notes (Lab1.md to Lab6.md) live one folder up.
+    const note = url.pathname.match(/^\/notes\/(Lab[1-6])\.md$/);
     if (note) {
         return fs.readFile(path.join(ROOT, '..', note[1] + '.md'), (err, data) => {
             if (err) { res.writeHead(404); return res.end('Not found'); }
@@ -1042,8 +1042,8 @@ const server = http.createServer(async (req, res) => {
         });
     }
 
-    // The lab guides (Lab1.pdf to Lab5.pdf), shown inline in the PDF tab.
-    const pdf = url.pathname.match(/^\/pdf\/(Lab[1-5])\.pdf$/);
+    // The lab guides (Lab1.pdf to Lab6.pdf), shown inline in the PDF tab.
+    const pdf = url.pathname.match(/^\/pdf\/(Lab[1-6])\.pdf$/);
     if (pdf) {
         return fs.readFile(path.join(ROOT, '..', pdf[1] + '.pdf'), (err, data) => {
             if (err) { res.writeHead(404); return res.end('Not found'); }

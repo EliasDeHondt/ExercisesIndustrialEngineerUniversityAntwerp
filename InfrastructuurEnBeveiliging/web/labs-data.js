@@ -6,8 +6,8 @@
 
 'use strict';
 
-// The guide of every lab, taken from Lab1.pdf to Lab5.pdf: goals, preparation, devices and the exercises with their questions.
-// Text between `backticks` is shown as code. `monitor` says which live view the lab has.
+// The guide of every lab, taken from Lab1.pdf to Lab6.pdf: goals, preparation, devices and the exercises with their questions.
+// Text between `backticks` is shown as code. `live: false` hides the Monitor and Check tabs.
 
 const LABS = [
     {
@@ -478,6 +478,95 @@ const LABS = [
                     'For Finance > IT, HR > IT, Guest > IT/Finance/HR and "nobody except IT may SSH to a router": which routers must carry the rule, and why?',
                     'List the rules you configured and explain your choice.',
                     'Do all tests give the expected result? If a test succeeds from one host but fails from the other host of the same department, explain why.'
+                ]
+            }
+        ]
+    },
+    {
+        n: 6,
+        title: 'Client-to-site VPN with WireGuard',
+        short: 'WireGuard VPN',
+        icon: 'lock',
+        live: false,              // no monitor or checker: guide, PDF, test and notes only
+        summary: 'Capture an unencrypted HTTP download from both sides of a router, then build a split-tunnel WireGuard VPN from a client to the OpenWrt router and compare what an attacker before the VPN endpoint and an observer after it can still see.',
+        goals: [
+            'Configure and verify a client-to-site WireGuard VPN.',
+            'Explain the role of public/private keys and Allowed IPs in WireGuard.',
+            'Configure and test a split-tunnel VPN.',
+            'Analyze VPN traffic and WireGuard handshakes using Wireshark.',
+            'Explain encapsulation, encryption, and the use of inner and outer packet headers.',
+            'Compare the visibility of network traffic with and without VPN protection.'
+        ],
+        reading: [
+            'The test is about concepts, not commands, key formats or algorithm names: what a VPN protects, how a packet is encapsulated, and what an observer sees on each side of the VPN endpoint.',
+            'Network Academy: VPN essentials. Which addresses are in the inner and in the outer packet of a remote access VPN, and what an observer on the internet sees.',
+            'Video: how WireGuard works (about 7 minutes): keys, handshake, design choices.',
+            'WireGuard: Conceptual Overview, up to and including "Built-in Roaming". Sending and receiving, AllowedIPs in both directions, how a peer learns the endpoint of the other peer.',
+            'WireGuard: Protocol & Cryptography, main text only. Who sends which message, in which order, and when encrypted data may be sent.',
+            'Pro Custodibus: WireGuard Endpoints and IP Addresses, section "Packet Flow" (skip the NAT steps).'
+        ],
+        devices: [
+            ['Roles', 'Group of four. A = client (`10.1.1.10`, tunnel `10.99.0.2`), B = attacker before the router (`10.1.1.11`), C = HTTP photo server (`10.1.2.11`), D = observer after the router (`10.1.2.10`).'],
+            ['Network', 'Switch 1 `10.1.1.1`, router LAN1 `10.1.1.2` (br-lan) and LAN2 `10.1.2.2` (lan2), switch 2 `10.1.2.1`, all /24. Hosts use the router address in their subnet as gateway.'],
+            ['Mirroring', 'Port mirroring on both switches (see Lab 4) so B sees A <> router and D sees router <> C.'],
+            ['WireGuard', '`opkg update` and `opkg install wireguard-tools luci-proto-wireguard` on the router, the WireGuard client on A. Tunnel network `10.99.0.0/24`, router `10.99.0.1`, listen port UDP `51820`. The router firewall may stay off.'],
+            ['Show', '`wg show` on the router and on A. Wireshark filters: `tcp.port == 8000`, `http`, `udp.port == 51820`.']
+        ],
+        exercises: [
+            {
+                id: 'ex1', title: 'Exercise 1: Observing unencrypted network traffic',
+                intro: 'Before any VPN: C serves secret-photo.jpg over plain HTTP, A downloads it through the router, and B (before the router) and D (after the router) capture the transfer to see what an outsider can read.',
+                steps: [
+                    'Build Figure 1, configure all addresses and gateways, set up port mirroring on both switches and check full connectivity. Install WireGuard on the router and on A (not used yet). The router firewall may be disabled.',
+                    'C: put an image named `secret-photo.jpg` in an empty folder and run `python3 -m http.server 8000` there. Check from the router that http://10.1.2.11:8000/ answers.',
+                    'A pings C (10.1.2.11) through the router.',
+                    'B and D start Wireshark first. Then A downloads http://10.1.2.11:8000/secret-photo.jpg (browser or `curl ... --output secret-photo.jpg`). Stop both captures.',
+                    'Analyze: filter, TCP handshake, the HTTP GET and its headers, the JPEG data. Recover the image with File > Export Objects > HTTP.',
+                    'Compare the captures of B and D: MAC addresses, IP addresses and TTL.'
+                ],
+                questions: [
+                    'Can A reach C with a ping?',
+                    'Can you see the TCP traffic? Which Wireshark filter did B use? Can you identify the TCP three-way handshake?',
+                    'Which HTTP method is used and which object does A request? Can you find GET /secret-photo.jpg, read the HTTP headers and see the JPEG data?',
+                    'Can B open the image, and should he be able to? Why could B reconstruct the file?',
+                    'Between B and D: do the MAC addresses stay the same? The IP addresses? What happens to the TTL, and why?'
+                ]
+            },
+            {
+                id: 'ex2', title: 'Exercise 2: Deploying a WireGuard tunnel',
+                intro: 'Same physical topology, but A now sets up a WireGuard tunnel to the router. Tunnel network 10.99.0.0/24: router 10.99.0.1, A 10.99.0.2. A gets a second IP identity next to 10.1.1.10.',
+                steps: [
+                    'Generate a key pair on the router and on A (`wg genkey | tee private.key | wg pubkey > public.key`) and note both public keys.',
+                    'Router: WireGuard interface with the server private key, listen port 51820, address 10.99.0.1/24. Peer: public key of A, allowed IPs 10.99.0.2/32.',
+                    'A: [Interface] PrivateKey and Address = 10.99.0.2/24; [Peer] PublicKey of the server, Endpoint = 10.1.1.2:51820, AllowedIPs = 10.99.0.1/32, 10.1.2.0/24. No PersistentKeepalive (split tunnel).',
+                    'Run `wg show` on both sides before any traffic. B and D start Wireshark, then A pings 10.99.0.1 and 10.1.2.11. Run `wg show` again.',
+                    'Capture the handshake: stop all traffic, disable the tunnel on A, start Wireshark on B (filter `udp.port == 51820`) and D, re-enable the tunnel, send one ping to 10.1.2.11 and stop after a few seconds.'
+                ],
+                questions: [
+                    'Why does A need a separate IP address for the tunnel?',
+                    'Which commands generate the key pairs? Why does each peer need its own key pair? Why may the public key be shared but not the private key?',
+                    'Why does the router associate 10.99.0.2/32 with the public key of A? What do Endpoint = 10.1.1.2:51820 and AllowedIPs = 10.99.0.1/32, 10.1.2.0/24 mean?',
+                    'Which traffic of A goes through the tunnel and which does not? What would AllowedIPs = 0.0.0.0/0 mean? Why prefer split tunneling here?',
+                    'What does wg show tell you? Is there a handshake before any traffic, and why? Do the pings work? What changed in wg show?',
+                    'After re-enabling the tunnel, do you see WireGuard packets immediately? Which messages follow (type and direction) and what comes after the handshake?',
+                    'Type 1 packet: outer source and destination IP, Layer 4 protocol. Can B or D see 10.1.2.11, the private key, or the public keys? Which fields does Wireshark decode?'
+                ]
+            },
+            {
+                id: 'ex3', title: 'Exercise 3: Analyzing traffic through a VPN tunnel',
+                intro: 'Repeat the download of Exercise 1 with the tunnel up, and compare what B sees between A and the VPN endpoint with what D sees after the router has decrypted the packets.',
+                steps: [
+                    'B and D start a new capture, A downloads http://10.1.2.11:8000/secret-photo.jpg again, stop both captures.',
+                    'B: analyze with `udp.port == 51820`. D: analyze with `tcp.port == 8000` or `http`.',
+                    'Find the packet that carries the HTTP request in both captures and fill in the comparison table (source and destination IP, L4 protocol, destination port, protocol visible, HTTP GET visible, JPEG recoverable).'
+                ],
+                questions: [
+                    'B: can he find the HTTP conversation? Which protocol and which IP addresses does he see? Can he find the TCP port, the GET request, the photo?',
+                    'D: the same questions. Why is everything visible again?',
+                    'Which IP header routes the packet across the untrusted network, and which one from the endpoint to C? Can B tell that the final destination is 10.1.2.11?',
+                    'Which source IP does D see, and why is it not 10.1.1.10?',
+                    'Is the image protected along the whole path? What does the tunnel protect, and what stays visible outside it?',
+                    'How could you also protect the traffic after the tunnel? Could D still reconstruct the image if the server used HTTPS?'
                 ]
             }
         ]

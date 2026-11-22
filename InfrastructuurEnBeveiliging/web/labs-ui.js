@@ -10,6 +10,8 @@
 // (Guide, Prepare, Monitor, Check, Notes).
 
 const TABS = [['guide', 'Guide'], ['pdf', 'PDF'], ['prepare', 'Prepare'], ['monitor', 'Monitor'], ['check', 'Check'], ['notes', 'Notes']];
+// A lab with `live: false` (Lab 6) has no live view: no Monitor and no Check tab.
+const tabsOf = lab => lab.live === false ? TABS.filter(([k]) => k !== 'monitor' && k !== 'check') : TABS;
 const TEST_MINUTES = 15;
 const PREP_STORE = 'ieb-best-lab';
 
@@ -29,6 +31,7 @@ const ICONS = {
     route: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/></svg>',
     tree: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="5" rx="1"/><rect x="2" y="16" width="6" height="5" rx="1"/><rect x="16" y="16" width="6" height="5" rx="1"/><path d="M12 7v4M5 16v-3h14v3"/></svg>',
     shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.3 8 11 4.6-1.7 8-6 8-11V5z"/><path d="m9 12 2 2 4-4"/></svg>',
+    lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
     layers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>',
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-7h6v7"/></svg>'
 };
@@ -94,7 +97,7 @@ function route() {
         return;
     }
     if (parts[0] === 'lab' && labByNumber(parts[1])) {
-        const tab = TABS.some(t => t[0] === parts[2]) ? parts[2] : 'guide';
+        const tab = tabsOf(labByNumber(parts[1])).some(t => t[0] === parts[2]) ? parts[2] : 'guide';
         showLab(Number(parts[1]), tab);
     } else {
         showHome();
@@ -110,7 +113,7 @@ function showHome() {
     $('view-home').innerHTML = `
         <div class="stp-hero">
             <h1>Choose a lab</h1>
-            <p>Every lab has a guide to read, a preparation test, a live monitor of your devices, a checker that tells you whether the exercise is set up correctly and, if not, what is wrong, and your notes.</p>
+            <p>Every lab has a guide to read, the original PDF, a preparation test and your notes. Labs 1 to 5 also have a live monitor of your devices and a checker that tells you whether the exercise is set up correctly and, if not, what is wrong.</p>
         </div>
         <div class="stp-lab-grid">
             ${LABS.map(l => {
@@ -122,15 +125,15 @@ function showHome() {
                     <div class="stp-badges">
                         <span class="stp-badge">${l.exercises.length} exercises</span>
                         <span class="stp-badge${best ? ' stp-badge--ok' : ''}">Test: ${best ? `${best.score}/${best.total}` : 'not taken'}</span>
-                        <span class="stp-badge${cs.ran && cs.ok === cs.ran ? ' stp-badge--ok' : cs.ran ? ' stp-badge--warn' : ''}">Checks: ${cs.ran ? `${cs.ok}/${cs.ran} OK` : 'not run'}</span>
+                        ${l.live === false ? '' : `<span class="stp-badge${cs.ran && cs.ok === cs.ran ? ' stp-badge--ok' : cs.ran ? ' stp-badge--warn' : ''}">Checks: ${cs.ran ? `${cs.ok}/${cs.ran} OK` : 'not run'}</span>`}
                     </div>
                     <div class="stp-lab-actions">
-                        ${TABS.map(([k, name]) => `<a class="stp-btn cursor-pointer" href="#/lab/${l.n}/${k}">${name}</a>`).join('')}
+                        ${tabsOf(l).map(([k, name]) => `<a class="stp-btn cursor-pointer" href="#/lab/${l.n}/${k}">${name}</a>`).join('')}
                     </div>
                 </article>`;
             }).join('')}
         </div>
-        <p class="stp-muted">Labs 6 to 8 (VPNs, security validation) follow when their guides are available.</p>`;
+        <p class="stp-muted">Labs 7 and 8 follow when their guides are available.</p>`;
     window.scrollTo(0, 0);
 }
 
@@ -144,7 +147,7 @@ function showLab(n, tab) {
     $('view-home').hidden = true;
     $('view-lab').hidden = false;
     $('labHead').innerHTML = `<span class="stp-lab-num">${n}</span><div><h1>${esc(lab.title)}</h1><p>${esc(lab.summary)}</p></div>`;
-    $('labTabs').innerHTML = TABS.map(([k, name]) => `<a class="stp-tab-link cursor-pointer${k === tab ? ' stp-active' : ''}" href="#/lab/${n}/${k}">${name}</a>`).join('');
+    $('labTabs').innerHTML = tabsOf(lab).map(([k, name]) => `<a class="stp-tab-link cursor-pointer${k === tab ? ' stp-active' : ''}" href="#/lab/${n}/${k}">${name}</a>`).join('');
     for (const [k] of TABS) $('tab-' + k).hidden = k !== tab;
     ({ guide: renderGuide, pdf: renderPdf, prepare: renderPrepare, monitor: renderMonitor, check: renderCheck, notes: renderLabNotes })[tab](lab);
     $('content').scrollTop = 0;
@@ -169,7 +172,7 @@ function renderGuide(lab) {
                     <p>${inlineMd(ex.intro)}</p>
                     ${ex.steps.length ? `<h3>What to do</h3><ol class="stp-steps">${ex.steps.map(s => `<li>${inlineMd(s)}</li>`).join('')}</ol>` : ''}
                     ${ex.questions.length ? `<h3>Questions</h3><ul class="stp-questions">${ex.questions.map(s => `<li>${inlineMd(s)}</li>`).join('')}</ul>` : ''}
-                    <div class="stp-ex-actions"><a class="stp-btn cursor-pointer" href="#/lab/${lab.n}/check" data-checkex="${ex.id}">Check this exercise</a><a class="stp-btn cursor-pointer" href="#/lab/${lab.n}/monitor">Open the monitor</a></div>
+                    ${lab.live === false ? '' : `<div class="stp-ex-actions"><a class="stp-btn cursor-pointer" href="#/lab/${lab.n}/check" data-checkex="${ex.id}">Check this exercise</a><a class="stp-btn cursor-pointer" href="#/lab/${lab.n}/monitor">Open the monitor</a></div>`}
                 </div>
             </details>`).join('')}`;
     for (const ex of lab.exercises) paintExStatus(lab.n, ex.id);
